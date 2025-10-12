@@ -1,10 +1,16 @@
+use derive_more::Display;
+
 pub mod models {
+    use derive_more::Display;
+    
     pub struct Market {}
 
-    struct Account {
-        username: String,
-        password: String,
-        api_key: String
+    #[derive(Debug, Clone, Display)]
+    #[display("Account: username={}, api_key={}", username, api_key)]
+    pub struct Account {
+        pub username: String,
+        pub password: String,
+        pub api_key: String
     }
 
     pub struct OrderRequest {}
