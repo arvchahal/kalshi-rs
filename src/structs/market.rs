@@ -1,4 +1,4 @@
-use derive_more::Display;
+// use derive_more::Display;
 
 pub mod models {
     use derive_more::Display;
@@ -8,9 +8,31 @@ pub mod models {
     #[derive(Debug, Clone, Display)]
     #[display("Account: username={}, api_key={}", username, api_key)]
     pub struct Account {
-        pub username: String,
-        pub password: String,
-        pub api_key: String
+        username: String,
+        password: String,
+        api_key: String
+    }
+    impl Account {
+        pub fn new(username: String, password: String, api_key: String) -> Self {
+            Self {
+                username,
+                password,
+                api_key,
+            }
+        }
+
+        // Getters
+        pub fn username(&self) -> &str {
+            &self.username
+        }
+
+        pub fn password(&self) -> &str {
+            &self.password
+        }
+
+        pub fn api_key(&self) -> &str {
+            &self.api_key
+        }
     }
 
     pub struct OrderRequest {}
