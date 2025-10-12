@@ -1,3 +1,7 @@
 pub mod markets;
 pub mod auth;
-pub(crate) mod client;
+pub mod client;
+
+// Re-export commonly used types
+pub use client::KalshiClient;
+pub use auth::Account;

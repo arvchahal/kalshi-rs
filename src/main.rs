@@ -2,7 +2,7 @@ use reqwest::{Client, Response, Url};
 use serde_json::Value;
 use tokio::fs;
 use kalshi_rust_sdk::auth::auth_loader::load_auth_from_file;
-use kalshi_rust_sdk::markets::models::Account;
+use kalshi_rust_sdk::auth::Account;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
