@@ -1,32 +1,25 @@
 use derive_more::Display;
 
 #[derive(Debug, Clone, Display)]
-#[display("Account: username={}, api_key={}", username, api_key)]
+#[display("Account: username={}", username)]
 pub struct Account {
     username: String,
-    password: String,
-    api_key: String
+    private_key_pem: String,
 }
 
 impl Account {
-    pub fn new(username: String, password: String, api_key: String) -> Self {
+    pub fn new(username: String, private_key_pem: String) -> Self {
         Self {
             username,
-            password,
-            api_key,
+            private_key_pem,
         }
     }
 
-    // Getters
     pub fn username(&self) -> &str {
         &self.username
     }
 
-    pub fn password(&self) -> &str {
-        &self.password
-    }
-
-    pub fn api_key(&self) -> &str {
-        &self.api_key
+    pub fn private_key_pem(&self) -> &str {
+        &self.private_key_pem
     }
 }

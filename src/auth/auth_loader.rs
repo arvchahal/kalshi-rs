@@ -21,14 +21,5 @@ pub fn load_auth_from_file() -> io::Result<Account> {
     
     Ok(Account::new(
          parts[0].to_string(),
-         parts[1].to_string(),
-         parts[2].to_string()))
-}
-
-pub fn load_from_input(username: &str, password: &str, api_key: &str) -> Account {
-    Account::new(
-         username.to_string(),
-         password.to_string(),
-         api_key.to_string()
-    )
+         parts[1].to_string()))
 }

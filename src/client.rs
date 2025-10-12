@@ -6,9 +6,9 @@ use crate::auth::Account;
 const KALSHI_API: &str = "https://api.elections.kalshi.com/trade-api/v2";
 
 pub struct KalshiClient{
-    http_client: Client,
-    account: Account,
-    base_url: String
+    pub(crate) http_client: Client,
+    pub(crate) account: Account,
+    pub(crate) base_url: String
 }
 
 impl KalshiClient{
