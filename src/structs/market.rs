@@ -1,19 +1,19 @@
-struct Market{
+pub mod models {
+    pub struct Market {}
 
-}
+    struct Account {
+        username: String,
+        password: String,
+        api_key: String
+    }
 
-struct Account{
+    pub struct OrderRequest {}
 
-}
+    pub struct Position {
+        user: Account
+    }
 
-struct OrderRequest{
+    pub struct OrderStatus{
 
-}
-
-struct Position{
-
-}
-
-struct OrderStatus{
-
+    }
 }
