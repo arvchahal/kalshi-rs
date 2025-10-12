@@ -1,7 +1,7 @@
 use std::fs;
 use std::io;
 use std::env;
-use crate::structs::market::models::Account;
+use crate::markets::models::Account;
 
 const SECRETS_FILE_DEFAULT: &str = "kalshi_private.txt";
 

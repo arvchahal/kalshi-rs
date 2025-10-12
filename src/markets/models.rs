@@ -1,9 +1,8 @@
 // use derive_more::Display;
 
-pub mod models {
     use derive_more::Display;
     
-    pub struct Market {}
+pub struct Market {}
 
     #[derive(Debug, Clone, Display)]
     #[display("Account: username={}, api_key={}", username, api_key)]
@@ -44,4 +43,3 @@ pub mod models {
     pub struct OrderStatus{
 
     }
-}

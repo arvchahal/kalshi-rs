@@ -1,2 +1,2 @@
-pub mod structs;
+pub mod markets;
 pub mod auth;
