@@ -2,5 +2,5 @@
 /.lsp
 /.clj-kondo
 /*.json
-kalshi_private.txt
+kalshi_private.pem
 CLAUDE.md

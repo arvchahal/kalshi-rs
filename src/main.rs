@@ -14,8 +14,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // fs::write("markets_pretty.json", pretty).await?;
     // println!("saved: markets_pretty.json");
-    let x = load_auth()?;
-    println!("{}",x);
+    // let x = load_auth()?;
+    // println!("{}",x);
+    let x = load_auth();
+    println!("{}",x.unwrap());
+
 
     Ok(())
 }
