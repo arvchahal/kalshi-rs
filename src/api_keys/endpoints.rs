@@ -72,12 +72,7 @@ impl KalshiClient {
         return Err(KalshiError::Other(format!("HTTP {}: {}", status, body)));
     }
 
-    #[derive(serde::Deserialize)]
-    struct GetApiKeysResponse {
-        #[serde(rename = "api_keys")]
-        api_keys: Vec<ApiKey>,
-    }
-    let data: GetApiKeysResponse = serde_json::from_str(&body)
+    let data: ListApiKeysResponse = serde_json::from_str(&body)
         .map_err(|e| KalshiError::Other(format!("Parse error: {e}. Body: {body}")))?;
     Ok(data.api_keys)
 }

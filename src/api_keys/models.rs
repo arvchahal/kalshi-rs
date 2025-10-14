@@ -2,10 +2,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ApiKey {
-    pub key_id: String,
-    pub description: Option<String>,
-    pub created_at: String,
-    pub is_active: bool,
+    pub api_key_id: String,
+    pub name: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -22,5 +20,5 @@ pub struct CreateApiKeyResponse {
 
 #[derive(Debug, Deserialize)]
 pub struct ListApiKeysResponse {
-    pub keys: Vec<ApiKey>,
+    pub api_keys: Vec<ApiKey>,
 }
