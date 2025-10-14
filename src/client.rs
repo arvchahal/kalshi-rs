@@ -3,7 +3,7 @@ use std::str::FromStr;
 use reqwest::Client;
 use crate::auth::Account;
 
-const KALSHI_API: &str = "https://api.elections.kalshi.com/trade-api/v2";
+const KALSHI_API: &str = "https://api.elections.kalshi.com";
 
 pub struct KalshiClient{
     pub(crate) http_client: Client,

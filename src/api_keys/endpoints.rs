@@ -1,4 +1,5 @@
 use std::error::Error;
+use url::Url;
 use crate::client::KalshiClient;
 use crate::api_keys::models::{ApiKey, CreateApiKeyRequest, CreateApiKeyResponse, ListApiKeysResponse};
 use crate::errors::KalshiError;
@@ -15,11 +16,16 @@ KALSHI-ACCESS-TIMESTAMP - the request timestamp in ms
 KALSHI-ACCESS-SIGNATURE - request hash signed with private key
 */
 
-const GET_API_KEY: &str = "api_keys"; // get
-const CREATE_API_KEY: &str = "api_keys"; // post
-const DELETE_API_KEY: &str = "api_keys/generate"; // post
-const GENERATE_API_KEY: &str = "api_keys/{api_key}"; // delete
+const GET_API_KEY: &str = "/trade-api/v2/api_keys/"; // get
+const CREATE_API_KEY: &str = "/trade-api/v2/api_keys/"; // post
+const DELETE_API_KEY: &str = "/trade-api/v2/api_keys/generate/"; // post
+const GENERATE_API_KEY: &str = "/trade-api/v2/api_keys/{api_key}/"; // delete
 
+fn full_url(prefix: &str, suffix: &str) -> String {
+   let x = format!("{}{}", prefix, suffix); // e.g. "/trade-api/v2/api_keys"
+    println!("{}",x);
+    x
+}
 
 
 
@@ -28,79 +34,53 @@ impl KalshiClient {
     /// GET /api-keys
     /// List all API keys for the authenticated user
     pub async fn get_api_keys(&self) -> Result<Vec<ApiKey>, KalshiError> {
-        let url = format!("{}/{}", self.base_url, GET_API_KEY);
+    // base_url should be host only, e.g. "https://api.elections.kalshi.com"
+    let base = self.base_url.trim_end_matches('/');
+    let url = format!("{}{}", base, GET_API_KEY);
+    let parsed = Url::parse(&url).map_err(|e| KalshiError::Other(e.to_string()))?;
 
-        let timestamp_str = get_current_timestamp_ms();
-        let timestamp: u64 = timestamp_str.parse()
-            .map_err(|e| KalshiError::Other(format!("Failed to parse timestamp: {}", e)))?;
+    // SIGN EXACTLY the path we will request
+    let signed_path = parsed.path().to_string(); // e.g. "/trade-api/v2/api_keys"
 
-        let key_id = self.account.key_id();
-        let signature = sign_request(&self.account.private_key_pem(), "GET", GET_API_KEY, timestamp)
-            .map_err(|e| KalshiError::Other(format!("Failed to sign request: {}", e)))?;
+    let ts = get_current_timestamp_ms();                 // ms as string
+    let ts_u64: u64 = ts.parse().map_err(|e| KalshiError::Other(format!("timestamp parse: {e}")))?;
 
-        let response = self.http_client
-            .get(&url)
-            .header("KALSHI-ACCESS-KEY", key_id)
-            .header("KALSHI-ACCESS-TIMESTAMP", timestamp_str)
-            .header("KALSHI-ACCESS-SIGNATURE", signature)
-            .send()
-            .await?;
+    let key_id = self.account.key_id().trim();           // trim in case of hidden whitespace
+    let sig = sign_request(&self.account.private_key_pem(), "GET", &signed_path, ts_u64)
+        .map_err(|e| KalshiError::Other(format!("sign error: {e}")))?;
 
-        let data: ListApiKeysResponse = response.json().await?;
-        Ok(data.keys)
+    // Optional debug
+    eprintln!("URL  : {}", url);
+    eprintln!("SIGNED: {}{}{}", ts, "GET", signed_path);
+    eprintln!("HEADERS:");
+    eprintln!("  KALSHI-ACCESS-KEY: '{}'", key_id);
+    eprintln!("  KALSHI-ACCESS-KEY (len): {}", key_id.len());
+    eprintln!("  KALSHI-ACCESS-TIMESTAMP: '{}'", ts);
+    eprintln!("  KALSHI-ACCESS-SIGNATURE: '{}'", sig);
+
+    let resp = self.http_client
+        .get(parsed.as_str())
+        .header("KALSHI-ACCESS-KEY", key_id)
+        .header("KALSHI-ACCESS-TIMESTAMP", &ts)
+        .header("KALSHI-ACCESS-SIGNATURE", sig)
+        .send()
+        .await?;
+
+    let status = resp.status();
+    let body = resp.text().await?;
+    if !status.is_success() {
+        return Err(KalshiError::Other(format!("HTTP {}: {}", status, body)));
     }
 
-    /// POST /api-keys
-    /// Create a new API key
-    pub async fn create_api_key(&self, description: Option<String>) -> Result<CreateApiKeyResponse, KalshiError> {
-        let url = format!("{}/{}", self.base_url, CREATE_API_KEY);
-        let request_body = CreateApiKeyRequest { description };
-
-        let timestamp_str = get_current_timestamp_ms();
-        let timestamp: u64 = timestamp_str.parse()
-            .map_err(|e| KalshiError::Other(format!("Failed to parse timestamp: {}", e)))?;
-
-        let key_id = self.account.key_id();
-        let signature = sign_request(&self.account.private_key_pem(), "POST", CREATE_API_KEY, timestamp)
-            .map_err(|e| KalshiError::Other(format!("Failed to sign request: {}", e)))?;
-
-        let response = self.http_client
-            .post(&url)
-            .header("KALSHI-ACCESS-KEY", key_id)
-            .header("KALSHI-ACCESS-TIMESTAMP", timestamp_str)
-            .header("KALSHI-ACCESS-SIGNATURE", signature)
-            .json(&request_body)
-            .send()
-            .await?;
-
-        Ok(response.json().await?)
+    #[derive(serde::Deserialize)]
+    struct GetApiKeysResponse {
+        #[serde(rename = "api_keys")]
+        api_keys: Vec<ApiKey>,
     }
-
-    /// DELETE /users/api-keys/{key_id}
-    /// Delete/revoke an API key
-    pub async fn delete_api_key(&self, key_id: &str) -> Result<(), KalshiError> {
-        let path = GENERATE_API_KEY.replace("{api_key}", key_id);
-        let url = format!("{}/{}", self.base_url, path);
-
-        let timestamp_str = get_current_timestamp_ms();
-        let timestamp: u64 = timestamp_str.parse()
-            .map_err(|e| KalshiError::Other(format!("Failed to parse timestamp: {}", e)))?;
-
-        let account_key_id = self.account.key_id();
-        let signature = sign_request(&self.account.private_key_pem(), "DELETE", &path, timestamp)
-            .map_err(|e| KalshiError::Other(format!("Failed to sign request: {}", e)))?;
-
-        let response = self.http_client
-            .delete(&url)
-            .header("KALSHI-ACCESS-KEY", account_key_id)
-            .header("KALSHI-ACCESS-TIMESTAMP", timestamp_str)
-            .header("KALSHI-ACCESS-SIGNATURE", signature)
-            .send()
-            .await?;
-
-        response.error_for_status()?;
-        Ok(())
-    }
+    let data: GetApiKeysResponse = serde_json::from_str(&body)
+        .map_err(|e| KalshiError::Other(format!("Parse error: {e}. Body: {body}")))?;
+    Ok(data.api_keys)
+}
 
     /// POST /users/api-keys/generate
     /// Generate a new API key (alternative endpoint)

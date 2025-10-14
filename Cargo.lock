@@ -1033,6 +1033,7 @@ dependencies = [
  "sha",
  "sha2",
  "tokio",
+ "url",
 ]
 
 [[package]]

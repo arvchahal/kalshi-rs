@@ -1,3 +1,4 @@
+use kalshi_rust_sdk::KalshiClient;
 use reqwest::{Client, Response, Url};
 use serde_json::Value;
 use tokio::fs;
@@ -16,17 +17,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // println!("saved: markets_pretty.json");
     // let x = load_auth()?;
     // println!("{}",x);
-    let x = load_auth();
-    println!("{}",x.unwrap());
-
-
+    let x = load_auth()?;
+    let t = KalshiClient::new(x);
+    let api_ = t.get_api_keys().await;
+    println!("hello");
+    println!("{:?}",api_?);
+    
     Ok(())
 }
 
 async fn send(url: &str) -> Result<Response, Box<dyn std::error::Error>> {
     let client = Client::new();
-    let url = Url::parse(url)?;                 // ParseError handled by Box<dyn Error>
-    let resp = client.get(url).send().await?;   // reqwest::Error also fits Box<dyn Error>
+    let url = Url::parse(url)?;                //ParseError handled by Box<dyn Error>
+    let resp = client.get(url).send().await?;   //reqwest::Error also fits Box<dyn Error>
     Ok(resp)
 }
 

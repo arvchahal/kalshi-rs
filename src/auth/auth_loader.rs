@@ -3,7 +3,7 @@ use std::io;
 use std::env;
 use crate::auth::models::Account;
 use std::time::{SystemTime, UNIX_EPOCH};
-use rsa::{RsaPrivateKey, pkcs8::DecodePrivateKey};
+use rsa::{RsaPrivateKey, pkcs8::DecodePrivateKey, pkcs1::DecodeRsaPrivateKey};
 use rsa::pss::SigningKey;
 use rsa::signature::{RandomizedSigner, SignatureEncoding};
 use sha2::Sha256;
@@ -55,16 +55,34 @@ pub fn sign_request(
     timestamp: u64,
 ) -> Result<String, Box<dyn std::error::Error>> {
     let msg_string = format!("{}{}{}", timestamp, method, path);
-    
-    let private_key = RsaPrivateKey::from_pkcs8_pem(private_key_pem)?;
-    
-    let signing_key = SigningKey::<Sha256>::new(private_key);
-    
+
+    // Debug output
+    println!("=== SIGNING DEBUG ===");
+    println!("Timestamp: {}", timestamp);
+    println!("Method: {}", method);
+    println!("Path: {}", path);
+    println!("Message to sign: '{}'", msg_string);
+    println!("Message bytes: {:?}", msg_string.as_bytes());
+
+    // Try PKCS#1 format first (-----BEGIN RSA PRIVATE KEY-----)
+    let private_key = if private_key_pem.contains("BEGIN RSA PRIVATE KEY") {
+        RsaPrivateKey::from_pkcs1_pem(private_key_pem)?
+    } else {
+        // Fall back to PKCS#8 format (-----BEGIN PRIVATE KEY-----)
+        RsaPrivateKey::from_pkcs8_pem(private_key_pem)?
+    };
+
+    let signing_key = SigningKey::<Sha256>::new_with_salt_len(private_key,32);
+
     let mut rng = thread_rng();
 
     let signature = signing_key.sign_with_rng(&mut rng, msg_string.as_bytes());
-    
+
     // Encode to base64
-    Ok(BASE64.encode(signature.to_bytes()))
+    let sig_b64 = BASE64.encode(signature.to_bytes());
+    println!("Signature (base64): {}", sig_b64);
+    println!("===================");
+
+    Ok(sig_b64)
 }
 
