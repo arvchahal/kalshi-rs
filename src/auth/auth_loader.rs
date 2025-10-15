@@ -56,14 +56,6 @@ pub fn sign_request(
 ) -> Result<String, Box<dyn std::error::Error>> {
     let msg_string = format!("{}{}{}", timestamp, method, path);
 
-    // Debug output
-    println!("=== SIGNING DEBUG ===");
-    println!("Timestamp: {}", timestamp);
-    println!("Method: {}", method);
-    println!("Path: {}", path);
-    println!("Message to sign: '{}'", msg_string);
-    println!("Message bytes: {:?}", msg_string.as_bytes());
-
     // Try PKCS#1 format first (-----BEGIN RSA PRIVATE KEY-----)
     let private_key = if private_key_pem.contains("BEGIN RSA PRIVATE KEY") {
         RsaPrivateKey::from_pkcs1_pem(private_key_pem)?
@@ -80,8 +72,6 @@ pub fn sign_request(
 
     // Encode to base64
     let sig_b64 = BASE64.encode(signature.to_bytes());
-    println!("Signature (base64): {}", sig_b64);
-    println!("===================");
 
     Ok(sig_b64)
 }

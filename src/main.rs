@@ -4,7 +4,6 @@ use serde_json::Value;
 use tokio::fs;
 use kalshi_rust_sdk::auth::auth_loader::load_auth_from_file;
 use kalshi_rust_sdk::auth::Account;
-
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // const KALSHI: &str = "https://api.elections.kalshi.com/trade-api/v2/markets";
@@ -13,6 +12,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let api_ = t.get_api_keys().await;
 
     println!("{:?}",api_?);
+    let announcements = t.get_exchange_announcements().await;
+    println!("{}",announcements?);
+    let sched = t.get_exchange_schedule().await?;
+    println!("{}",sched);
     
     Ok(())
 }

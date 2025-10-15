@@ -22,8 +22,6 @@ const DELETE_API_KEY: &str = "/trade-api/v2/api_keys/{}";// ned to append this t
 
 
 
-
-
 impl KalshiClient {
     /// GET /api-keys
     /// List all API keys for the authenticated user

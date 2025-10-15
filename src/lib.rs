@@ -2,6 +2,7 @@ pub mod markets;
 pub mod auth;
 pub mod client;
 pub mod api_keys;
+pub mod exchange;
 pub mod errors;
 pub(crate) mod helpers;
 
