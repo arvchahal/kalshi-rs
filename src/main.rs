@@ -16,6 +16,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("{}",announcements?);
     let sched = t.get_exchange_schedule().await?;
     println!("{}",sched);
+    let status = t.get_exchange_status().await?;
+    println!("{}",status);
+    let user_data = t.get_user_data_timestamp().await?;
+    println!("{}",user_data);
+
     
     Ok(())
 }

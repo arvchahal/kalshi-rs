@@ -40,3 +40,19 @@ pub struct Schedule {
 pub struct GetExchangeScheduleResponse {
     pub schedule: Schedule,
 }
+
+#[derive(serde::Deserialize, Display)]
+#[display("The Excahnge is Active (T/F) {}, Time to Resume {:?}, Tradiing is Active (T/F) {}", exchange_active, (exchange_estimated_resume_time), trading_active)]
+pub struct GetExcahngeStatus{
+    pub exchange_active: bool,
+    pub exchange_estimated_resume_time: Option<String>,
+    pub trading_active: bool
+}
+
+//gets timestamp of last active user data
+#[derive(serde::Deserialize, Display)]
+#[display("Last time user data was updated: {:?}",as_of_time)]
+pub struct GetUserDataTimestampResponse{
+    pub as_of_time: String //timestamp as a string
+}
+
