@@ -4,6 +4,20 @@ use crate::errors::KalshiError;
 use crate::helpers;
 use reqwest::{Client, StatusCode};
 
+/*
+Main entry point for the entire sdk implemented in multiple parts across different crates to promote
+modularity..
+
+Each implementation follows the python sdk api classes
+https://docs.kalshi.com/python-sdk/api/PortfolioApi
+Each folder in has an ###endpoints.rs#### that has all of the methods to hit and get data from the endpoints
+and then parse the json into the native structs
+then there is a ###models.rs### that contains the native structs and their implementations
+Finally there is a mod.rs that exposes the crates
+
+*/
+
+
 const KALSHI_API: &str = "https://api.elections.kalshi.com";
 
 pub struct KalshiClient{
