@@ -8,19 +8,13 @@ use kalshi_rust_sdk::auth::Account;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // const KALSHI: &str = "https://api.elections.kalshi.com/trade-api/v2/markets";
-
-    // let resp = send(KALSHI).await?;
-    // let json: Value = resp.error_for_status()?.json().await?;
-    // let pretty = serde_json::to_string_pretty(&json)?;
-
-    // fs::write("markets_pretty.json", pretty).await?;
-    // println!("saved: markets_pretty.json");
-    // let x = load_auth()?;
-    // println!("{}",x);
     let x = load_auth()?;
     let t = KalshiClient::new(x);
     let api_ = t.get_api_keys().await;
-    println!("hello");
+    let d= t.delete_api_key("9f9b143f-d995-4b0f-88a6-0b981f3f036e").await;
+
+    println!("{}",d?);
+
     println!("{:?}",api_?);
     
     Ok(())

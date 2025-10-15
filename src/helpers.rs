@@ -1,6 +1,6 @@
 /// Helper functions for making authenticated and unauthenticated HTTP requests
 use url::Url;
-use reqwest::Client;
+use reqwest::{Client, StatusCode};
 use crate::auth::auth_loader::{get_current_timestamp_ms, sign_request};
 use crate::errors::KalshiError;
 use crate::auth::Account;
@@ -35,7 +35,7 @@ pub(crate) async fn unauthenticated_get(
     let resp = http_client.get(&url).send().await?;
 
     let status = resp.status();
-    let body = resp.text().await?;
+    let body:String = resp.text().await?;
 
     if !status.is_success() {
         return Err(KalshiError::Other(format!("HTTP {}: {}", status, body)));
@@ -77,19 +77,23 @@ pub(crate) async fn authenticated_get(
 }
 
 /// Make an authenticated POST request
-pub(crate) async fn authenticated_post(
-    http_client: &Client,
+pub(crate) async fn authenticated_post<T>(
+    http_client: &reqwest::Client,
     base_url: &str,
     account: &Account,
     path: &str,
-    json_body: Option<&impl serde::Serialize>,
-) -> Result<String, KalshiError> {
+    json_body: Option<&T>,
+) -> Result<String, KalshiError>
+where
+    T: serde::Serialize + ?Sized,
+{
     let base = base_url.trim_end_matches('/');
     let url = format!("{}{}", base, path);
-    let parsed = Url::parse(&url).map_err(|e| KalshiError::Other(e.to_string()))?;
+    let parsed = url::Url::parse(&url).map_err(|e| KalshiError::Other(e.to_string()))?;
 
     let signed_path = parsed.path().to_string();
-    let (key_id, timestamp, signature) = create_auth_headers(account, "POST", &signed_path)?;
+    let (key_id, timestamp, signature) =
+        create_auth_headers(account, "POST", &signed_path)?;
 
     let mut request = http_client
         .post(parsed.as_str())
@@ -98,19 +102,18 @@ pub(crate) async fn authenticated_post(
         .header("KALSHI-ACCESS-SIGNATURE", signature);
 
     if let Some(body) = json_body {
-        request = request.json(body);
+        request = request.json(body); // sets Content-Type and serializes
     }
 
     let resp = request.send().await?;
     let status = resp.status();
-    let body = resp.text().await?;
-
+    let text = resp.text().await?;
     if !status.is_success() {
-        return Err(KalshiError::Other(format!("HTTP {}: {}", status, body)));
+        return Err(KalshiError::Other(format!("HTTP {}: {}", status, text)));
     }
-
-    Ok(body)
+    Ok(text)
 }
+
 
 /// Make an authenticated DELETE request
 pub(crate) async fn authenticated_delete(
@@ -118,7 +121,7 @@ pub(crate) async fn authenticated_delete(
     base_url: &str,
     account: &Account,
     path: &str,
-) -> Result<String, KalshiError> {
+) -> Result<(StatusCode,String), KalshiError> {
     let base = base_url.trim_end_matches('/');
     let url = format!("{}{}", base, path);
     let parsed = Url::parse(&url).map_err(|e| KalshiError::Other(e.to_string()))?;
@@ -141,5 +144,5 @@ pub(crate) async fn authenticated_delete(
         return Err(KalshiError::Other(format!("HTTP {}: {}", status, body)));
     }
 
-    Ok(body)
+    Ok((status,body))
 }
