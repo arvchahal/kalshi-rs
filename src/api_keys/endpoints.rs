@@ -2,7 +2,6 @@ use crate::client::KalshiClient;
 use crate::api_keys::models::{ApiKey, DeleteApiKeyResponse, CreateApiKeyResponse, ListApiKeysResponse};
 use crate::errors::KalshiError;
 use serde_json::json;
-use reqwest::{ StatusCode};
 
 // Endpoints for creating/deleting/generating/getting api keys
 // All of these methods require auth including your private key,
@@ -16,7 +15,7 @@ KALSHI-ACCESS-SIGNATURE - request hash signed with private key
 */
 
 const GET_API_KEY: &str = "/trade-api/v2/api_keys/"; // get need the trailing slash
-const CREATE_API_KEY: &str = "/trade-api/v2/api_keys/"; // post
+// const CREATE_API_KEY: &str = "/trade-api/v2/api_keys/"; // post
 const GENERATE_API_KEY: &str = "/trade-api/v2/api_keys/generate"; // post no trailing slash
 const DELETE_API_KEY: &str = "/trade-api/v2/api_keys/{}";// ned to append this to the end {api_key}"; // delete
 

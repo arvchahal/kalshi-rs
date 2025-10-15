@@ -1,7 +1,5 @@
-use std::str::FromStr;
-use url::Url;
+
 use crate::auth::Account;
-use crate::auth::auth_loader::{get_current_timestamp_ms, sign_request};
 use crate::errors::KalshiError;
 use crate::helpers;
 use reqwest::{Client, StatusCode};
