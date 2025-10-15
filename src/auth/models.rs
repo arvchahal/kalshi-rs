@@ -1,7 +1,6 @@
 use derive_more::Display;
 
-#[derive(Debug, Clone, Display)]
-#[display("Account: private key {}", private_key_pem)]
+#[derive(Debug, Clone)]
 pub struct Account {
     private_key_pem: String,
     key_id: String

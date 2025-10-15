@@ -11,9 +11,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let x = load_auth()?;
     let t = KalshiClient::new(x);
     let api_ = t.get_api_keys().await;
-    let d= t.delete_api_key("9f9b143f-d995-4b0f-88a6-0b981f3f036e").await;
-
-    println!("{}",d?);
 
     println!("{:?}",api_?);
     
@@ -29,6 +26,5 @@ async fn send(url: &str) -> Result<Response, Box<dyn std::error::Error>> {
 
 fn load_auth() -> Result<Account, Box<dyn std::error::Error>> {
     let _account = load_auth_from_file()?;
-    println!("hi {:?}",_account);
     Ok(_account)
 }
