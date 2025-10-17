@@ -5,6 +5,10 @@
 
 A Rust SDK for interacting with the Kalshi trading API. Kalshi is an event-based prediction market platform where users can trade on the outcomes of real-world events. This project provides a Rust interface to Kalshi's trading API, enabling developers to build trading applications and market analysis tools. The SDK handles authentication, market data retrieval, API key management, and exchange information queries.
 
+This implementation is based on the official [Kalshi Trading API documentation](https://trading-api.readme.io/reference/getting-started) and follows the architecture of the [Kalshi Python SDK](https://docs.kalshi.com/python-sdk/). The API uses REST endpoints with JSON responses, and authentication is handled via RSA-signed requests using the KALSHI-ACCESS-KEY, KALSHI-ACCESS-TIMESTAMP, and KALSHI-ACCESS-SIGNATURE headers as specified in the API documentation.
+
+The project follows a modular design with separate modules for different API categories (authentication, markets, API keys, exchange data), mirroring the structure of Kalshi's official Python SDK API classes.
+
 Third-party crates used: **reqwest** (HTTP client), **tokio** (async runtime), **serde/serde_json** (JSON serialization), **rsa/sha2/base64** (RSA cryptography for request signing), **url** (URL parsing), and **derive_more** (derive macros).
 
 ## Installation
