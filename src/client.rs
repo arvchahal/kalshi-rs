@@ -23,7 +23,7 @@ const KALSHI_API: &str = "https://api.elections.kalshi.com";
 pub struct KalshiClient{
     pub(crate) http_client: Client,
     pub(crate) account: Account,
-    pub(crate) base_url: String
+    pub(crate) base_url: String,
 }
 
 impl KalshiClient{
@@ -32,6 +32,13 @@ impl KalshiClient{
             http_client: Client::new(),
             account:user,
             base_url: KALSHI_API.to_string(),
+        }
+    }
+    pub fn new_with_config(user:Account,configuration:Option<String>) -> KalshiClient{
+        KalshiClient{
+            http_client: Client::new(),
+            account:user,
+            base_url: configuration.unwrap_or_else(|| KALSHI_API.to_string()),
         }
     }
 

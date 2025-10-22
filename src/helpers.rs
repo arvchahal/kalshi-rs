@@ -158,9 +158,23 @@ pub(crate) fn build_url_with_query<T:serde::Serialize>(url:String,query:&T)->Str
 }
 
 ///method to convert strings to utc timestamps.. pretty useful for the responses we get back
-// pub(crate) fn str_to_utc(timestamp:&str)->DateTime<Utc>{
+pub(crate) fn str_to_utc(timestamp:&str)->DateTime<Utc>{
+    DateTime::parse_from_str(timestamp, "%Y-%m-%dT%H:%M:%SZ").expect("Failed to parse from str to utc... string might not be in utc").with_timezone(&Utc)
+}
 
-// }
+////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+
+UNIT TESTS BELOW
+
+*/
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
 
 #[cfg(test)]
 mod tests {
