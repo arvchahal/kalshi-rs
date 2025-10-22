@@ -12,14 +12,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let api_ = t.get_api_keys().await;
 
     println!("{:?}",api_?);
-    let announcements = t.get_exchange_announcements().await;
-    println!("{}",announcements?);
-    let sched = t.get_exchange_schedule().await?;
-    println!("{}",sched);
-    let status = t.get_exchange_status().await?;
-    println!("{}",status);
-    let user_data = t.get_user_data_timestamp().await?;
-    println!("{}",user_data);
+    // let announcements = t.get_exchange_announcements().await;
+    // println!("{}",announcements?);
+    // let sched = t.get_exchange_schedule().await?;
+    // println!("{}",sched);
+    // let status = t.get_exchange_status().await?;
+    // println!("{}",status);
+    // let user_data = t.get_user_data_timestamp().await?;
+    // println!("{}",user_data);
+    // let market_data = t.get_market().await?;
+    // println!("{}",market_data);
 
     
     Ok(())

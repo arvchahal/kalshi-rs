@@ -1,4 +1,5 @@
 use crate::auth::Account;
+use derive_more::Display;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -64,7 +65,7 @@ pub struct Market {
     pub liquidity_dollars: String,
     pub open_interest: u32,
 
-    pub result: String,
+    pub result: Option<String>,
     pub can_close_early: bool,
     pub expiration_value: String,
     pub category: String,
@@ -97,8 +98,35 @@ pub struct MveSelectedLeg {
     pub side: String, // "yes" or "no"
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct GetMarketResponse {
+#[derive(Debug, Clone, Serialize, Deserialize, Display)]
+#[display("All markets {:?}", markets)]
+pub struct GetMarketsResponse {
     pub markets: Vec<Market>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Display)]
+#[display("Market {:?}", market)]
+pub struct GetMarketResponse{
+    pub market: Market,
+    
+}
+
+#[derive(Serialize)]
+pub struct MarketsQuery<'a> {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limit: Option<u16>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cursor: Option<&'a str>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub event_ticker: Option<&'a str>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub series_ticker: Option<&'a str>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub max_close_ts: Option<i64>, // seconds since epoch
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub min_close_ts: Option<i64>, // seconds since epoch
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub status: Option<&'a str>,   // comma-separated per API
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tickers: Option<String>,   // comma-separated list
+}

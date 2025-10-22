@@ -47,7 +47,7 @@ pub fn get_current_timestamp_ms()->String{
 
 }
 
-//
+// sign request using rsa
 pub fn sign_request(
     private_key_pem: &str,
     method: &str,
