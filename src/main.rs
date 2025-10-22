@@ -22,6 +22,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("{}",user_data);
     // let market_data = t.get_market().await?;
     // println!("{}",market_data);
+    let market_orderbook = t.get_market_orderbook("KXWTAMATCH-25OCT22SUNWAN-WAN", None).await?;
+    println!("{}",market_orderbook);
+
 
     
     Ok(())

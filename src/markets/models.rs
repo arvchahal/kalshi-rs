@@ -1,4 +1,5 @@
 use crate::auth::Account;
+use base64::display;
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -130,6 +131,40 @@ pub struct MarketsQuery<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tickers: Option<String>,   // comma-separated list
 }
+
+#[derive(serde::Deserialize, Display, Debug)]
+pub struct GetMarketOrderbookResponse{
+    pub orderbook:Orderbook,
+}
+
+#[derive(serde::Deserialize, Display, Debug)]
+#[display("No(cents, total shares available) {:?} \nNo(dollars, shares available): {:?} \nYes(cents, total shares available) {:?} \nYes(dollars, shares available): {:?}", no, no_dollars, yes, yes_dollars)]
+pub struct Orderbook{
+    no:Vec<(u64,u64)>,
+    no_dollars:Vec<(String,u64)>,
+    yes:Vec<(u64, u64)>,
+    yes_dollars: Vec<(String,u64)>,
+
+}
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+
+UNIT TESTS BELOW
+
+*/
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
 
 #[cfg(test)]
 mod tests {

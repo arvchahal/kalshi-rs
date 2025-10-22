@@ -5,15 +5,16 @@ use chrono::{DateTime, Utc};
 use crate::helpers::build_url_with_query;
 
 // use crate::exchange::models::{GetExcahngeStatus, GetExchangeAnnouncementsResponse, GetExchangeScheduleResponse, GetUserDataTimestampResponse, GetMarketRespose};
-use crate::markets::models::{GetMarketResponse,GetMarketsResponse, MarketsQuery};
+use crate::markets::models::{GetMarketOrderbookResponse, GetMarketResponse, GetMarketsResponse, MarketsQuery};
 
 const GET_MARKETS:&str = "/trade-api/v2/markets"; //no auth GET
-const GET_MARKET:&str = "/trade-api/v2/markets/{}";//no auth GET
+const GET_MARKET:&str = "/trade-api/v2/markets/{}";//no auth GET the {} with ticker
 const GET_TRADES:&str = "/trade-api/v2/markets/trades";// auth GET
-const GET_MARKET_ORDERBOOK:&str ="/trade-api/v2/markets/{ticker}/orderbook";
+const GET_MARKET_ORDERBOOK:&str ="/trade-api/v2/markets/{}/orderbook"; // no auth get replace the {} with ticker
 const GET_MARKET_CANDLESTICKS: &str = "/trade-api/v2/series/{}/markets/{}/candlesticks";//first replacement is series ticker, second is market ticker
 
 impl KalshiClient{
+    ///might need to refactor into a macro for better function overloading not curretnly suppported in rust
         pub async fn get_all_markets(
         &self,
         limit: Option<u16>,
@@ -46,17 +47,26 @@ impl KalshiClient{
     }
     pub async fn get_market(&self, ticker:&str)->Result<GetMarketResponse,KalshiError>{
         let url = GET_MARKET.replace("{}", ticker);
-            let resp = self.unauthenticated_get(&url).await?;
+        let resp = self.unauthenticated_get(&url).await?;
         let data: GetMarketResponse = serde_json::from_str(&resp).map_err(|e| KalshiError::Other(format!("Invalid Parsing response format: Parse error: {e}. Response: {resp}")))?;
         Ok(data)
     }
     // pub fn get_trades(&self)->Result<>{
 
     // }
-    // pub fn get_market_orderbook(&self)->Result<>{
+    pub async fn get_market_orderbook(&self, ticker:&str, depth: Option<u128>)->Result<GetMarketOrderbookResponse, KalshiError>{
+        let mut url:String= GET_MARKET_ORDERBOOK.to_string().replace("{}", ticker);
+        let mut actual_depth = depth.unwrap_or(0);
+        if actual_depth>100{
+            actual_depth = 100;
+            url = build_url_with_query(url.clone(), &actual_depth);
+        }
+        let resp = self.unauthenticated_get(&url).await?;
+        let data: GetMarketOrderbookResponse = serde_json::from_str(&resp).map_err(|e| KalshiError::Other(format!("Invalid Parsing response format: Parse error: {e}. Response: {resp}")))?;
+        Ok(data)
 
-    // }
-    // pub fn get_market_candlesticks(&self)->{
+    }
+    // pub fn get_market_candlesticks(&self, ticker:&str, depth:Option<int>)->R{
 
     // }
 
