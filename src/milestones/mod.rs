@@ -1,7 +1,2 @@
-pub struct GetMilestonesResponse{
-
-}
-
-pub struct GetMilestoneResponse{
-    
-}
+pub mod models;
+pub mod endpoints;
