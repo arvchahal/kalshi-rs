@@ -146,3 +146,12 @@ pub(crate) async fn authenticated_delete(
 
     Ok((status,body))
 }
+///pass in base url and the query outputs the string path with query params
+pub(crate) fn build_url_with_query<T:serde::Serialize>(url:String,query:&T)->String{
+    let qs = serde_urlencoded::to_string(query).unwrap_or_default();
+      if qs.is_empty() {
+          url.to_string()
+      } else {
+          format!("{}?{}", url, qs)
+      }
+}
