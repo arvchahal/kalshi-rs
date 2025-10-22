@@ -16,7 +16,7 @@ KALSHI-ACCESS-SIGNATURE - request hash signed with private key
 
 const GET_API_KEY: &str = "/trade-api/v2/api_keys"; // get sometimes need the trailing slash other times you do not
 // const CREATE_API_KEY: &str = "/trade-api/v2/api_keys/"; // post
-const GENERATE_API_KEY: &str = "/trade-api/v2/api_keys/generate"; // post no trailing slash
+const GENERATE_API_KEY: &str = "/trade-api/v2/api_keys/generate/"; // post no trailing slash
 const DELETE_API_KEY: &str = "/trade-api/v2/api_keys/{}";// ned to append this to the end {api_key}"; // delete
 
 

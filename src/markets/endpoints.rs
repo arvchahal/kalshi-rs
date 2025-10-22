@@ -2,6 +2,7 @@
 use crate::client::KalshiClient;
 use crate::errors::KalshiError;
 use chrono::{DateTime, Utc};
+use crate::helpers::build_url_with_query;
 
 // use crate::exchange::models::{GetExcahngeStatus, GetExchangeAnnouncementsResponse, GetExchangeScheduleResponse, GetUserDataTimestampResponse, GetMarketRespose};
 use crate::markets::models::{GetMarketResponse,GetMarketsResponse, MarketsQuery};
@@ -36,12 +37,7 @@ impl KalshiClient{
         };
 
         // build "/trade-api/v2/markets?..."
-        let qs = serde_urlencoded::to_string(q).unwrap();
-        let url = if qs.is_empty() {
-            GET_MARKETS.to_string()
-        } else {
-            format!("{}?{}", GET_MARKETS, qs)
-        };
+        let url = build_url_with_query(GET_MARKETS.to_string(), &q);
 
         let resp = self.unauthenticated_get(&url).await?;
         let data: GetMarketsResponse = serde_json::from_str(&resp)

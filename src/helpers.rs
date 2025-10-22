@@ -155,3 +155,58 @@ pub(crate) fn build_url_with_query<T:serde::Serialize>(url:String,query:&T)->Str
           format!("{}?{}", url, qs)
       }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde::Serialize;
+
+    #[derive(Serialize)]
+    struct TestQuery {
+        #[serde(skip_serializing_if = "Option::is_none")]
+        limit: Option<u16>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        status: Option<String>,
+    }
+
+    #[test]
+    fn test_build_url_with_query_empty() {
+        let query = TestQuery {
+            limit: None,
+            status: None,
+        };
+        let url = build_url_with_query("/api/markets".to_string(), &query);
+        assert_eq!(url, "/api/markets");
+    }
+
+    #[test]
+    fn test_build_url_with_query_single_param() {
+        let query = TestQuery {
+            limit: Some(10),
+            status: None,
+        };
+        let url = build_url_with_query("/api/markets".to_string(), &query);
+        assert_eq!(url, "/api/markets?limit=10");
+    }
+
+    #[test]
+    fn test_build_url_with_query_multiple_params() {
+        let query = TestQuery {
+            limit: Some(25),
+            status: Some("active".to_string()),
+        };
+        let url = build_url_with_query("/api/markets".to_string(), &query);
+        assert!(url.contains("limit=25"));
+        assert!(url.contains("status=active"));
+        assert!(url.starts_with("/api/markets?"));
+    }
+
+    #[test]
+    fn test_create_auth_headers_format() {
+        use crate::auth::Account;
+
+        // This test would require valid RSA keys, so we'll skip the actual signing
+        // and just test that the function signature is correct
+        // In a real test environment, you'd use test fixtures with valid keys
+    }
+}

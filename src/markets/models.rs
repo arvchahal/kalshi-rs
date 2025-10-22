@@ -130,3 +130,151 @@ pub struct MarketsQuery<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tickers: Option<String>,   // comma-separated list
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_market_deserialization_basic() {
+        let json = r#"{
+            "ticker": "TEST-TICKER",
+            "event_ticker": "TEST-EVENT",
+            "market_type": "binary",
+            "title": "Test Market",
+            "subtitle": "",
+            "yes_sub_title": "Yes",
+            "no_sub_title": "No",
+            "open_time": "2025-01-01T00:00:00Z",
+            "close_time": "2025-12-31T23:59:59Z",
+            "expected_expiration_time": "2025-12-31T23:59:59Z",
+            "expiration_time": "2025-12-31T23:59:59Z",
+            "latest_expiration_time": "2025-12-31T23:59:59Z",
+            "settlement_timer_seconds": 600,
+            "status": "active",
+            "response_price_units": "usd_cent",
+            "notional_value": 100,
+            "notional_value_dollars": "1.00",
+            "yes_bid": 50,
+            "yes_bid_dollars": "0.50",
+            "yes_ask": 55,
+            "yes_ask_dollars": "0.55",
+            "no_bid": 45,
+            "no_bid_dollars": "0.45",
+            "no_ask": 50,
+            "no_ask_dollars": "0.50",
+            "last_price": 52,
+            "last_price_dollars": "0.52",
+            "previous_yes_bid": 48,
+            "previous_yes_bid_dollars": "0.48",
+            "previous_yes_ask": 53,
+            "previous_yes_ask_dollars": "0.53",
+            "previous_price": 50,
+            "previous_price_dollars": "0.50",
+            "volume": 1000,
+            "volume_24h": 500,
+            "liquidity": 10000,
+            "liquidity_dollars": "100.00",
+            "open_interest": 250,
+            "can_close_early": true,
+            "expiration_value": "",
+            "category": "sports",
+            "risk_limit_cents": 5000,
+            "strike_type": "binary",
+            "tick_size": 1
+        }"#;
+
+        let market: Market = serde_json::from_str(json).unwrap();
+        assert_eq!(market.ticker, "TEST-TICKER");
+        assert_eq!(market.event_ticker, "TEST-EVENT");
+        assert_eq!(market.yes_bid, 50);
+        assert_eq!(market.volume, 1000);
+    }
+
+    #[test]
+    fn test_market_with_mve_fields() {
+        let json = r#"{
+            "ticker": "MVE-TEST",
+            "event_ticker": "MVE-EVENT",
+            "market_type": "multi",
+            "title": "Multi-variate",
+            "subtitle": "",
+            "yes_sub_title": "",
+            "no_sub_title": "",
+            "open_time": "2025-01-01T00:00:00Z",
+            "close_time": "2025-12-31T23:59:59Z",
+            "expected_expiration_time": "2025-12-31T23:59:59Z",
+            "expiration_time": "2025-12-31T23:59:59Z",
+            "latest_expiration_time": "2025-12-31T23:59:59Z",
+            "settlement_timer_seconds": 600,
+            "status": "active",
+            "response_price_units": "usd_cent",
+            "notional_value": 100,
+            "notional_value_dollars": "1.00",
+            "yes_bid": 0,
+            "yes_bid_dollars": "0.00",
+            "yes_ask": 0,
+            "yes_ask_dollars": "0.00",
+            "no_bid": 0,
+            "no_bid_dollars": "0.00",
+            "no_ask": 0,
+            "no_ask_dollars": "0.00",
+            "last_price": 0,
+            "last_price_dollars": "0.00",
+            "previous_yes_bid": 0,
+            "previous_yes_bid_dollars": "0.00",
+            "previous_yes_ask": 0,
+            "previous_yes_ask_dollars": "0.00",
+            "previous_price": 0,
+            "previous_price_dollars": "0.00",
+            "volume": 0,
+            "volume_24h": 0,
+            "liquidity": 0,
+            "liquidity_dollars": "0.00",
+            "open_interest": 0,
+            "can_close_early": false,
+            "expiration_value": "",
+            "category": "",
+            "risk_limit_cents": 0,
+            "strike_type": "custom",
+            "tick_size": 1,
+            "mve_collection_ticker": "MVE-COL",
+            "mve_selected_legs": [
+                {
+                    "event_ticker": "E1",
+                    "market_ticker": "M1",
+                    "side": "yes"
+                }
+            ]
+        }"#;
+
+        let market: Market = serde_json::from_str(json).unwrap();
+        assert_eq!(market.mve_collection_ticker, Some("MVE-COL".to_string()));
+        assert_eq!(market.mve_selected_legs.as_ref().unwrap().len(), 1);
+    }
+
+    #[test]
+    fn test_markets_query_serialization() {
+        let query = MarketsQuery {
+            limit: Some(10),
+            cursor: Some("abc123"),
+            event_ticker: None,
+            series_ticker: None,
+            max_close_ts: None,
+            min_close_ts: None,
+            status: Some("active"),
+            tickers: None,
+        };
+
+        let encoded = serde_urlencoded::to_string(&query).unwrap();
+        assert!(encoded.contains("limit=10"));
+        assert!(encoded.contains("status=active"));
+    }
+
+    #[test]
+    fn test_get_markets_response_deserialization() {
+        let json = r#"{"markets": []}"#;
+        let response: GetMarketsResponse = serde_json::from_str(json).unwrap();
+        assert_eq!(response.markets.len(), 0);
+    }
+}
