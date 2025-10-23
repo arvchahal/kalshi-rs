@@ -89,7 +89,7 @@ pub struct MveSelectedLeg {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Display)]
-#[display("All markets {:?}", cursor)]
+#[display("All markets {:?}", markets)]
 pub struct GetMarketsResponse {
     pub cursor: Option<String>,
     pub markets: Vec<Market>,
@@ -205,6 +205,56 @@ pub struct CandlesticksQuery {
     pub end_ts: i64,          
     pub period_interval: u32, 
 }
+
+#[derive(Serialize)]
+pub struct GetTradesQuery{
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limit: Option<u16>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cursor: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ticker: Option<String>,   // comma-separated per API
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub min_ts: Option<u64>, // seconds since epoch
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub max_ts: Option<u64>, // seconds since epoch
+}
+
+#[derive(Debug, Clone, Deserialize, Display)]
+#[display("All trades available: {:?}", trades)]
+pub struct GetTradesResponse{
+    cursor: Option<String>,
+    trades: Vec<Trade>,
+}
+
+#[derive(serde::Deserialize, Display, Debug, Clone)]
+#[display("Trade: {} {} @ ${} ({})", ticker, count, price, take_side)]
+
+pub struct Trade{
+    count: i64,
+    created_time: String,
+    no_price: u64,
+    no_price_dollars: String, 
+    price: f64,
+    take_side: String,
+    ticker: String, 
+    trade_id: String,
+    yes_price: u64,
+    yes_price_dollars: String
+
+}
+
+/*
+      "count": 319,
+      "created_time": "2025-10-23T17:08:22.020762Z",
+      "no_price": 49,
+      "no_price_dollars": "0.4900",
+      "price": 0.51,
+      "taker_side": "yes",
+      "ticker": "KXATPMATCH-25OCT23OPEVAN-OPE",
+      "trade_id": "45d4820b-b9d7-6246-4102-dfa297646a8c",
+      "yes_price": 51,
+      "yes_price_dollars": "0.5100" */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 /*

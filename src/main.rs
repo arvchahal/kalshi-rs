@@ -20,8 +20,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // println!("{}",status);
     // let user_data = t.get_user_data_timestamp().await?;
     // println!("{}",user_data);
-    let market_data = t.get_all_markets(None, None, None, None, None, None, None, None).await?;
-    println!("{}",market_data);
+    // let market_data = t.get_all_markets(None, None, None, None, None, None, None, None).await?;
+    // println!("{}",market_data);
+    let trades = t.get_trades(None, None, None, None, None).await?;
+        println!("{}",trades);
+
     // let market_orderbook = t.get_market_orderbook("KXNFLPASSYDS-25OCT23MINLAC-LACJHERBERT10-225", Some(8)).await?;
     // println!("{}",market_orderbook);
 
