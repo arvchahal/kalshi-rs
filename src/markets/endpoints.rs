@@ -61,6 +61,7 @@ impl KalshiClient{
             actual_depth = 100;
             url = build_url_with_query(url.clone(), &actual_depth);
         }
+        println!("{}", url);
         let resp = self.unauthenticated_get(&url).await?;
         let data: GetMarketOrderbookResponse = serde_json::from_str(&resp).map_err(|e| KalshiError::Other(format!("Invalid Parsing response format: Parse error: {e}. Response: {resp}")))?;
         Ok(data)

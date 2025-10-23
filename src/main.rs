@@ -22,16 +22,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // println!("{}",user_data);
     // let market_data = t.get_market().await?;
     // println!("{}",market_data);
-    // let market_orderbook = t.get_market_orderbook("KXWTAMATCH-25OCT22SUNWAN-WAN", None).await?;
-    // println!("{}",market_orderbook);
+    let market_orderbook = t.get_market_orderbook("KXNFLPASSYDS-25OCT23MINLAC-LACJHERBERT10-225", Some(8)).await?;
+    println!("{}",market_orderbook);
 
-    let resp = t.get_market_candlesticks(
-    "KXNFLPASSYDS",
-    "KXNFLPASSYDS-25OCT23MINLAC-LACJHERBERT10-225",
-    1761180723,  // start_ts
-    1761267123,  // end_ts
-    1,           // period_interval (1 minute)
-).await?;
+//     let resp = t.get_market_candlesticks(
+//     "KXNFLPASSYDS",
+//     "KXNFLPASSYDS-25OCT23MINLAC-LACJHERBERT10-225",
+//     1761180723,  // start_ts
+//     1761267123,  // end_ts
+//     1,           // period_interval (1 minute)
+// ).await?;
 
 // // quick sanity print (keeps it short)
 // println!(
