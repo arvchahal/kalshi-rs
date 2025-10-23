@@ -1,18 +1,7 @@
-use crate::auth::Account;
-use base64::display;
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-pub struct OrderRequest {}
-
-pub struct Position {
-    user: Account
-}
-
-pub struct OrderStatus {
-
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Market {
@@ -144,11 +133,77 @@ pub struct Orderbook{
     no_dollars:Vec<(String,u64)>,
     yes:Vec<(u64, u64)>,
     yes_dollars: Vec<(String,u64)>,
-
 }
 
+#[derive(Debug, Clone, Deserialize, Display)]
+#[display( "candles: {} markets (adjusted_end_ts={})",
+          "self.market_tickers.len()", "self.adjusted_end_ts")]
+pub struct GetMarketCandlesticksResponse {
+    pub market_candlesticks: Vec<Candlestick>, // parallel to market_tickers
+    pub market_ticker: String,
+}
+
+#[derive(Debug, Clone, Deserialize, Display)]
+#[display( "ts={} vol={} oi={:?} price[{}] bid[{}] ask[{}]",
+          "self.end_period_ts", "self.volume", "self.open_interest",
+          "self.price", "self.yes_bid", "self.yes_ask")]
+pub struct Candlestick {
+    pub end_period_ts: i64,
+    pub open_interest: Option<u32>,
+    pub volume: u32,
+    pub price: PriceStats,
+    pub yes_ask: SideOhlc,
+    pub yes_bid: SideOhlc,
+    #[serde(default)] pub no_ask: Option<SideOhlc>,
+    #[serde(default)] pub no_bid: Option<SideOhlc>,
+}
+
+#[derive(Debug, Clone, Deserialize, Display)]
+#[display( "prev={:?} o={:?} h={:?} l={:?} c={:?}",
+          "self.previous","self.open","self.high","self.low","self.close")]
+pub struct PriceStats {
+    pub open: Option<u32>,
+    pub open_dollars: Option<String>,
+    pub close: Option<u32>,
+    pub close_dollars: Option<String>,
+    pub high: Option<u32>,
+    pub high_dollars: Option<String>,
+    pub low: Option<u32>,
+    pub low_dollars: Option<String>,
+    pub min: Option<u32>,
+    pub min_dollars: Option<String>,
+    pub max: Option<u32>,
+    pub max_dollars: Option<String>,
+    pub mean: Option<u32>,
+    pub mean_dollars: Option<String>,
+    pub previous: Option<u32>,
+    pub previous_dollars: Option<String>,
+}
+
+#[derive(Debug, Clone, Deserialize, Display)]
+#[display("O/H/L/C={}/{}/{}/{}",
+          "self.open","self.high","self.low","self.close")]
+pub struct SideOhlc {
+    pub open: u32,
+    pub open_dollars: String,
+    pub high: u32,
+    pub high_dollars: String,
+    pub low: u32,
+    pub low_dollars: String,
+    pub close: u32,
+    pub close_dollars: String,
+}
+
+// --- tiny helper to dump a quick sample (first N per market) ---
 
 
+
+#[derive(Serialize)]
+pub struct CandlesticksQuery {
+    pub start_ts: i64,      
+    pub end_ts: i64,          
+    pub period_interval: u32, 
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 /*
@@ -287,6 +342,13 @@ mod tests {
         assert_eq!(market.mve_collection_ticker, Some("MVE-COL".to_string()));
         assert_eq!(market.mve_selected_legs.as_ref().unwrap().len(), 1);
     }
+
+
+
+
+
+
+    
 
     #[test]
     fn test_markets_query_serialization() {

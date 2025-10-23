@@ -5,7 +5,7 @@ use chrono::{DateTime, Utc};
 use crate::helpers::build_url_with_query;
 
 // use crate::exchange::models::{GetExcahngeStatus, GetExchangeAnnouncementsResponse, GetExchangeScheduleResponse, GetUserDataTimestampResponse, GetMarketRespose};
-use crate::markets::models::{GetMarketOrderbookResponse, GetMarketResponse, GetMarketsResponse, MarketsQuery};
+use crate::markets::models::{GetMarketOrderbookResponse, GetMarketResponse, GetMarketsResponse, MarketsQuery, GetMarketCandlesticksResponse, CandlesticksQuery};
 
 const GET_MARKETS:&str = "/trade-api/v2/markets"; //no auth GET
 const GET_MARKET:&str = "/trade-api/v2/markets/{}";//no auth GET the {} with ticker
@@ -66,8 +66,20 @@ impl KalshiClient{
         Ok(data)
 
     }
-    // pub fn get_market_candlesticks(&self, ticker:&str, depth:Option<int>)->R{
+    pub async fn get_market_candlesticks(&self, series_ticker:&str, ticker:&str, start_ts: i64, end_ts: i64, period_interval: u32,)->Result<GetMarketCandlesticksResponse,KalshiError>{
+        let url = GET_MARKET_CANDLESTICKS
+            .replacen("{}", series_ticker,1)
+            .replacen("{}", ticker,1);
+        let query: CandlesticksQuery = CandlesticksQuery{start_ts, end_ts, period_interval};
+        let url_query = build_url_with_query(url, &query);
+        println!("{}", url_query);
+        let resp = self.unauthenticated_get(&url_query).await?;
+        let data: GetMarketCandlesticksResponse = serde_json::from_str(&resp)
+            .map_err(|e| KalshiError::Other(format!("Invalid Parsing response format: Parse error: {e}. Response: {resp}")))?;
+        Ok(data)
 
-    // }
+    }
+
+    
 
 }
