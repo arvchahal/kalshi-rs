@@ -89,8 +89,9 @@ pub struct MveSelectedLeg {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Display)]
-#[display("All markets {:?}", markets)]
+#[display("All markets {:?}", cursor)]
 pub struct GetMarketsResponse {
+    pub cursor: Option<String>,
     pub markets: Vec<Market>,
 }
 
