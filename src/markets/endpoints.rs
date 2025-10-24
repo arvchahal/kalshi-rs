@@ -1,7 +1,6 @@
 
 use crate::client::KalshiClient;
 use crate::errors::KalshiError;
-use chrono::{DateTime, Utc};
 use crate::helpers::build_url_with_query;
 
 // use crate::exchange::models::{GetExcahngeStatus, GetExchangeAnnouncementsResponse, GetExchangeScheduleResponse, GetUserDataTimestampResponse, GetMarketRespose};

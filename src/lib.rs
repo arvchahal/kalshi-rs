@@ -3,6 +3,7 @@ pub mod auth;
 pub mod client;
 pub mod api_keys;
 pub mod exchange;
+pub mod milestones;
 pub mod errors;
 pub(crate) mod helpers;
 
