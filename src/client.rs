@@ -3,6 +3,7 @@ use crate::auth::Account;
 use crate::errors::KalshiError;
 use crate::helpers;
 use reqwest::{Client, StatusCode};
+use serde::Serialize;
 
 /*
 Main entry point for the entire sdk implemented in multiple parts across different crates to promote
@@ -63,5 +64,13 @@ impl KalshiClient{
     /// Wrapper for unauthenticated GET requests
     pub async fn unauthenticated_get(&self, path: &str) -> Result<String, KalshiError> {
         helpers::unauthenticated_get(&self.http_client, &self.base_url, path).await
+    }
+
+    /// Wrapper for authenticated put requests
+    pub async fn authenticated_put<T>(&self, path: &str,json_body: Option<&T>) -> Result<String, KalshiError>
+    where
+        T: serde::Serialize + ?Sized,
+    {
+        helpers::authenticated_put(&self.http_client, &self.base_url, &self.account, path,json_body).await
     }
 }

@@ -5,6 +5,7 @@ use crate::auth::auth_loader::{get_current_timestamp_ms, sign_request};
 use crate::errors::KalshiError;
 use crate::auth::Account;
     use chrono::{DateTime, Utc, TimeZone};
+use serde::Serialize;
 
 /// Create authentication headers (key_id, timestamp, signature) for a request
 pub(crate) fn create_auth_headers(
@@ -115,7 +116,43 @@ where
     Ok(text)
 }
 
+///make an authenticated put request
+pub(crate) async fn authenticated_put<T>(
+    http_client: &reqwest::Client,
+    base_url: &str,
+    account: &Account,
+    path: &str,
+    json_body: Option<&T>,
+) -> Result<String, KalshiError>
+where
+    T: serde::Serialize + ?Sized,
+{
+    let base = base_url.trim_end_matches('/');
+    let url = format!("{}{}", base, path);
+    let parsed = url::Url::parse(&url).map_err(|e| KalshiError::Other(e.to_string()))?;
 
+    let signed_path = parsed.path().to_string();
+    let (key_id, timestamp, signature) =
+        create_auth_headers(account, "PUT", &signed_path)?;
+
+    let mut request = http_client
+        .put(parsed.as_str())
+        .header("KALSHI-ACCESS-KEY", key_id)
+        .header("KALSHI-ACCESS-TIMESTAMP", &timestamp)
+        .header("KALSHI-ACCESS-SIGNATURE", signature);
+
+    if let Some(body) = json_body {
+        request = request.json(body); // sets Content-Type and serializes
+    }
+
+    let resp = request.send().await?;
+    let status = resp.status();
+    let text = resp.text().await?;
+    if !status.is_success() {
+        return Err(KalshiError::Other(format!("HTTP {}: {}", status, text)));
+    }
+    Ok(text)
+}
 /// Make an authenticated DELETE request
 pub(crate) async fn authenticated_delete(
     http_client: &Client,
