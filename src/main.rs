@@ -24,8 +24,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // println!("{}",market_data);
     // let trades = t.get_trades(None, None, None, None, None).await?;
     //     println!("{}",trades);
-    let milestone = t.get_milestones(None).await?;
-    println!("Milestones: {:?}", milestone);
+    // let milestone = t.get_milestones(None).await?;
+    // println!("Milestones: {:?}", milestone);
+    // let all_events = t.get_all_events(None, None).await?;
+    // println!("All events:\n{:#?}", all_events);
+
+
+    let event = t.get_event("KXNFLPASSYDS-25OCT23MINLAC").await?;
+    println!("Single event:\n{:#?}", event);
+
+
+    // let meta = t.get_event_metadata("KXNFLPASSYDS-25OCT23MINLAC").await?;
+    // println!("Event metadata:\n{:#?}", meta);
     // let market_orderbook = t.get_market_orderbook("KXNFLPASSYDS-25OCT23MINLAC-LACJHERBERT10-225", Some(8)).await?;
     // println!("{}",market_orderbook);
 
