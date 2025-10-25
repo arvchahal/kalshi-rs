@@ -30,9 +30,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // println!("All events:\n{:#?}", all_events);
 
 
-    let event = t.get_event("KXNFLPASSYDS-25OCT23MINLAC").await?;
-    println!("Single event:\n{:#?}", event);
+    // let event = t.get_event("KXNFLPASSYDS-25OCT23MINLAC").await?;
+    // println!("Single event:\n{:#?}", event);
+    // let series_list = t.get_all_series(Some(5), None).await?;
+    // println!("All series:\n{:#?}", series_list);
 
+    // Example: Fetch one specific series
+    // let single_series = t.get_series_by_ticker("KXNFLPASSYDS").await?;
+    // println!("Single series:\n{:#?}", single_series);
 
     // let meta = t.get_event_metadata("KXNFLPASSYDS-25OCT23MINLAC").await?;
     // println!("Event metadata:\n{:#?}", meta);
