@@ -34,6 +34,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // println!("Single event:\n{:#?}", event);
     // let series_list = t.get_all_series(Some(5), None).await?;
     // println!("All series:\n{:#?}", series_list);
+    // let x = t.get_structured_target(structured_target_id)
 
     // Example: Fetch one specific series
     // let single_series = t.get_series_by_ticker("KXNFLPASSYDS").await?;
@@ -43,6 +44,29 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // println!("Event metadata:\n{:#?}", meta);
     // let market_orderbook = t.get_market_orderbook("KXNFLPASSYDS-25OCT23MINLAC-LACJHERBERT10-225", Some(8)).await?;
     // println!("{}",market_orderbook);
+    // let all_structured_targets = t.get_all_structured_targets(Some(10)).await?;
+    // println!("Structured targets:\n{:#?}", all_structured_targets);
+
+    // // get a single structured target by id
+    // if let Some(first) = all_structured_targets.structured_targets.first() {
+    //     let structured_target_id = &first.id;
+    //     let target = t.get_structured_target(structured_target_id).await?;
+    //     println!("Structured target details:\n{:#?}", target);
+    // } else {
+    //     println!("No structured targets returned.");
+    // }
+        let collections = t.get_multivariate_event_collections().await?;
+    // println!("All MVE collections:\n{:#?}", collections);
+
+    // get a single one
+    if let Some(first) = collections.multivariate_contracts.first() {
+        let ticker = &first.collection_ticker;
+        let collection = t.get_multivariate_event_collection(ticker).await?;
+        println!("Single MVE collection:\n{:#?}", collection);
+    } else {
+        println!("No MVE collections returned.");
+    }
+
 
 //     let resp = t.get_market_candlesticks(
 //     "KXNFLPASSYDS",
