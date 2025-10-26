@@ -3,7 +3,6 @@ use crate::auth::Account;
 use crate::errors::KalshiError;
 use crate::helpers;
 use reqwest::{Client, StatusCode};
-use serde::Serialize;
 
 /*
 Main entry point for the entire sdk implemented in multiple parts across different crates to promote

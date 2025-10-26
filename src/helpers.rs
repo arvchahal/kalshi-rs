@@ -4,7 +4,7 @@ use reqwest::{Client, StatusCode};
 use crate::auth::auth_loader::{get_current_timestamp_ms, sign_request};
 use crate::errors::KalshiError;
 use crate::auth::Account;
-    use chrono::{DateTime, Utc, TimeZone};
+    use chrono::{DateTime, Utc};
 use serde::Serialize;
 
 /// Create authentication headers (key_id, timestamp, signature) for a request
