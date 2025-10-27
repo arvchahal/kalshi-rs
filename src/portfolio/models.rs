@@ -30,6 +30,7 @@ pub struct Order {
     pub ticker: String,
     pub side: String,
     pub action: String,
+    #[serde(rename = "type")]
     pub type_: String,
     pub status: String,
     pub yes_price: Option<u64>,
@@ -54,6 +55,13 @@ pub struct Order {
     pub self_trade_prevention_type: Option<String>,
     pub order_group_id: Option<String>,
     pub cancel_order_on_pause: Option<bool>,
+    pub order_error: Option<OrderError>
+}
+
+
+//option if there was an error in the response for the orders
+pub struct OrderError{
+
 }
 pub struct BatchCancelOrdersResponse{
     pub orders: Vec<Order>,
@@ -67,6 +75,11 @@ pub struct BatchCancelOrdersRequest{
 }
 
 pub struct BatchCreateOrdersResponse{
+    pub orders: Vec<String>,
+}
+
+pub struct BatchCreateOrdersRequest{
+    orders: Vec<Order>
 }
 
 pub struct CancelOrderResponse{
