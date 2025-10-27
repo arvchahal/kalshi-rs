@@ -56,7 +56,10 @@ impl KalshiClient{
     }
 
     /// Wrapper for authenticated DELETE requests
-    pub async fn authenticated_delete(&self, path: &str) -> Result<(StatusCode,String), KalshiError> {
+    pub async fn authenticated_delete<T>(&self, path: &str, body: Option<&T>) -> Result<(StatusCode,String), KalshiError> 
+    where
+        T: serde::Serialize + ?Sized,
+    {
         helpers::authenticated_delete(&self.http_client, &self.base_url, &self.account, path).await
     }
 

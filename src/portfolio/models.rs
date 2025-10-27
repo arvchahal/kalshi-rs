@@ -30,7 +30,7 @@ pub struct Order {
     pub ticker: String,
     pub side: String,
     pub action: String,
-    pub r#type: String,
+    pub type_: String,
     pub status: String,
     pub yes_price: Option<u64>,
     pub no_price: Option<u64>,
@@ -48,18 +48,25 @@ pub struct Order {
     pub queue_position: Option<u64>,
     pub taker_fees_dollars: Option<String>,
     pub maker_fees_dollars: Option<String>,
-    pub expiration_time: Option<DateTime<Utc>>,
-    pub created_time: Option<DateTime<Utc>>,
-    pub last_update_time: Option<DateTime<Utc>>,
+    pub expiration_time: Option<String>,
+    pub created_time: Option<String>,
+    pub last_update_time: Option<String>,
     pub self_trade_prevention_type: Option<String>,
     pub order_group_id: Option<String>,
     pub cancel_order_on_pause: Option<bool>,
 }
 pub struct BatchCancelOrdersResponse{
+    pub orders: Vec<Order>,
+
+
+}
+pub struct BatchCancelOrdersRequest{
+    pub order_ids: Vec<String>,
+
+
 }
 
 pub struct BatchCreateOrdersResponse{
-
 }
 
 pub struct CancelOrderResponse{

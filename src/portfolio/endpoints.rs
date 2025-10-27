@@ -8,7 +8,7 @@ use crate::portfolio::models::{
     GetFillsResponse, GetOrderResponse, GetOrderGroupResponse, 
     GetOrderGroupsResponse, GetOrderQueuePositionResponse, GetOrdersResponse, 
     GetPositionsResponse, GetQueuePositionsResponse, GetSettlementsResponse, 
-    GetTotalRestingOrderValueResponse, ResetOrderGroupResponse
+    GetTotalRestingOrderValueResponse, ResetOrderGroupResponse, BatchCancelOrdersRequest
 };
 const AMEND_ORDER: &str = "/trade-api/v2/portfolio/orders//amend"; // Post
 const BATCH_CANCEL_ORDERS: &str = "/trade-api/v2/portfolio/orders/batched"; // Delete
@@ -31,9 +31,9 @@ const GET_SETTLEMENTS: &str = "/trade-api/v2/portfolio/settlements"; // Get
 const GET_TOTAL_RESTING_ORDER_VALUE: &str = "/trade-api/v2/portfolio/summary/total_resting_order_value"; // Get
 const RESET_ORDER_GROUP: &str = "/trade-api/v2/portfolio/order_groups//reset"; // Put
 
-
-pub async fn amend_order(order_id: &str, ){
-        pub async fn amend_order(
+//need to test
+impl KalshiClient{
+    pub async fn amend_order(
         &self,
         order_id: &str,
         body: &AmendOrderRequest,
@@ -49,4 +49,18 @@ pub async fn amend_order(order_id: &str, ){
         })?;
         Ok(data)
     }
+    pub async fn batch_cancel_orders(&self, order_ids:Vec<String>,body:&BatchCancelOrdersRequest)-> Result<BatchCancelOrdersResponse,KalshiError>{
+                let json_body = serde_json::to_string(body).map_err(|e| {
+                KalshiError::Other(format!("Failed to serialize request body: {}", e))
+            })?;
+            let resp = self.authenticated_delete(&url, &json_body).await?;
+            let data: AmendOrderResponse = serde_json::from_str(&resp).map_err(|e| {
+                KalshiError::Other(format!("Parse error: {e}. Response: {resp}"))
+            })?;
+            Ok(data)
+
+    }
+
+
+
 }

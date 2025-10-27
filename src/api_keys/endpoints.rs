@@ -47,7 +47,7 @@ impl KalshiClient {
     /// 
     pub async fn delete_api_key(&self, api_key:&str) ->Result<DeleteApiKeyResponse, KalshiError>{
         let url = DELETE_API_KEY.replace("{}", api_key);
-        let (status,resp) = self.authenticated_delete(&url).await?;
+        let (status,resp) = self.authenticated_delete(&url,Option::<&str>::None).await?;
         if status.as_u16() == 204 || resp.trim().is_empty() {
             return Ok(DeleteApiKeyResponse { body: None });
         }
