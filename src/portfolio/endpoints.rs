@@ -32,3 +32,21 @@ const GET_TOTAL_RESTING_ORDER_VALUE: &str = "/trade-api/v2/portfolio/summary/tot
 const RESET_ORDER_GROUP: &str = "/trade-api/v2/portfolio/order_groups//reset"; // Put
 
 
+pub async fn amend_order(order_id: &str, ){
+        pub async fn amend_order(
+        &self,
+        order_id: &str,
+        body: &AmendOrderRequest,
+    ) -> Result<AmendOrderResponse, KalshiError> {
+        let url = AMEND_ORDER.replace("{}", order_id);
+        let json_body = serde_json::to_string(body).map_err(|e| {
+            KalshiError::Other(format!("Failed to serialize request body: {}", e))
+        })?;
+
+        let resp = self.authenticated_post(&url, &json_body).await?;
+        let data: AmendOrderResponse = serde_json::from_str(&resp).map_err(|e| {
+            KalshiError::Other(format!("Parse error: {e}. Response: {resp}"))
+        })?;
+        Ok(data)
+    }
+}

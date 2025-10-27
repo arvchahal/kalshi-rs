@@ -1,6 +1,6 @@
 use crate::client::KalshiClient;
 use crate::errors::KalshiError;
-use crate::helpers::build_url_with_query;
+// use crate::helpers::build_url_with_query;
 use crate::multivariate_collections::models::{GetMultivariateEventCollectionResponse,
     GetMultivariateEventCollectionsResponse//, LookupBundleResponse
 };
