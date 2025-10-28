@@ -1,4 +1,6 @@
-#[derive(serde::Serialize)]
+use serde::{Serialize, Deserialize};
+use derive_more::Display;
+
 
 
 #[derive(Serialize, Debug, Clone)]
@@ -22,7 +24,7 @@ pub struct AmendOrderResponse {
     pub order: Order,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, Serialize)]
 pub struct Order {
     pub order_id: String,
     pub user_id: String,
@@ -60,24 +62,35 @@ pub struct Order {
 
 
 //option if there was an error in the response for the orders
-pub struct OrderError{
-
+#[derive(serde::Deserialize, Debug, Clone, Serialize)]
+pub struct OrderError {
+    pub code: Option<String>,
+    pub message: Option<String>,
+    pub details: Option<String>,
+    pub service: Option<String>,
 }
+
+#[derive(serde::Deserialize, serde::Serialize)]
 pub struct BatchCancelOrdersResponse{
     pub orders: Vec<Order>,
 
 
 }
+
+#[derive(serde::Serialize,serde::Deserialize)]
+
 pub struct BatchCancelOrdersRequest{
     pub order_ids: Vec<String>,
 
 
 }
 
+#[derive(serde::Deserialize)]
 pub struct BatchCreateOrdersResponse{
     pub orders: Vec<String>,
 }
 
+#[derive(serde::Serialize)]
 pub struct BatchCreateOrdersRequest{
     orders: Vec<Order>
 }

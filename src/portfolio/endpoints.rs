@@ -8,7 +8,7 @@ use crate::portfolio::models::{
     GetFillsResponse, GetOrderResponse, GetOrderGroupResponse, 
     GetOrderGroupsResponse, GetOrderQueuePositionResponse, GetOrdersResponse, 
     GetPositionsResponse, GetQueuePositionsResponse, GetSettlementsResponse, 
-    GetTotalRestingOrderValueResponse, ResetOrderGroupResponse, BatchCancelOrdersRequest, BatchCreateOrdersRequest
+    GetTotalRestingOrderValueResponse, ResetOrderGroupResponse, BatchCancelOrdersRequest, BatchCreateOrdersRequest,AmendOrderRequest
 };
 const AMEND_ORDER: &str = "/trade-api/v2/portfolio/orders//amend"; // Post
 const BATCH_CANCEL_ORDERS: &str = "/trade-api/v2/portfolio/orders/batched"; // Delete
@@ -43,26 +43,33 @@ impl KalshiClient{
             KalshiError::Other(format!("Failed to serialize request body: {}", e))
         })?;
 
-        let resp = self.authenticated_post(&url, &json_body).await?;
+        let resp = self.authenticated_post(&url, Some(&json_body)).await?;
         let data: AmendOrderResponse = serde_json::from_str(&resp).map_err(|e| {
             KalshiError::Other(format!("Parse error: {e}. Response: {resp}"))
         })?;
         Ok(data)
     }
-    pub async fn batch_cancel_orders(&self, order_ids:Vec<String>,body:&BatchCancelOrdersRequest)-> Result<BatchCancelOrdersResponse,KalshiError>{
+    pub async fn batch_cancel_orders(&self,body:&BatchCancelOrdersRequest)-> Result<BatchCancelOrdersResponse,KalshiError>{
             let json_body = serde_json::to_string(body).map_err(|e| {
                 KalshiError::Other(format!("Failed to serialize request body: {}", e))
             })?;
-            let resp = self.authenticated_delete(BATCH_CANCEL_ORDERS, &json_body).await?;
-            let data: AmendOrderResponse = serde_json::from_str(&resp).map_err(|e| {
-                KalshiError::Other(format!("Parse error: {e}. Response: {resp}"))
+            let (status, resp) = self.authenticated_delete(BATCH_CANCEL_ORDERS, Some(&json_body)).await?;
+            let data: BatchCancelOrdersResponse = serde_json::from_str(&resp).map_err(|e| {
+                KalshiError::Other(format!("Parse error: {e}. Response: {resp}, status{status}"))
             })?;
             Ok(data)
 
     }
 
-    pub async fn batch_create_orders(&self,  order_ids:Vec<String>,body:&BatchCreateOrdersRequest)-> Result<BatchCreateOrdersResponse,KalshiError>{
-
+    pub async fn batch_create_orders(&self,body:&BatchCreateOrdersRequest)-> Result<BatchCreateOrdersResponse,KalshiError>{
+            let json_body = serde_json::to_string(body).map_err(|e| {
+                KalshiError::Other(format!("Failed to serialize request body: {}", e))
+            })?;
+            let resp = self.authenticated_post(BATCH_CANCEL_ORDERS, Some(&json_body)).await?;
+            let data: BatchCreateOrdersResponse = serde_json::from_str(&resp).map_err(|e| {
+                KalshiError::Other(format!("Parse error: {e}. Response: {resp}"))
+            })?;
+            Ok(data)
     }
     
 
