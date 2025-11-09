@@ -8,7 +8,8 @@ use crate::portfolio::models::{
     GetFillsResponse, GetOrderResponse, GetOrderGroupResponse, 
     GetOrderGroupsResponse, GetOrderQueuePositionResponse, GetOrdersResponse, 
     GetPositionsResponse, GetQueuePositionsResponse, GetSettlementsResponse, 
-    GetTotalRestingOrderValueResponse, ResetOrderGroupResponse, BatchCancelOrdersRequest, BatchCreateOrdersRequest,AmendOrderRequest
+    GetTotalRestingOrderValueResponse, ResetOrderGroupResponse, BatchCancelOrdersRequest, 
+    BatchCreateOrdersRequest,AmendOrderRequest,CreateOrderRequest
 };
 const AMEND_ORDER: &str = "/trade-api/v2/portfolio/orders//amend"; // Post
 const BATCH_CANCEL_ORDERS: &str = "/trade-api/v2/portfolio/orders/batched"; // Delete
@@ -32,6 +33,9 @@ const GET_TOTAL_RESTING_ORDER_VALUE: &str = "/trade-api/v2/portfolio/summary/tot
 const RESET_ORDER_GROUP: &str = "/trade-api/v2/portfolio/order_groups//reset"; // Put
 
 //need to test
+
+// TODO need to build out macros for anything that has options in them  
+
 impl KalshiClient{
     pub async fn amend_order(
         &self,
@@ -71,16 +75,24 @@ impl KalshiClient{
             })?;
             Ok(data)
     }
+
+    // TODO refactor need to see if we need status or can just keep as _
     pub async fn cancel_order(&self, order_id:String)-> Result<CancelOrderResponse, KalshiError>{
         let url:&str = &CANCEL_ORDER.replace("{}",&order_id);
-        let (status,resp) = self.authenticated_delete::<str>(url,None).await?;
+        let (_,resp) = self.authenticated_delete::<str>(url,None).await?;
         let data: CancelOrderResponse = serde_json::from_str(&resp).map_err(|e| {
             KalshiError::Other(format!("Parse error: {e}. Response: {resp}"))})?;
         Ok(data)
     }
 
-    pub async fn create_order(){
-
+    pub async fn create_order(&self, body:&CreateOrderRequest)-> Result<CreateOrderResponse, KalshiError>{
+        let json_body = serde_json::to_string(body).map_err(|e| {
+                KalshiError::Other(format!("Failed to serialize request body: {}", e))
+            })?;
+        let resp = self.authenticated_post(CREATE_ORDER, Some(&json_body)).await?;
+        let data: CreateOrderResponse = serde_json::from_str(&resp).map_err(|e| {
+            KalshiError::Other(format!("Parse error: {e}. Response: {resp}"))            })?;
+        Ok(data)
     }
 
     pub async fn create_order_group(){

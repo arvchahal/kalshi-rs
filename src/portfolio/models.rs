@@ -95,18 +95,51 @@ pub struct BatchCreateOrdersRequest{
     orders: Vec<Order>
 }
 
-#[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
+#[derive(serde::Deserialize, serde::Serialize, Debug)]
 pub struct CancelOrderResponse {
     pub order: Order,
     pub reduced_by: Option<u64>,
 }
+// TODO need to build out macros for anything that has options in them  
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct CreateOrderRequest {
+    pub ticker: String,
+    pub side: String, // "yes" | "no"
+    pub action: String, // "buy" | "sell"
+    pub count: u64,
 
-pub struct CreateOrderResponse{
-
+    // Optional fields
+    pub client_order_id: Option<String>,
+    #[serde(rename = "type")]
+    pub type_: Option<String>, // "limit" | "market"
+    pub yes_price: Option<u64>,
+    pub no_price: Option<u64>,
+    pub yes_price_dollars: Option<String>,
+    pub no_price_dollars: Option<String>,
+    pub expiration_ts: Option<u64>,
+    pub time_in_force: Option<String>, // "fill_or_kill" | "good_till_canceled" | "immediate_or_cancel"
+    pub buy_max_cost: Option<u64>,
+    pub post_only: Option<bool>,
+    pub reduce_only: Option<bool>,
+    pub self_trade_prevention_type: Option<String>, // "taker_at_cross" | "maker"
+    pub order_group_id: Option<String>,
+    pub cancel_order_on_pause: Option<bool>,
 }
 
-pub struct CreateOrderGroupResponse{
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct CreateOrderResponse {
+    pub order: Order,
+}
 
+
+#[derive(serde::Serialize)]
+pub struct CreateOrderGroupRequest {
+    pub contracts_limit: u64,
+}
+
+#[derive(serde::Deserialize, Debug, Clone)]
+pub struct CreateOrderGroupResponse {
+    pub order_group_id: String,
 }
 
 pub struct DecreaseOrderResponse{
