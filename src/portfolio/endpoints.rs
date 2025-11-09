@@ -65,13 +65,75 @@ impl KalshiClient{
             let json_body = serde_json::to_string(body).map_err(|e| {
                 KalshiError::Other(format!("Failed to serialize request body: {}", e))
             })?;
-            let resp = self.authenticated_post(BATCH_CANCEL_ORDERS, Some(&json_body)).await?;
+            let resp = self.authenticated_post(BATCH_CREATE_ORDERS, Some(&json_body)).await?;
             let data: BatchCreateOrdersResponse = serde_json::from_str(&resp).map_err(|e| {
                 KalshiError::Other(format!("Parse error: {e}. Response: {resp}"))
             })?;
             Ok(data)
     }
-    
+    pub async fn cancel_order(&self, order_id:String)-> Result<CancelOrderResponse, KalshiError>{
+        let url:&str = &CANCEL_ORDER.replace("{}",&order_id);
+        let (status,resp) = self.authenticated_delete::<str>(url,None).await?;
+        let data: CancelOrderResponse = serde_json::from_str(&resp).map_err(|e| {
+            KalshiError::Other(format!("Parse error: {e}. Response: {resp}"))})?;
+        Ok(data)
+    }
+
+    pub async fn create_order(){
+
+    }
+
+    pub async fn create_order_group(){
+
+    }
+    pub async fn decrease_order(){
+
+    }
+
+    pub async fn delete_order_group(){
+
+    }
+    pub async fn get_balance(){
+
+    }
+    pub async fn get_fills(){
+
+    }
+    pub async fn get_order(){
+
+    }
+    pub async fn get_order_group(){
+
+    }
+    pub async fn get_order_groups(){
+
+    }
+    pub async fn get_order_queue_position(){
+        
+    }
+
+
+    pub async fn get_orders(){
+        
+    }
+
+    pub async fn get_positions(){
+
+    }
+    pub async fn get_queue_positions(){
+
+    }
+
+    pub async fn get_settlements(){
+
+    }
+    pub async fn get_total_resting_order_value(){
+
+    }
+
+    pub async fn reset_order_group(){
+
+    }
 
 
 

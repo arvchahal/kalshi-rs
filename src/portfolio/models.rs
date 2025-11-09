@@ -95,8 +95,10 @@ pub struct BatchCreateOrdersRequest{
     orders: Vec<Order>
 }
 
-pub struct CancelOrderResponse{
-
+#[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
+pub struct CancelOrderResponse {
+    pub order: Order,
+    pub reduced_by: Option<u64>,
 }
 
 pub struct CreateOrderResponse{
@@ -153,4 +155,12 @@ pub struct GetSettlementsResponse{
 
 pub struct GetTotalRestingOrderValueResponse{
 
+}
+
+pub struct DeleteOrderGroupResponse{
+
+}
+
+pub struct ResetOrderGroupResponse{
+    
 }
