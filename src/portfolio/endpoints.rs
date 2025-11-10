@@ -9,7 +9,7 @@ use crate::portfolio::models::{
     GetOrderGroupsResponse, GetOrderQueuePositionResponse, GetOrdersResponse, 
     GetPositionsResponse, GetQueuePositionsResponse, GetSettlementsResponse, 
     GetTotalRestingOrderValueResponse, ResetOrderGroupResponse, BatchCancelOrdersRequest, 
-    BatchCreateOrdersRequest,AmendOrderRequest,CreateOrderRequest
+    BatchCreateOrdersRequest,AmendOrderRequest,CreateOrderRequest, CreateOrderGroupRequest
 };
 const AMEND_ORDER: &str = "/trade-api/v2/portfolio/orders//amend"; // Post
 const BATCH_CANCEL_ORDERS: &str = "/trade-api/v2/portfolio/orders/batched"; // Delete
@@ -91,11 +91,21 @@ impl KalshiClient{
             })?;
         let resp = self.authenticated_post(CREATE_ORDER, Some(&json_body)).await?;
         let data: CreateOrderResponse = serde_json::from_str(&resp).map_err(|e| {
-            KalshiError::Other(format!("Parse error: {e}. Response: {resp}"))            })?;
+            KalshiError::Other(format!("Parse error: {e}. Response: {resp}"))})?;
         Ok(data)
     }
 
-    pub async fn create_order_group(){
+    pub async fn create_order_group(&self, body: &CreateOrderGroupRequest)-> Result< CreateOrderGroupResponse, KalshiError>{
+        let json_body = serde_json::to_string(body).map_err(|e| {
+                KalshiError::Other(format!("Failed to serialize request body: {}", e))
+            })?;
+        let resp = self.authenticated_post(CREATE_ORDER_GROUP, Some(&json_body)).await?;
+        let data: CreateOrderGroupResponse = serde_json::from_str(&resp).map_err(|e|{
+            KalshiError::Other(format!("Failed to serialize request body: {}", e))
+        })?;
+        Ok(data)
+
+
 
     }
     pub async fn decrease_order(){

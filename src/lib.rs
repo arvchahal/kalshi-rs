@@ -10,6 +10,7 @@ pub mod series;
 pub mod events;
 pub mod structured_targets;
 pub mod multivariate_collections;
+pub mod communications;
 pub(crate) mod helpers;
 
 // Re-export commonly used types
