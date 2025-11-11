@@ -142,30 +142,53 @@ pub struct CreateOrderGroupResponse {
     pub order_group_id: String,
 }
 
+#[derive(serde::Deserialize, Debug, Clone)]
 pub struct DecreaseOrderResponse{
+    pub order: Order
 
 }
 
+#[derive(serde::Serialize,serde::Deserialize, Debug, Clone)]
+pub struct DecreaseOrderRequest{
+    pub reduce_by:u64, //>=1
+    pub reduce_to: u64 //>=0
+
+}
+#[derive(serde::Serialize,serde::Deserialize, Debug, Clone)]
 pub struct GetBalanceResponse{
-    
+    pub balance:u64,
+    pub portfolio_value:u64,
+    pub updated_ts:String,
 }
 
 pub struct GetFillsResponse{
 
 }
 
+#[derive(serde::Serialize,serde::Deserialize, Debug, Clone)]
 pub struct GetOrderResponse{
-
+    pub order:Order,
 }
 
-pub struct GetOrderGroupResponse{
+  #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+  pub struct GetOrderGroupResponse {
+    pub is_auto_cancel_enabled: bool,
+    pub orders: Vec<String>
+  }
 
-}
 
-pub struct GetOrderGroupsResponse{
+  // Order group summary (for get_order_groups)
+  #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+  pub struct OrderGroup{
+    pub id: String,
+    pub is_auto_cancel_enabled: bool
+  }
 
-}
-
+  #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+  pub struct GetOrderGroupsResponse {
+    pub order_groups: Vec<OrderGroup>,
+    pub cursor: Option<String>  // Don't forget the cursor!
+  }
 pub struct GetOrderQueuePositionResponse{
 
 }
@@ -190,8 +213,9 @@ pub struct GetTotalRestingOrderValueResponse{
 
 }
 
+#[derive(serde::Serialize,serde::Deserialize, Debug, Clone)]
 pub struct DeleteOrderGroupResponse{
-
+    pub body: Option<String>,
 }
 
 pub struct ResetOrderGroupResponse{

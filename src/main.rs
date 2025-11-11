@@ -1,4 +1,5 @@
 use kalshi_rust_sdk::KalshiClient;
+use kalshi_rust_sdk::portfolio::models::CreateOrderGroupRequest;
 use reqwest::{Client, Response, Url};
 use serde_json::Value;
 use tokio::fs;
@@ -55,17 +56,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // } else {
     //     println!("No structured targets returned.");
     // }
-        let collections = t.get_multivariate_event_collections().await?;
+        // let collections = t.get_multivariate_event_collections().await?;
     // println!("All MVE collections:\n{:#?}", collections);
 
     // get a single one
-    if let Some(first) = collections.multivariate_contracts.first() {
-        let ticker = &first.collection_ticker;
-        let collection = t.get_multivariate_event_collection(ticker).await?;
-        println!("Single MVE collection:\n{:#?}", collection);
-    } else {
-        println!("No MVE collections returned.");
-    }
+    // if let Some(first) = collections.multivariate_contracts.first() {
+    //     let ticker = &first.collection_ticker;
+    //     let collection = t.get_multivariate_event_collection(ticker).await?;
+    //     println!("Single MVE collection:\n{:#?}", collection);
+    // } else {
+    //     println!("No MVE collections returned.");
+    // }
+    let og = CreateOrderGroupRequest{contracts_limit:1};
+    let s = t.create_order_group(&og).await?;
+    let g = t.get_order_group(&s.order_group_id).await?;
+    println!("{:?}",g);
+
 
 
 //     let resp = t.get_market_candlesticks(
