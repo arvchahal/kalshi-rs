@@ -2,15 +2,15 @@ use crate::client::KalshiClient;
 use crate::errors::KalshiError;
 use crate::helpers::build_url_with_query;
 use crate::portfolio::models::{
-    AmendOrderResponse, BatchCancelOrdersResponse, BatchCreateOrdersResponse, 
-    CancelOrderResponse, CreateOrderResponse, CreateOrderGroupResponse, 
-    DecreaseOrderResponse, DeleteOrderGroupResponse, GetBalanceResponse, 
-    GetFillsResponse, GetOrderResponse, GetOrderGroupResponse, 
-    GetOrderGroupsResponse, GetOrderQueuePositionResponse, GetOrdersResponse, 
-    GetPositionsResponse, GetQueuePositionsResponse, GetSettlementsResponse, 
-    GetTotalRestingOrderValueResponse, ResetOrderGroupResponse, BatchCancelOrdersRequest, 
+    AmendOrderResponse, BatchCancelOrdersResponse, BatchCreateOrdersResponse,
+    CancelOrderResponse, CreateOrderResponse, CreateOrderGroupResponse,
+    DecreaseOrderResponse, DeleteOrderGroupResponse, GetBalanceResponse,
+    GetFillsResponse, GetOrderResponse, GetOrderGroupResponse,
+    GetOrderGroupsResponse, GetOrderQueuePositionResponse, GetOrdersResponse,
+    GetOrdersParams, GetPositionsResponse, GetQueuePositionsResponse, GetSettlementsResponse,
+    GetTotalRestingOrderValueResponse, ResetOrderGroupResponse, BatchCancelOrdersRequest,
     BatchCreateOrdersRequest,AmendOrderRequest,CreateOrderRequest, CreateOrderGroupRequest,
-    DecreaseOrderRequest, 
+    DecreaseOrderRequest,
 };
 const AMEND_ORDER: &str = "/trade-api/v2/portfolio/orders//amend"; // Post
 const BATCH_CANCEL_ORDERS: &str = "/trade-api/v2/portfolio/orders/batched"; // Delete
@@ -25,7 +25,7 @@ const GET_FILLS: &str = "/trade-api/v2/portfolio/fills"; // Get
 const GET_ORDER: &str = "/trade-api/v2/portfolio/orders/"; // Get
 const GET_ORDER_GROUP: &str = "/trade-api/v2/portfolio/order_groups/{}"; // Get
 const GET_ORDER_GROUPS: &str = "/trade-api/v2/portfolio/order_groups"; // Get
-const GET_ORDER_QUEUE_POSITION: &str = "/trade-api/v2/portfolio/orders//queue_position"; // Get
+const GET_ORDER_QUEUE_POSITION: &str = "/trade-api/v2/portfolio/orders/{}/queue_position"; // Get
 const GET_ORDERS: &str = "/trade-api/v2/portfolio/orders"; // Get
 const GET_POSITIONS: &str = "/trade-api/v2/portfolio/positions"; // Get
 const GET_QUEUE_POSITIONS: &str = "/trade-api/v2/portfolio/orders/queue_positions"; // Post
@@ -163,13 +163,31 @@ impl KalshiClient{
         })?;
         Ok(data)
     }
-    pub async fn get_order_queue_position(){
-        
+    pub async fn get_order_queue_position(&self, order_id:&str)-> Result<GetOrderQueuePositionResponse, KalshiError>{
+        let url = GET_ORDER_QUEUE_POSITION.replace("{}", order_id);
+        let resp = self.authenticated_get(&url).await?;
+        let data:GetOrderQueuePositionResponse = serde_json::from_str(&resp).map_err(|e|{
+            KalshiError::Other(format!("Failed to serialize request body: {}", e))
+        })?;
+        Ok(data)
     }
 
 
-    pub async fn get_orders(){
-        
+    pub async fn get_orders(&self, params: &GetOrdersParams) -> Result<GetOrdersResponse, KalshiError> {
+        let query = serde_urlencoded::to_string(params)
+            .map_err(|e| KalshiError::Other(format!("Failed to serialize params: {}", e)))?;
+
+        let url = if query.is_empty() {
+            GET_ORDERS.to_string()
+        } else {
+            format!("{}?{}", GET_ORDERS, query)
+        };
+
+        let resp = self.authenticated_get(&url).await?;
+        let data: GetOrdersResponse = serde_json::from_str(&resp).map_err(|e| {
+            KalshiError::Other(format!("Failed to deserialize response: {}", e))
+        })?;
+        Ok(data)
     }
 
     pub async fn get_positions(){

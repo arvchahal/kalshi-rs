@@ -189,12 +189,34 @@ pub struct GetOrderResponse{
     pub order_groups: Vec<OrderGroup>,
     pub cursor: Option<String>  // Don't forget the cursor!
   }
-pub struct GetOrderQueuePositionResponse{
 
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+pub struct GetOrderQueuePositionResponse{
+    pub queue_position: u64,
 }
 
-pub struct GetOrdersResponse{
+#[derive(serde::Serialize, Default, Debug, Clone)]
+pub struct GetOrdersParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ticker: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub event_ticker: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub min_ts: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub max_ts: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub status: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limit: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cursor: Option<String>,
+}
 
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+pub struct GetOrdersResponse{
+    pub orders: Vec<Order>,
+    pub cursor: Option<String>
 }
 
 pub struct GetPositionsResponse{
