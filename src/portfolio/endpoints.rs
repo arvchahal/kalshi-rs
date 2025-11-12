@@ -5,12 +5,13 @@ use crate::portfolio::models::{
     AmendOrderResponse, BatchCancelOrdersResponse, BatchCreateOrdersResponse,
     CancelOrderResponse, CreateOrderResponse, CreateOrderGroupResponse,
     DecreaseOrderResponse, DeleteOrderGroupResponse, GetBalanceResponse,
-    GetFillsResponse, GetOrderResponse, GetOrderGroupResponse,
+    GetFillsResponse, GetFillsParams, GetOrderResponse, GetOrderGroupResponse,
     GetOrderGroupsResponse, GetOrderQueuePositionResponse, GetOrdersResponse,
-    GetOrdersParams, GetPositionsResponse, GetQueuePositionsResponse, GetSettlementsResponse,
+    GetOrdersParams, GetPositionsResponse, GetPositionsParams, GetQueuePositionsResponse,
+    GetSettlementsResponse, GetSettlementsParams,
     GetTotalRestingOrderValueResponse, ResetOrderGroupResponse, BatchCancelOrdersRequest,
     BatchCreateOrdersRequest,AmendOrderRequest,CreateOrderRequest, CreateOrderGroupRequest,
-    DecreaseOrderRequest,
+    DecreaseOrderRequest,GetQueueParams
 };
 const AMEND_ORDER: &str = "/trade-api/v2/portfolio/orders//amend"; // Post
 const BATCH_CANCEL_ORDERS: &str = "/trade-api/v2/portfolio/orders/batched"; // Delete
@@ -136,8 +137,21 @@ impl KalshiClient{
         Ok(data)
     }
 
-    pub async fn get_fills(){
+    pub async fn get_fills(&self, params: &GetFillsParams) -> Result<GetFillsResponse, KalshiError> {
+        let query = serde_urlencoded::to_string(params)
+            .map_err(|e| KalshiError::Other(format!("Failed to serialize params: {}", e)))?;
 
+        let url = if query.is_empty() {
+            GET_FILLS.to_string()
+        } else {
+            format!("{}?{}", GET_FILLS, query)
+        };
+
+        let resp = self.authenticated_get(&url).await?;
+        let data: GetFillsResponse = serde_json::from_str(&resp).map_err(|e| {
+            KalshiError::Other(format!("Failed to deserialize response: {}", e))
+        })?;
+        Ok(data)
     }
     pub async fn get_order(&self, order_id:&str)-> Result<GetOrderResponse,KalshiError>{
         let url = GET_ORDER.replace("{}", order_id);
@@ -190,22 +204,79 @@ impl KalshiClient{
         Ok(data)
     }
 
-    pub async fn get_positions(){
+    pub async fn get_positions(&self, params: &GetPositionsParams) -> Result<GetPositionsResponse, KalshiError> {
+        let query = serde_urlencoded::to_string(params)
+            .map_err(|e| KalshiError::Other(format!("Failed to serialize params: {}", e)))?;
 
+        let url = if query.is_empty() {
+            GET_POSITIONS.to_string()
+        } else {
+            format!("{}?{}", GET_POSITIONS, query)
+        };
+
+        let resp = self.authenticated_get(&url).await?;
+        let data: GetPositionsResponse = serde_json::from_str(&resp).map_err(|e| {
+            KalshiError::Other(format!("Failed to deserialize response: {}", e))
+        })?;
+        Ok(data)
     }
-    pub async fn get_queue_positions(){
+    pub async fn get_queue_positions(&self, params: &GetQueueParams)->Result<GetQueuePositionsResponse, KalshiError> {
+        let query = serde_urlencoded::to_string(params)
+            .map_err(|e| KalshiError::Other(format!("Failed to serialize params: {}", e)))?;
 
+        let url = if query.is_empty() {
+            GET_QUEUE_POSITIONS.to_string()
+        } else {
+            format!("{}?{}", GET_QUEUE_POSITIONS, query)
+        };
+
+        let resp = self.authenticated_get(&url).await?;
+        let data: GetQueuePositionsResponse = serde_json::from_str(&resp).map_err(|e| {
+            KalshiError::Other(format!("Failed to deserialize response: {}", e))
+        })?;
+        Ok(data)
     }
 
-    pub async fn get_settlements(){
+    pub async fn get_settlements(&self, params: &GetSettlementsParams) -> Result<GetSettlementsResponse, KalshiError> {
+        let query = serde_urlencoded::to_string(params)
+            .map_err(|e| KalshiError::Other(format!("Failed to serialize params: {}", e)))?;
 
+        let url = if query.is_empty() {
+            GET_SETTLEMENTS.to_string()
+        } else {
+            format!("{}?{}", GET_SETTLEMENTS, query)
+        };
+
+        let resp = self.authenticated_get(&url).await?;
+        let data: GetSettlementsResponse = serde_json::from_str(&resp).map_err(|e| {
+            KalshiError::Other(format!("Failed to deserialize response: {}", e))
+        })?;
+        Ok(data)
     }
-    pub async fn get_total_resting_order_value(){
+    ///Endpoint for getting the total value, in cents, of resting orders. This endpoint is only intended for use by FCM members (rare). Note: If you’re uncertain about this endpoint, it likely does not apply to you.
 
+    pub async fn get_total_resting_order_value(&self)-> Result<GetTotalRestingOrderValueResponse, KalshiError>{
+        let resp = self.authenticated_get(&GET_TOTAL_RESTING_ORDER_VALUE).await?;
+        let data: GetTotalRestingOrderValueResponse = serde_json::from_str(&resp)
+            .map_err(|e| KalshiError::Other(format!(
+                "Parse error: {e}. Response: {resp}"
+            )))?;
+        Ok(data)
     }
 
-    pub async fn reset_order_group(){
+    pub async fn reset_order_group(&self, order_group_id: &str) -> Result<ResetOrderGroupResponse, KalshiError> {
+        let url = RESET_ORDER_GROUP.replace("{}", order_group_id);
+        let (status, resp) = self.authenticated_put(&url, None::<&str>).await?;
 
+        // API returns empty body on success (200), verify status
+        if status.is_success() {
+            Ok(ResetOrderGroupResponse {})
+        } else {
+            Err(KalshiError::Other(format!(
+                "Unexpected status {}: {}",
+                status, resp
+            )))
+        }
     }
 
 

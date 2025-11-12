@@ -161,8 +161,47 @@ pub struct GetBalanceResponse{
     pub updated_ts:String,
 }
 
-pub struct GetFillsResponse{
+#[derive(serde::Serialize, Default, Debug, Clone)]
+pub struct GetFillsParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ticker: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub order_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub min_ts: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub max_ts: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limit: Option<u32>, // default: 100, range: 1-200
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cursor: Option<String>,
+}
 
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+pub struct Fill {
+    pub fill_id: String,
+    pub trade_id: String,
+    pub order_id: String,
+    pub client_order_id: String,
+    pub ticker: String,
+    pub market_ticker: String,
+    pub side: String, // "yes" | "no"
+    pub action: String, // "buy" | "sell"
+    pub count: u64,
+    pub price: u64,
+    pub yes_price: u64,
+    pub no_price: u64,
+    pub yes_price_fixed: String,
+    pub no_price_fixed: String,
+    pub is_taker: bool,
+    pub created_time: String, // ISO 8601 format: "2023-11-07T05:31:56Z"
+    pub ts: u64,
+}
+
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+pub struct GetFillsResponse {
+    pub fills: Vec<Fill>,
+    pub cursor: String,
 }
 
 #[derive(serde::Serialize,serde::Deserialize, Debug, Clone)]
@@ -219,20 +258,108 @@ pub struct GetOrdersResponse{
     pub cursor: Option<String>
 }
 
-pub struct GetPositionsResponse{
-
+#[derive(serde::Serialize, Default, Debug, Clone)]
+pub struct GetPositionsParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cursor: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limit: Option<u32>, // default: 100, range: 1-1000
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub count_filter: Option<String>, // comma-separated: "position", "total_traded"
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub settlement_status: Option<String>, // "all" | "unsettled" | "settled", default: "unsettled"
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ticker: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub event_ticker: Option<String>, // comma-separated list (max 10)
 }
+
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+pub struct MarketPosition {
+    pub market_ticker: String,
+    pub position: i64,
+    pub market_exposure: i64,
+    pub realized_pnl: i64,
+    pub fees_paid: u64, // Fees are always positive costs
+    pub resting_order_count: u64,
+    pub total_traded: u64,
+}
+
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+pub struct EventPosition {
+    pub event_ticker: String,
+    pub position: i64,
+    pub event_exposure: i64,
+    pub realized_pnl: i64,
+    pub fees_paid: u64, // Fees are always positive costs
+    pub resting_order_count: u64,
+    pub total_traded: u64,
+}
+
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+pub struct GetPositionsResponse {
+    pub cursor: Option<String>,
+    pub market_positions: Vec<MarketPosition>,
+    pub event_positions: Vec<EventPosition>,
+}
+
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 
 pub struct GetQueuePositionsResponse{
+    queue_positions: Vec<QueuePositionObj>
 
 }
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+pub struct QueuePositionObj{
+    order_id: String, 
+    market_ticker: String, 
+    queue_position:u64
+}
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 
-pub struct GetSettlementsResponse{
-
+pub struct GetQueueParams{
+    pub market_tickers: Option<String>,
+    pub event_ticker: Option<String>
+}
+#[derive(serde::Serialize, Default, Debug, Clone)]
+pub struct GetSettlementsParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limit: Option<u32>, // default: 100, range: 1-200
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cursor: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ticker: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub event_ticker: Option<String>, // comma-separated list (max 10)
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub min_ts: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub max_ts: Option<u64>,
 }
 
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+pub struct Settlement {
+    pub ticker: String,
+    pub market_result: String, // "yes" | "no"
+    pub yes_count: u64,
+    pub yes_total_cost: u64,
+    pub no_count: u64,
+    pub no_total_cost: u64,
+    pub revenue: i64, // Can be negative for losses
+    pub settled_time: String, // ISO 8601 format: "2023-11-07T05:31:56Z"
+    pub fee_cost: String, // Decimal string like "0.3400"
+    pub value: u64,
+}
+
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+pub struct GetSettlementsResponse {
+    pub settlements: Vec<Settlement>,
+    pub cursor: String,
+}
+
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct GetTotalRestingOrderValueResponse{
-
+    total_resting_order_value: u64,//value in cents
 }
 
 #[derive(serde::Serialize,serde::Deserialize, Debug, Clone)]
