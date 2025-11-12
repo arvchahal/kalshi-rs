@@ -69,10 +69,10 @@ impl KalshiClient{
     }
 
     /// Wrapper for authenticated put requests
-    pub async fn authenticated_put<T>(&self, path: &str,json_body: Option<&T>) -> Result<String, KalshiError>
+    pub async fn authenticated_put<T>(&self, path: &str, json_body: Option<&T>) -> Result<(StatusCode, String), KalshiError>
     where
         T: serde::Serialize + ?Sized,
     {
-        helpers::authenticated_put(&self.http_client, &self.base_url, &self.account, path,json_body).await
+        helpers::authenticated_put(&self.http_client, &self.base_url, &self.account, path, json_body).await
     }
 }

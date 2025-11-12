@@ -123,7 +123,7 @@ pub(crate) async fn authenticated_put<T>(
     account: &Account,
     path: &str,
     json_body: Option<&T>,
-) -> Result<String, KalshiError>
+) -> Result<(StatusCode, String), KalshiError>
 where
     T: serde::Serialize + ?Sized,
 {
@@ -151,7 +151,7 @@ where
     if !status.is_success() {
         return Err(KalshiError::Other(format!("HTTP {}: {}", status, text)));
     }
-    Ok(text)
+    Ok((status, text))
 }
 /// Make an authenticated DELETE request
 pub(crate) async fn authenticated_delete(
