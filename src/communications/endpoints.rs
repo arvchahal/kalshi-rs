@@ -1,10 +1,11 @@
 use crate::client::KalshiClient;
 use crate::communications::models::{
-    GetCommunicationsIDResponse,GetRFQResponse, CreateQuoteRequest, CreateQuoteResponse
+    Accept, AcceptQuoteResponse, CreateQuoteRequest, CreateQuoteResponse, DeleteQuoteResponse, 
+    GetCommunicationsIDResponse, GetRFQResponse, ConfirmQuoteResponse,DeleteRFQResponse
+    
 
 };
 use crate::errors::KalshiError;
-use serde_json::json;
 
 
 const ACCEPT_QUOTE: &str = "/trade-api/v2/communications/quotes/{quote_id}/accept";
@@ -19,11 +20,24 @@ const GET_COMMUNICATIONS_ID: &str ="/trade-api/v2/communications/id";
 const GET_RFQS: &str ="/trade-api/v2/communications/rfqs";
 const CREATE_RFQ: &str ="/trade-api/v2/communications/rfqs";
 
+
+
 impl KalshiClient{
-    pub async fn accept_quote(){
+    pub async fn accept_quote(&self, quote_id: &str, accepted_side:&str)->Result<AcceptQuoteResponse,KalshiError>{
+        let accept: Accept = Accept::from_str(accepted_side).unwrap();
+        let url = ACCEPT_QUOTE.replace("{}", quote_id);
+        let resp = self.authenticated_get::<Accept>(&url, Some(&accept)).await?;
+        let data: AcceptQuoteResponse = serde_json::from_str(&resp)
+            .map_err(|e| KalshiError::Other(format!("Parse error: {e}")))?;
+        Ok(data)
 
     }
-    pub async fn confirm_quote(){
+    pub async fn confirm_quote(&self, quote_id: &str)-> Result<ConfirmQuoteResponse,KalshiError>{
+        let url = CONFIRM_QUOTE.replace("{}", quote_id);
+        let resp = self.authenticated_get::<str>(&url, None).await?;
+        let data: ConfirmQuoteResponse = serde_json::from_str(&resp)
+            .map_err(|e| KalshiError::Other(format!("Parse error: {e}")))?;
+        Ok(data)
         
     }
     pub async fn create_quote(&self, body:CreateQuoteRequest )-> Result<CreateQuoteResponse, KalshiError>{
@@ -45,10 +59,21 @@ impl KalshiClient{
     pub async fn get_quotes(){
         
     }
-    pub async fn delete_quote(){
-        
+    pub async fn delete_quote(&self, quote_id: &str)-> Result<DeleteQuoteResponse, KalshiError>{
+        let url = DELETE_QUOTE.replace("{}", quote_id);
+        let (_, resp) = self.authenticated_delete::<str>(&url, None).await?;
+        let data: DeleteQuoteResponse = serde_json::from_str(&resp)
+            .map_err(|e| KalshiError::ParseError(e))?;
+ 
+        Ok(data)
     }
-    pub async fn delete_rfq(){
+    pub async fn delete_rfq(&self, rfq_id:&str)-> Result<DeleteRFQResponse, KalshiError>{
+        let url = DELETE_RFQ.replace("{}", rfq_id);
+        let (_, resp) = self.authenticated_delete::<str>(&url, None).await?;
+        let data: DeleteRFQResponse = serde_json::from_str(&resp)
+            .map_err(|e| KalshiError::ParseError(e))?;
+ 
+        Ok(data)
         
     }
     pub async fn get_communications_id(&self)->Result<GetCommunicationsIDResponse, KalshiError>{
