@@ -137,10 +137,10 @@ pub struct GetMarketOrderbookResponse {
     yes_dollars
 )]
 pub struct Orderbook {
-    pub no: Vec<(u64, u64)>,
-    pub no_dollars: Vec<(String, u64)>,
-    pub yes: Vec<(u64, u64)>,
-    pub yes_dollars: Vec<(String, u64)>,
+    pub no: Option<Vec<(u64, u64)>>,
+    pub no_dollars: Option<Vec<(String, u64)>>,
+    pub yes: Option<Vec<(u64, u64)>>,
+    pub yes_dollars: Option<Vec<(String, u64)>>,
 }
 #[derive(Serialize)]
 pub struct OrderbookQuery {
