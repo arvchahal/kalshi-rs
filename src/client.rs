@@ -43,8 +43,10 @@ impl KalshiClient{
     }
 
     /// Wrapper for authenticated GET requests
-    pub async fn authenticated_get(&self, path: &str) -> Result<String, KalshiError> {
-        helpers::authenticated_get(&self.http_client, &self.base_url, &self.account, path).await
+    pub async fn authenticated_get<T>(&self, path: &str, body:Option<&T>) -> Result<String, KalshiError> 
+    where T:serde::Serialize +?Sized
+    {
+        helpers::authenticated_get(&self.http_client, &self.base_url, &self.account, path, body).await
     }
 
     /// Wrapper for authenticated POST requests

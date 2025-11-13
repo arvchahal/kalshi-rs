@@ -47,12 +47,17 @@ pub(crate) async fn unauthenticated_get(
 }
 
 /// Make an authenticated GET request
-pub(crate) async fn authenticated_get(
+pub(crate) async fn authenticated_get<T>(
     http_client: &Client,
     base_url: &str,
     account: &Account,
     path: &str,
-) -> Result<String, KalshiError> {
+    json_body: Option<&T>
+) -> Result<String, KalshiError> 
+    where
+        T: serde::Serialize + ?Sized
+        {
+
     let base = base_url.trim_end_matches('/');
     let url = format!("{}{}", base, path);
     let parsed = Url::parse(&url).map_err(|e| KalshiError::Other(e.to_string()))?;
@@ -60,13 +65,15 @@ pub(crate) async fn authenticated_get(
     let signed_path = parsed.path().to_string();
     let (key_id, timestamp, signature) = create_auth_headers(account, "GET", &signed_path)?;
 
-    let resp = http_client
+    let mut request = http_client
         .get(parsed.as_str())
         .header("KALSHI-ACCESS-KEY", key_id)
         .header("KALSHI-ACCESS-TIMESTAMP", &timestamp)
-        .header("KALSHI-ACCESS-SIGNATURE", signature)
-        .send()
-        .await?;
+        .header("KALSHI-ACCESS-SIGNATURE", signature);
+    if let Some(body) = json_body {
+        request = request.json(body); // sets Content-Type and serializes
+    }
+    let resp = request.send().await?;
 
     let status = resp.status();
     let body = resp.text().await?;
