@@ -42,6 +42,7 @@ pub struct Event {
     pub category: Option<String>,
     pub strike_date: Option<String>,
     pub strike_period: Option<String>,
+    #[serde(default)]
     pub markets: Vec<Market>,
     pub available_on_brokers: bool,
 }

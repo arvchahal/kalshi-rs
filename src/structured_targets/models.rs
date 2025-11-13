@@ -1,5 +1,5 @@
 use derive_more::Display;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Display, Debug, Clone)]
 #[display("StructuredTarget {{ id: {id}, name: {name}, type: {type}, source_id: {source_id}, last_updated_ts: {last_updated_ts} }}")]
@@ -24,4 +24,10 @@ pub struct GetStructuredTargetsResponse {
 #[display("GetStructuredTargetResponse {{ structured_target: {structured_target} }}")]
 pub struct GetStructuredTargetResponse {
     pub structured_target: StructuredTarget,
+}
+
+#[derive(Debug, Serialize)]
+pub struct StructuredTargetsQuery {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limit: Option<u64>,
 }

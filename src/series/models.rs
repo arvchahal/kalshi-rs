@@ -35,3 +35,11 @@ pub struct GetSeriesListResponse {
 pub struct GetSeriesResponse {
     pub series: Series,
 }
+
+#[derive(Debug, Serialize)]
+pub struct SeriesQuery<'a> {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limit: Option<u16>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cursor: Option<&'a str>,
+}

@@ -130,10 +130,16 @@ pub struct GetMarketOrderbookResponse{
 #[derive(serde::Deserialize, Display, Debug)]
 #[display("No(cents, total shares available) {:?} \nNo(dollars, shares available): {:?} \nYes(cents, total shares available) {:?} \nYes(dollars, shares available): {:?}", no, no_dollars, yes, yes_dollars)]
 pub struct Orderbook{
-    no:Vec<(u64,u64)>,
-    no_dollars:Vec<(String,u64)>,
-    yes:Vec<(u64, u64)>,
-    yes_dollars: Vec<(String,u64)>,
+    pub no:Vec<(u64,u64)>,
+    pub no_dollars:Vec<(String,u64)>,
+    pub yes:Vec<(u64, u64)>,
+    pub yes_dollars: Vec<(String,u64)>,
+}
+
+#[derive(Serialize)]
+pub struct OrderbookQuery {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub depth: Option<u128>,
 }
 
 #[derive(Debug, Clone, Deserialize, Display)]
@@ -223,24 +229,24 @@ pub struct GetTradesQuery{
 #[derive(Debug, Clone, Deserialize, Display)]
 #[display("All trades available: {:?}", trades)]
 pub struct GetTradesResponse{
-    cursor: Option<String>,
-    trades: Vec<Trade>,
+    pub cursor: Option<String>,
+    pub trades: Vec<Trade>,
 }
 
 #[derive(serde::Deserialize, Display, Debug, Clone)]
 #[display("Trade: {} {} @ ${} ({})", ticker, count, price, take_side)]
 
 pub struct Trade{
-    count: i64,
-    created_time: String,
-    no_price: u64,
-    no_price_dollars: String, 
-    price: f64,
-    take_side: String,
-    ticker: String, 
-    trade_id: String,
-    yes_price: u64,
-    yes_price_dollars: String
+    pub count: i64,
+    pub created_time: String,
+    pub no_price: u64,
+    pub no_price_dollars: String, 
+    pub price: f64,
+    pub take_side: String,
+    pub ticker: String, 
+    pub trade_id: String,
+    pub yes_price: u64,
+    pub yes_price_dollars: String
 
 }
 

@@ -4,8 +4,7 @@ use reqwest::{Client, StatusCode};
 use crate::auth::auth_loader::{get_current_timestamp_ms, sign_request};
 use crate::errors::KalshiError;
 use crate::auth::Account;
-    use chrono::{DateTime, Utc};
-use serde::Serialize;
+use chrono::{DateTime, Utc};
 
 /// Create authentication headers (key_id, timestamp, signature) for a request
 pub(crate) fn create_auth_headers(
@@ -191,7 +190,22 @@ pub(crate) async fn authenticated_delete(
 
     Ok((status,body))
 }
-///pass in base url and the query outputs the string path with query params
+
+/// DEPRECATED: Use portfolio-style manual serialization instead for better error handling.
+/// This function uses unwrap_or_default which silently hides serialization errors.
+///
+/// Preferred pattern:
+/// ```
+/// let query = serde_urlencoded::to_string(&params)
+///     .map_err(|e| KalshiError::Other(format!("Failed to serialize params: {}", e)))?;
+/// let url = if query.is_empty() {
+///     base_url.to_string()
+/// } else {
+///     format!("{}?{}", base_url, query)
+/// };
+/// ```
+#[deprecated(note = "Use portfolio-style manual serialization with explicit error handling")]
+#[allow(dead_code)]
 pub(crate) fn build_url_with_query<T:serde::Serialize>(url:String,query:&T)->String{
     let qs = serde_urlencoded::to_string(query).unwrap_or_default();
       if qs.is_empty() {

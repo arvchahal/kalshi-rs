@@ -17,3 +17,9 @@ pub struct Milestone {
     pub id: String,
     // Add other milestone fields as needed
 }
+
+#[derive(Debug, Serialize)]
+pub struct MilestonesQuery {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limit: Option<u32>,
+}

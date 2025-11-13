@@ -1,6 +1,5 @@
 use crate::client::KalshiClient;
 use crate::errors::KalshiError;
-use crate::helpers::build_url_with_query;
 use crate::portfolio::models::{
     AmendOrderResponse, BatchCancelOrdersResponse, BatchCreateOrdersResponse,
     CancelOrderResponse, CreateOrderResponse, CreateOrderGroupResponse,
