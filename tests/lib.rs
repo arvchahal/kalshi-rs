@@ -6,3 +6,4 @@ pub mod markets_test;
 pub mod portfolio_test;
 pub mod api_keys_test;
 pub mod communications_test;
+pub mod multivariate_collections_test;
