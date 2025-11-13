@@ -12,10 +12,10 @@ pub struct CreateQuoteResponse {
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateQuoteRequest {
-    rfq_id: String,
-    yes_bid: String,
-    no_bid: String,
-    rest_remainder: bool,
+    pub rfq_id: String,
+    pub yes_bid: String,
+    pub no_bid: String,
+    pub rest_remainder: bool,
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DeleteQuoteResponse {
