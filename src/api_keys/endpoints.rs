@@ -25,7 +25,7 @@ impl KalshiClient {
     /// GET /api-keys
     /// List all API keys for the authenticated user
     pub async fn get_api_keys(&self) -> Result<Vec<ApiKey>, KalshiError> {
-        let body: String = self.authenticated_get(GET_API_KEY).await?;
+        let body: String = self.authenticated_get::<str>(GET_API_KEY, None).await?;
 
         let data: ListApiKeysResponse = serde_json::from_str(&body)
             .map_err(|e| KalshiError::Other(format!("Parse error: {e}. Body: {body}")))?;
