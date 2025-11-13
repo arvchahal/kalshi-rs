@@ -20,3 +20,6 @@ sha = "1.0.3"
 url = "2.5.7"
 chrono = "0.4.42"
 serde_urlencoded = "0.7.1"
+prettyplease = "0.2"
+syn = { version = "2", features = ["full", "parsing"] }
+walkdir = "2"

@@ -1,18 +1,16 @@
-pub mod markets;
+pub mod api_keys;
 pub mod auth;
 pub mod client;
-pub mod api_keys;
-pub mod exchange;
-pub mod milestones;
+pub mod communications;
 pub mod errors;
+pub mod events;
+pub mod exchange;
+pub(crate) mod helpers;
+pub mod markets;
+pub mod milestones;
+pub mod multivariate_collections;
 pub mod portfolio;
 pub mod series;
-pub mod events;
 pub mod structured_targets;
-pub mod multivariate_collections;
-pub mod communications;
-pub(crate) mod helpers;
-
-// Re-export commonly used types
-pub use client::KalshiClient;
 pub use auth::Account;
+pub use client::KalshiClient;

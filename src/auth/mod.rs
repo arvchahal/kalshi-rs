@@ -1,5 +1,3 @@
-pub mod models;
 pub mod auth_loader;
-
-// Re-export for convenience
+pub mod models;
 pub use models::Account;
