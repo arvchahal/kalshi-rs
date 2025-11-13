@@ -8,3 +8,4 @@ pub mod api_keys_test;
 pub mod communications_test;
 pub mod multivariate_collections_test;
 pub mod milestones_test;
+pub mod series_test;
