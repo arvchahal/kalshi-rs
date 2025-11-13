@@ -1,5 +1,5 @@
 use crate::client::KalshiClient;
-use crate::api_keys::models::{ApiKey, DeleteApiKeyResponse, CreateApiKeyResponse, ListApiKeysResponse};
+use crate::communications::models::{GetCommunicationsIDResponse,GetRFQResponse};
 use crate::errors::KalshiError;
 use serde_json::json;
 
@@ -16,36 +16,46 @@ const GET_COMMUNICATIONS_ID: &str ="/trade-api/v2/communications/id";
 const GET_RFQS: &str ="/trade-api/v2/communications/rfqs";
 const CREATE_RFQ: &str ="/trade-api/v2/communications/rfqs";
 
-pub async fn accept_quote(){
+impl KalshiClient{
+    pub async fn accept_quote(){
 
-}
-pub async fn confirm_quote(){
-    
-}
-pub async fn create_quote(){
-    
-}
-pub async fn get_rfq(){
-    
-}
-pub async fn get_quotes(){
-    
-}
-pub async fn delete_quote(){
-    
-}
-pub async fn delete_rfq(){
-    
-}
-pub async fn get_communications_id(){
-    
-}
-pub async fn get_rfqs(){
-    
-}
-pub async fn get_quote(){
-    
-}
-pub async fn create_rfq(){
-    
+    }
+    pub async fn confirm_quote(){
+        
+    }
+    pub async fn create_quote(){
+        
+    }
+    pub async fn get_rfq(&self, rfq_id:&str)->Result<GetRFQResponse,KalshiError>{
+        let url = GET_RFQ.replace("{}", rfq_id);
+        let resp = self.authenticated_get(&url).await?;
+        let data: GetRFQResponse = serde_json::from_str(&resp)
+            .map_err(|e| KalshiError::Other(format!("Parse error: {e}")))?;
+        Ok(data)
+        
+    }
+    pub async fn get_quotes(){
+        
+    }
+    pub async fn delete_quote(){
+        
+    }
+    pub async fn delete_rfq(){
+        
+    }
+    pub async fn get_communications_id(&self)->Result<GetCommunicationsIDResponse, KalshiError>{
+        let resp = self.authenticated_get(GET_COMMUNICATIONS_ID).await?;
+        let data: GetCommunicationsIDResponse = serde_json::from_str(&resp)
+            .map_err(|e| KalshiError::Other(format!("Parse error: {e}")))?;
+        Ok(data)
+    }
+    pub async fn get_rfqs(){
+        
+    }
+    pub async fn get_quote(){
+        
+    }
+    pub async fn create_rfq(){
+        
+    }
 }

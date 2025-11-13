@@ -24,8 +24,6 @@ pub fn load_auth_from_file() -> io::Result<Account> {
             io::Error::new(io::ErrorKind::NotFound, "KALSHI_API_KEY_ID environment variable not set")
         })?;
 
-    println!("{} is set.", api_key_id);
-
     // Read the private key PEM file directly
     // This file should contain the RSA private key in PEM format:
     // -----BEGIN RSA PRIVATE KEY----- or -----BEGIN PRIVATE KEY-----

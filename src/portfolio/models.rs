@@ -158,7 +158,7 @@ pub struct DecreaseOrderRequest{
 pub struct GetBalanceResponse{
     pub balance:u64,
     pub portfolio_value:u64,
-    pub updated_ts:String,
+    pub updated_ts:u64, // Unix timestamp in milliseconds
 }
 
 #[derive(serde::Serialize, Default, Debug, Clone)]
@@ -182,15 +182,15 @@ pub struct Fill {
     pub fill_id: String,
     pub trade_id: String,
     pub order_id: String,
-    pub client_order_id: String,
+    pub client_order_id: Option<String>,
     pub ticker: String,
     pub market_ticker: String,
     pub side: String, // "yes" | "no"
     pub action: String, // "buy" | "sell"
     pub count: u64,
-    pub price: u64,
-    pub yes_price: u64,
-    pub no_price: u64,
+    pub price: f64, // Decimal price
+    pub yes_price: f64, // Decimal price
+    pub no_price: f64, // Decimal price
     pub yes_price_fixed: String,
     pub no_price_fixed: String,
     pub is_taker: bool,
@@ -276,24 +276,24 @@ pub struct GetPositionsParams {
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct MarketPosition {
-    pub market_ticker: String,
-    pub position: i64,
-    pub market_exposure: i64,
-    pub realized_pnl: i64,
-    pub fees_paid: u64, // Fees are always positive costs
-    pub resting_order_count: u64,
-    pub total_traded: u64,
+    pub market_ticker: Option<String>,
+    pub position: Option<i64>,
+    pub market_exposure:Option<i64>,
+    pub realized_pnl: Option<i64>,
+    pub fees_paid: Option<u64>, // Fees are always positive costs
+    pub resting_order_count: Option<u64>,
+    pub total_traded: Option<u64>,
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct EventPosition {
-    pub event_ticker: String,
-    pub position: i64,
-    pub event_exposure: i64,
-    pub realized_pnl: i64,
-    pub fees_paid: u64, // Fees are always positive costs
-    pub resting_order_count: u64,
-    pub total_traded: u64,
+    pub event_ticker: Option<String>,
+    pub position: Option<i64>,
+    pub event_exposure: Option<i64>,
+    pub realized_pnl: Option<i64>,
+    pub fees_paid: Option<u64>, // Fees are always positive costs
+    pub resting_order_count: Option<u64>,
+    pub total_traded: Option<u64>,
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
@@ -304,10 +304,8 @@ pub struct GetPositionsResponse {
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
-
 pub struct GetQueuePositionsResponse{
-    queue_positions: Vec<QueuePositionObj>
-
+    pub queue_positions: Vec<QueuePositionObj>
 }
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct QueuePositionObj{
@@ -347,7 +345,8 @@ pub struct Settlement {
     pub no_total_cost: u64,
     pub revenue: i64, // Can be negative for losses
     pub settled_time: String, // ISO 8601 format: "2023-11-07T05:31:56Z"
-    pub fee_cost: String, // Decimal string like "0.3400"
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fee_cost: Option<String>, // Decimal string like "0.3400"
     pub value: u64,
 }
 
@@ -359,7 +358,7 @@ pub struct GetSettlementsResponse {
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct GetTotalRestingOrderValueResponse{
-    total_resting_order_value: u64,//value in cents
+    pub total_resting_order_value: u64,//value in cents
 }
 
 #[derive(serde::Serialize,serde::Deserialize, Debug, Clone)]
