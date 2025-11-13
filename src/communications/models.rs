@@ -47,3 +47,114 @@ impl Accept {
 pub struct ConfirmQuoteResponse {
     pub body: Option<String>,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CreateRFQRequest {
+    pub market_ticker: String,
+    pub rest_remainder: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub contracts: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub target_cost_centi_cents: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub replace_existing: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub subtrader_id: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CreateRFQResponse {
+    pub id: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GetRFQsResponse {
+    pub rfqs: Vec<RFQ>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cursor: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RFQ {
+    pub id: String,
+    pub market_ticker: String,
+    pub rest_remainder: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub contracts: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub target_cost_centi_cents: Option<i32>,
+    pub created_time: String,
+    pub status: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct GetQuotesQuery<'a> {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cursor: Option<&'a str>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub event_ticker: Option<&'a str>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub market_ticker: Option<&'a str>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limit: Option<u16>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub status: Option<&'a str>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub quote_creator_user_id: Option<&'a str>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub rfq_creator_user_id: Option<&'a str>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub rfq_id: Option<&'a str>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GetQuotesResponse {
+    pub quotes: Vec<Quote>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cursor: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GetQuoteResponse {
+    pub quote: Quote,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Quote {
+    pub id: String,
+    pub rfq_id: String,
+    pub creator_id: String,
+    pub rfq_creator_id: String,
+    pub market_ticker: String,
+    pub contracts: i32,
+    pub yes_bid: i32,
+    pub no_bid: i32,
+    pub created_ts: String,
+    pub updated_ts: String,
+    pub status: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub accepted_side: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub accepted_ts: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub confirmed_ts: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub executed_ts: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cancelled_ts: Option<String>,
+    pub rest_remainder: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cancellation_reason: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub creator_user_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub rfq_creator_user_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expired_ts: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub rfq_target_cost_centi_cents: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub rfq_creator_order_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub creator_order_id: Option<String>,
+}

@@ -1,8 +1,9 @@
 use crate::client::KalshiClient;
 use crate::communications::models::{
     Accept, AcceptQuoteResponse, ConfirmQuoteResponse, CreateQuoteRequest,
-    CreateQuoteResponse, DeleteQuoteResponse, DeleteRFQResponse,
-    GetCommunicationsIDResponse, GetRFQResponse,
+    CreateQuoteResponse, CreateRFQRequest, CreateRFQResponse, DeleteQuoteResponse,
+    DeleteRFQResponse, GetCommunicationsIDResponse, GetQuoteResponse, GetQuotesQuery,
+    GetQuotesResponse, GetRFQResponse, GetRFQsResponse,
 };
 use crate::errors::KalshiError;
 const ACCEPT_QUOTE: &str = "/trade-api/v2/communications/quotes/{quote_id}/accept";
@@ -57,7 +58,45 @@ impl KalshiClient {
             .map_err(|e| KalshiError::Other(format!("Parse error: {e}")))?;
         Ok(data)
     }
-    pub async fn get_quotes() {}
+
+    /// GET /trade-api/v2/communications/quotes
+    /// Returns all quotes matching the query criteria
+    pub async fn get_quotes(
+        &self,
+        cursor: Option<&str>,
+        event_ticker: Option<&str>,
+        market_ticker: Option<&str>,
+        limit: Option<u16>,
+        status: Option<&str>,
+        quote_creator_user_id: Option<&str>,
+        rfq_creator_user_id: Option<&str>,
+        rfq_id: Option<&str>,
+    ) -> Result<GetQuotesResponse, KalshiError> {
+        let params = GetQuotesQuery {
+            cursor,
+            event_ticker,
+            market_ticker,
+            limit,
+            status,
+            quote_creator_user_id,
+            rfq_creator_user_id,
+            rfq_id,
+        };
+
+        let query = serde_urlencoded::to_string(&params)
+            .map_err(|e| KalshiError::Other(format!("Failed to serialize params: {}", e)))?;
+
+        let url = if query.is_empty() {
+            GET_QUOTES.to_string()
+        } else {
+            format!("{}?{}", GET_QUOTES, query)
+        };
+
+        let resp = self.authenticated_get::<str>(&url, None).await?;
+        let data: GetQuotesResponse = serde_json::from_str(&resp)
+            .map_err(|e| KalshiError::Other(format!("Parse error: {e}. Response: {resp}")))?;
+        Ok(data)
+    }
     pub async fn delete_quote(
         &self,
         quote_id: &str,
@@ -86,7 +125,35 @@ impl KalshiClient {
             .map_err(|e| KalshiError::Other(format!("Parse error: {e}")))?;
         Ok(data)
     }
-    pub async fn get_rfqs() {}
-    pub async fn get_quote() {}
-    pub async fn create_rfq() {}
+
+    /// GET /trade-api/v2/communications/rfqs
+    /// Returns all RFQs for the authenticated user
+    pub async fn get_rfqs(&self) -> Result<GetRFQsResponse, KalshiError> {
+        let resp = self.authenticated_get::<str>(GET_RFQS, None).await?;
+        let data: GetRFQsResponse = serde_json::from_str(&resp)
+            .map_err(|e| KalshiError::Other(format!("Parse error: {e}. Response: {resp}")))?;
+        Ok(data)
+    }
+
+    /// POST /trade-api/v2/communications/rfqs
+    /// Creates a new RFQ. You can have a maximum of 100 open RFQs at a time.
+    pub async fn create_rfq(
+        &self,
+        body: &CreateRFQRequest,
+    ) -> Result<CreateRFQResponse, KalshiError> {
+        let resp = self.authenticated_post(CREATE_RFQ, Some(body)).await?;
+        let data: CreateRFQResponse = serde_json::from_str(&resp)
+            .map_err(|e| KalshiError::Other(format!("Parse error: {e}. Response: {resp}")))?;
+        Ok(data)
+    }
+
+    /// GET /trade-api/v2/communications/quotes/{quote_id}
+    /// Gets a single quote by its ID
+    pub async fn get_quote(&self, quote_id: &str) -> Result<GetQuoteResponse, KalshiError> {
+        let url = GET_QUOTE.replace("{}", quote_id);
+        let resp = self.authenticated_get::<str>(&url, None).await?;
+        let data: GetQuoteResponse = serde_json::from_str(&resp)
+            .map_err(|e| KalshiError::Other(format!("Parse error: {e}. Response: {resp}")))?;
+        Ok(data)
+    }
 }
