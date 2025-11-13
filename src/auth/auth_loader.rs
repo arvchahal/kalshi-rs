@@ -12,7 +12,6 @@ use std::time::{SystemTime, UNIX_EPOCH};
 const PRIVATE_KEY_FILE: &str = "kalshi_private.pem";
 const KALSHI_API_KEY_ID: &str = "KALSHI_API_KEY_ID";
 pub fn load_auth_from_file() -> io::Result<Account> {
-    println!("{}", env::current_dir() ?.display());
     let api_key_id = env::var(KALSHI_API_KEY_ID)
         .map_err(|_| {
             eprintln!("{} is not set. Exiting.", KALSHI_API_KEY_ID);

@@ -22,7 +22,7 @@ impl KalshiClient {
         let resp = self.unauthenticated_get(&url).await?;
         let data: GetSeriesListResponse = serde_json::from_str(&resp)
             .map_err(|e| KalshiError::Other(
-                format!("Parse error: {e}. Response: {resp}"),
+                format!("Parse error: {e}."),
             ))?;
         Ok(data)
     }
@@ -34,7 +34,7 @@ impl KalshiClient {
         let resp = self.unauthenticated_get(&url).await?;
         let data: GetSeriesResponse = serde_json::from_str(&resp)
             .map_err(|e| KalshiError::Other(
-                format!("Parse error: {e}. Response: {resp}"),
+                format!("Parse error: {e}. Response {resp}"),
             ))?;
         Ok(data)
     }

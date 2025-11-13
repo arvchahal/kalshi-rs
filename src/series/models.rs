@@ -3,8 +3,8 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SettlementSource {
-    pub name: String,
-    pub url: String,
+    pub name: Option<String>,
+    pub url: Option<String>,
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Series {
@@ -12,14 +12,24 @@ pub struct Series {
     pub frequency: String,
     pub title: String,
     pub category: String,
-    pub tags: Vec<String>,
-    pub settlement_sources: Vec<SettlementSource>,
-    pub contract_url: String,
-    pub contract_terms_url: String,
-    pub product_metadata: HashMap<String, String>,
+
+    #[serde(default)]
+    pub tags: Option<Vec<String>>,
+
+    #[serde(default)]
+    pub settlement_sources: Option<Vec<SettlementSource>>,
+
+    pub contract_url: Option<String>,
+    pub contract_terms_url: Option<String>,
+
     pub fee_type: String,
-    pub fee_multiplier: u32,
-    pub additional_prohibitions: Vec<String>,
+    pub fee_multiplier: f32,
+
+    #[serde(default)]
+    pub additional_prohibitions: Option<Vec<String>>,
+
+    #[serde(default)]
+    pub product_metadata: Option<serde_json::Value>,
 }
 #[derive(Debug, Clone, Serialize, Deserialize, Display)]
 #[display("All series retrieved ({}) entries", series.len())]

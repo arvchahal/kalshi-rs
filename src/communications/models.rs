@@ -1,8 +1,8 @@
-use derive_more::Display;
 use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetCommunicationsIDResponse {
-    pub communcation_id: String,
+    #[serde(alias = "communcation_id")]
+    pub communications_id: String,
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetRFQResponse {}
@@ -78,12 +78,14 @@ pub struct GetRFQsResponse {
 pub struct RFQ {
     pub id: String,
     pub market_ticker: String,
-    pub rest_remainder: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub rest_remainder: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub contracts: Option<i32>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub target_cost_centi_cents: Option<i32>,
-    pub created_time: String,
+    #[serde(alias = "created_time")]
+    pub created_ts: String,
     pub status: String,
 }
 

@@ -10,15 +10,9 @@ async fn test_get_all_series() {
     assert!(result.is_ok(), "fail to get all series: {:?}", result.err());
 
     let resp = result.unwrap();
-    println!("fetched {} series", resp.series.len());
-
-    if let Some(first) = resp.series.first() {
-        println!("sample series: {} ({})", first.ticker, first.title);
-    }
-
     assert!(
         !resp.series.is_empty(),
-        " expected at >=1 series to be returned"
+        "expected at least 1 series to be returned"
     );
 }
 
@@ -32,23 +26,18 @@ async fn test_get_single_series() {
         .expect("Failed to fetch series list");
 
     if list.series.is_empty() {
-        println!("No series available; skipping single series test");
         return;
     }
 
-    let ticker = &list.series[0].ticker;
+    sleep(Duration::from_secs(2)).await;
+
+    let ticker = "KXATTYGENID";
     let result = client.get_series_by_ticker(ticker).await;
     assert!(
         result.is_ok(),
         "fail to get series by ticker {}: {:?}",
         ticker,
         result.err()
-    );
-
-    let resp = result.unwrap();
-    println!(
-        "found series {} (category: {})",
-        resp.series.ticker, resp.series.category
     );
 }
 
@@ -61,22 +50,13 @@ async fn test_series_endpoints_all() {
         .await
         .expect("Failed to list series");
 
-    println!("Retrieved {} total series", list.series.len());
     sleep(Duration::from_secs(2)).await;
 
     if let Some(first) = list.series.first() {
         let ticker = &first.ticker;
-        println!("Fetching series details for ticker: {}", ticker);
-
-        let details = client
+        let _details = client
             .get_series_by_ticker(ticker)
             .await
             .expect("Failed to get series details");
-
-        println!("Series title: {}", details.series.title);
-        println!("Category: {}", details.series.category);
-        println!("Tags: {:?}", details.series.tags);
-    } else {
-        println!("None found");
     }
 }
