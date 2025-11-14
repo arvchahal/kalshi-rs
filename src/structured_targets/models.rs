@@ -2,7 +2,7 @@ use derive_more::Display;
 use serde::{Deserialize, Serialize};
 #[derive(Deserialize, Display, Debug, Clone)]
 #[display(
-    "StructuredTarget {{ id: {id}, name: {name}, type: {type}, source_id: {source_id}, last_updated_ts: {last_updated_ts} }}"
+    "StructuredTarget {{ id: {id}, name: {name}, type: {type}, source_id: {source_id:?}, last_updated_ts: {last_updated_ts} }}"
 )]
 pub struct StructuredTarget {
     pub id: String,
@@ -10,7 +10,7 @@ pub struct StructuredTarget {
     #[serde(rename = "type")]
     pub r#type: String,
     pub details: serde_json::Value,
-    pub source_id: String,
+    pub source_id: Option<String>,
     pub last_updated_ts: String,
 }
 #[derive(Deserialize, Display, Debug, Clone)]
@@ -27,7 +27,9 @@ pub struct GetStructuredTargetResponse {
     pub structured_target: StructuredTarget,
 }
 #[derive(Debug, Serialize)]
-pub struct StructuredTargetsQuery {
+pub struct StructuredTargetsQuery<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub limit: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cursor: Option<&'a str>,
 }
