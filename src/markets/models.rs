@@ -41,7 +41,7 @@ pub struct Market {
     pub previous_price_dollars: String,
     pub volume: u64,
     pub volume_24h: u64,
-    pub liquidity: u32,
+    pub liquidity: i64,
     pub liquidity_dollars: String,
     pub open_interest: u32,
     pub can_close_early: bool,

@@ -19,7 +19,9 @@ pub struct AmendOrderResponse {
     pub old_order: Order,
     pub order: Order,
 }
-#[derive(Deserialize, Debug, Clone, Serialize)]
+#[derive(Deserialize, Debug, Clone, Serialize, Display)]
+#[display("order number {}, user number {}, side {}", order_id, user_id, side)]
+
 pub struct Order {
     pub order_id: String,
     pub user_id: String,
@@ -104,7 +106,8 @@ pub struct CreateOrderRequest {
     pub order_group_id: Option<String>,
     pub cancel_order_on_pause: Option<bool>,
 }
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone, Display)]
+#[display("order: {}", order)]
 pub struct CreateOrderResponse {
     pub order: Order,
 }
