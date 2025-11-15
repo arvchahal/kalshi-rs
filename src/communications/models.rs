@@ -90,23 +90,23 @@ pub struct RFQ {
 }
 
 #[derive(Debug, Serialize)]
-pub struct GetQuotesQuery<'a> {
+pub struct GetQuotesQuery {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub cursor: Option<&'a str>,
+    pub cursor: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub event_ticker: Option<&'a str>,
+    pub event_ticker: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub market_ticker: Option<&'a str>,
+    pub market_ticker: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub limit: Option<u16>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub status: Option<&'a str>,
+    pub status: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub quote_creator_user_id: Option<&'a str>,
+    pub quote_creator_user_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub rfq_creator_user_id: Option<&'a str>,
+    pub rfq_creator_user_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub rfq_id: Option<&'a str>,
+    pub rfq_id: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

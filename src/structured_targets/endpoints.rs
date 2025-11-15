@@ -11,7 +11,7 @@ impl KalshiClient {
         limit: Option<u64>,
         cursor: Option<&str>,
     ) -> Result<GetStructuredTargetsResponse, KalshiError> {
-        let params = StructuredTargetsQuery { limit, cursor };
+        let params = StructuredTargetsQuery { limit, cursor: cursor.map(|s| s.to_string()) };
         let query = serde_urlencoded::to_string(&params)
             .map_err(|e| KalshiError::Other(
                 format!("Failed to serialize params: {}", e),

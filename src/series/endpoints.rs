@@ -9,7 +9,7 @@ impl KalshiClient {
         limit: Option<u16>,
         cursor: Option<&str>,
     ) -> Result<GetSeriesListResponse, KalshiError> {
-        let params = SeriesQuery { limit, cursor };
+        let params = SeriesQuery { limit, cursor: cursor.map(|s| s.to_string()) };
         let query = serde_urlencoded::to_string(&params)
             .map_err(|e| KalshiError::Other(
                 format!("Failed to serialize params: {}", e),

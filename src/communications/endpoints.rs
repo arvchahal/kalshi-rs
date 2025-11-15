@@ -73,14 +73,14 @@ impl KalshiClient {
         rfq_id: Option<&str>,
     ) -> Result<GetQuotesResponse, KalshiError> {
         let params = GetQuotesQuery {
-            cursor,
-            event_ticker,
-            market_ticker,
+            cursor: cursor.map(|s| s.to_string()),
+            event_ticker: event_ticker.map(|s| s.to_string()),
+            market_ticker: market_ticker.map(|s| s.to_string()),
             limit,
-            status,
-            quote_creator_user_id,
-            rfq_creator_user_id,
-            rfq_id,
+            status: status.map(|s| s.to_string()),
+            quote_creator_user_id: quote_creator_user_id.map(|s| s.to_string()),
+            rfq_creator_user_id: rfq_creator_user_id.map(|s| s.to_string()),
+            rfq_id: rfq_id.map(|s| s.to_string()),
         };
 
         let query = serde_urlencoded::to_string(&params)

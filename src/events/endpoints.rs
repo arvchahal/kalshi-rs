@@ -1,7 +1,7 @@
 use crate::client::KalshiClient;
 use crate::errors::KalshiError;
 use crate::events::models::{
-    GetEventMetadataResponse, GetEventResponse, GetEventsResponse,
+    EventsQuery, GetEventMetadataResponse, GetEventResponse, GetEventsResponse,
 };
 const GET_EVENTS: &str = "/trade-api/v2/events";
 const GET_EVENT: &str = "/trade-api/v2/events/{}";
@@ -11,20 +11,14 @@ impl KalshiClient {
     /// Returns all available events (optionally filterable by limit, cursor, etc.)
     pub async fn get_all_events(
         &self,
-        limit: Option<u16>,
-        cursor: Option<&str>,
+        params: &EventsQuery,
     ) -> Result<GetEventsResponse, KalshiError> {
-        let mut params = vec![];
-        if let Some(l) = limit {
-            params.push(format!("limit={}", l));
-        }
-        if let Some(c) = cursor {
-            params.push(format!("cursor={}", c));
-        }
-        let url = if params.is_empty() {
+        let query = serde_urlencoded::to_string(params)
+            .map_err(|e| KalshiError::Other(format!("Failed to serialize params: {}", e)))?;
+        let url = if query.is_empty() {
             GET_EVENTS.to_string()
         } else {
-            format!("{}?{}", GET_EVENTS, params.join("&"))
+            format!("{}?{}", GET_EVENTS, query)
         };
         let resp = self.unauthenticated_get(&url).await?;
         let data: GetEventsResponse = serde_json::from_str(&resp)

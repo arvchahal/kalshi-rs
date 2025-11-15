@@ -42,9 +42,9 @@ pub struct GetSeriesResponse {
     pub series: Series,
 }
 #[derive(Debug, Serialize)]
-pub struct SeriesQuery<'a> {
+pub struct SeriesQuery {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub limit: Option<u16>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub cursor: Option<&'a str>,
+    pub cursor: Option<String>,
 }

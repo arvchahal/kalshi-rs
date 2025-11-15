@@ -27,9 +27,9 @@ pub struct GetStructuredTargetResponse {
     pub structured_target: StructuredTarget,
 }
 #[derive(Debug, Serialize)]
-pub struct StructuredTargetsQuery<'a> {
+pub struct StructuredTargetsQuery {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub limit: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub cursor: Option<&'a str>,
+    pub cursor: Option<String>,
 }

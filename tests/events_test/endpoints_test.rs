@@ -8,7 +8,8 @@ use tokio::time::sleep;
 #[tokio::test]
 async fn test_get_all_events_basic() {
     let client = setup_client();
-    let result = client.get_all_events(Some(10), None).await;
+    let params = EventsQuery { limit: Some(10), cursor: None };
+    let result = client.get_all_events(&params).await;
     assert!(result.is_ok(), "Failed to get all events: {:?}", result.err());
     let response = result.unwrap();
     println!("Events retrieved: {}", response.events.len());
@@ -24,13 +25,15 @@ async fn test_get_all_events_basic() {
 #[tokio::test]
 async fn test_get_all_events_with_cursor() {
     let client = setup_client();
-    let batch = client.get_all_events(Some(3), None).await.unwrap();
+    let params = EventsQuery { limit: Some(3), cursor: None };
+    let batch = client.get_all_events(&params).await.unwrap();
     if batch.events.is_empty() {
         println!("No events available - skipping cursor pagination test");
         return;
     }
     println!("Testing pagination with limit=3");
-    let next = client.get_all_events(Some(3), Some("abc123")).await;
+    let params2 = EventsQuery { limit: Some(3), cursor: Some("abc123".to_string()) };
+    let next = client.get_all_events(&params2).await;
     assert!(
         next.is_ok() || next.is_err(), "Pagination should succeed or gracefully fail"
     );
@@ -42,7 +45,8 @@ async fn test_get_all_events_with_cursor() {
 #[tokio::test]
 async fn test_get_event_single() {
     let client = setup_client();
-    let events = client.get_all_events(Some(1), None).await.unwrap();
+    let params = EventsQuery { limit: Some(1), cursor: None };
+    let events = client.get_all_events(&params).await.unwrap();
     if events.events.is_empty() {
         println!("No events available - skipping single event test");
         return;
@@ -60,7 +64,8 @@ async fn test_get_event_single() {
 #[tokio::test]
 async fn test_get_event_with_markets_check() {
     let client = setup_client();
-    let events = client.get_all_events(Some(1), None).await.unwrap();
+    let params = EventsQuery { limit: Some(1), cursor: None };
+    let events = client.get_all_events(&params).await.unwrap();
     if events.events.is_empty() {
         println!("No events available - skipping markets check test");
         return;
@@ -78,7 +83,8 @@ async fn test_get_event_with_markets_check() {
 #[tokio::test]
 async fn test_get_event_metadata() {
     let client = setup_client();
-    let events = client.get_all_events(Some(1), None).await.unwrap();
+    let params = EventsQuery { limit: Some(1), cursor: None };
+    let events = client.get_all_events(&params).await.unwrap();
     if events.events.is_empty() {
         println!("No events available - skipping metadata test");
         return;
@@ -106,8 +112,9 @@ async fn test_events_endpoints_comprehensive() {
     println!("COMPREHENSIVE EVENTS ENDPOINTS TEST");
     println!("{}\n", "=".repeat(80));
     println!("1. Getting all events...");
+    let params = EventsQuery { limit: Some(5), cursor: None };
     let events = client
-        .get_all_events(Some(5), None)
+        .get_all_events(&params)
         .await
         .expect("Failed to get all events");
     println!("   Retrieved {} events\n", events.events.len());

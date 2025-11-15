@@ -116,7 +116,7 @@ fn test_structured_targets_query_no_limit() {
 fn test_structured_targets_query_with_cursor() {
     let query = StructuredTargetsQuery {
         limit: Some(5),
-        cursor: Some("test-cursor-123"),
+        cursor: Some("test-cursor-123".to_string()),
     };
     let serialized = serde_urlencoded::to_string(&query).unwrap();
     assert_eq!(serialized, "limit=5&cursor=test-cursor-123");
@@ -126,7 +126,7 @@ fn test_structured_targets_query_with_cursor() {
 fn test_structured_targets_query_cursor_only() {
     let query = StructuredTargetsQuery {
         limit: None,
-        cursor: Some("cursor-abc"),
+        cursor: Some("cursor-abc".to_string()),
     };
     let serialized = serde_urlencoded::to_string(&query).unwrap();
     assert_eq!(serialized, "cursor=cursor-abc");

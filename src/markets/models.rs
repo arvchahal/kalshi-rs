@@ -106,21 +106,21 @@ pub struct GetMarketResponse {
     pub market: Market,
 }
 #[derive(Serialize)]
-pub struct MarketsQuery<'a> {
+pub struct MarketsQuery {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub limit: Option<u16>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub cursor: Option<&'a str>,
+    pub cursor: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub event_ticker: Option<&'a str>,
+    pub event_ticker: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub series_ticker: Option<&'a str>,
+    pub series_ticker: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub max_close_ts: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub min_close_ts: Option<i64>,
     #[serde(rename = "statuses", skip_serializing_if = "Option::is_none")]
-    pub status: Option<&'a str>,
+    pub status: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tickers: Option<String>,
 }
@@ -388,12 +388,12 @@ mod tests {
     fn test_markets_query_serialization() {
         let query = MarketsQuery {
             limit: Some(10),
-            cursor: Some("abc123"),
+            cursor: Some("abc123".to_string()),
             event_ticker: None,
             series_ticker: None,
             max_close_ts: None,
             min_close_ts: None,
-            status: Some("active"),
+            status: Some("active".to_string()),
             tickers: None,
         };
         let encoded = serde_urlencoded::to_string(&query).unwrap();

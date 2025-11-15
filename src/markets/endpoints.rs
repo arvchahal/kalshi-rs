@@ -11,28 +11,10 @@ const GET_TRADES: &str = "/trade-api/v2/markets/trades";
 const GET_MARKET_ORDERBOOK: &str = "/trade-api/v2/markets/{}/orderbook";
 const GET_MARKET_CANDLESTICKS: &str = "/trade-api/v2/series/{}/markets/{}/candlesticks";
 impl KalshiClient {
-    ///might need to refactor into a macro for better function overloading not currently supported in rust
     pub async fn get_all_markets(
         &self,
-        limit: Option<u16>,
-        cursor: Option<&str>,
-        event_ticker: Option<&str>,
-        series_ticker: Option<&str>,
-        max_close_ts: Option<i64>,
-        min_close_ts: Option<i64>,
-        status: Option<&str>,
-        tickers: Option<&[&str]>,
+        params: &MarketsQuery,
     ) -> Result<GetMarketsResponse, KalshiError> {
-        let params = MarketsQuery {
-            limit,
-            cursor,
-            event_ticker,
-            series_ticker,
-            max_close_ts,
-            min_close_ts,
-            status,
-            tickers: tickers.map(|t| t.join(",")),
-        };
         let query = serde_urlencoded::to_string(&params)
             .map_err(|e| KalshiError::Other(
                 format!("Failed to serialize params: {}", e),
@@ -123,7 +105,6 @@ impl KalshiClient {
         } else {
             format!("{}?{}", base_url, query)
         };
-        println!("{}", url);
         let resp = self.unauthenticated_get(&url).await?;
         let data: GetMarketOrderbookResponse = serde_json::from_str(&resp)
             .map_err(|e| {
@@ -160,7 +141,6 @@ impl KalshiClient {
         } else {
             format!("{}?{}", base_url, query)
         };
-        println!("{}", url);
         let resp = self.unauthenticated_get(&url).await?;
         let data: GetMarketCandlesticksResponse = serde_json::from_str(&resp)
             .map_err(|e| {
