@@ -1,6 +1,50 @@
-// Kalshi Rust SDK
-// Unofficial SDK for interacting with the Kalshi trading API
-// Provides authentication, market data, portfolio management, and trading functionality
+//! Kalshi Rust SDK
+//!
+//! Unofficial Rust SDK for interacting with the Kalshi trading API.
+//! Provides authentication, market data retrieval, portfolio management, and trading functionality.
+//!
+//! # Quick Start
+//!
+//! ```no_run
+//! use kalshi_rust_sdk::{Account, KalshiClient};
+//! use kalshi_rust_sdk::markets::models::MarketsQuery;
+//!
+//! # async fn example() -> Result<(), Box<dyn std::error::Error>> {
+//! // 1. Load your API credentials
+//! let account = Account::from_file("kalshi_private.pem", "your-api-key-id")?;
+//!
+//! // 2. Create a client
+//! let client = KalshiClient::new(account);
+//!
+//! // 3. Use the client to call API endpoints
+//! let markets = client.get_all_markets(&MarketsQuery {
+//!     limit: Some(10),
+//!     status: Some("open".to_string()),
+//!     ..Default::default()
+//! }).await?;
+//!
+//! println!("Found {} markets", markets.markets.len());
+//! # Ok(())
+//! # }
+//! ```
+//!
+//! # Main Components
+//!
+//! - [`KalshiClient`] - Main client with all API endpoint methods
+//! - [`Account`] - Authentication credentials
+//!
+//! # API Endpoint Modules
+//!
+//! - [`markets`] - Market data, orderbooks, candlesticks, trades
+//! - [`portfolio`] - Orders, positions, fills, balance
+//! - [`exchange`] - Exchange status and schedule
+//! - [`events`] - Event information
+//! - [`series`] - Series data
+//!
+//! # Finding Endpoint Methods
+//!
+//! All API endpoint methods are implemented on [`KalshiClient`].
+//! Navigate to the [`KalshiClient`] documentation to see all available methods organized by category.
 
 
 // Core modules

@@ -1,3 +1,7 @@
+//! Structured_targets module models.
+//!
+//! This module contains data structures for structured_targets functionality.
+
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
 
@@ -6,6 +10,8 @@ use serde::{Deserialize, Serialize};
 #[display(
     "StructuredTarget {{ id: {id}, name: {name}, type: {type}, source_id: {source_id:?}, last_updated_ts: {last_updated_ts} }}"
 )]
+/// StructuredTarget data model.
+///
 pub struct StructuredTarget {
     pub id: String,
     pub name: String,
@@ -21,6 +27,8 @@ pub struct StructuredTarget {
 #[display(
     "GetStructuredTargetsResponse {{ cursor: {cursor:?}, structured_targets: {structured_targets:?} }}"
 )]
+/// Response model for API endpoint.
+///
 pub struct GetStructuredTargetsResponse {
     pub structured_targets: Vec<StructuredTarget>,
     pub cursor: Option<String>,

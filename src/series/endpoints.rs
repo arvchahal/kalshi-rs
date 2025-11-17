@@ -1,3 +1,7 @@
+//! Series module endpoints.
+//!
+//! This module implements API endpoints for series operations.
+
 use crate::client::KalshiClient;
 use crate::errors::KalshiError;
 use crate::series::models::{GetSeriesListResponse, GetSeriesResponse, SeriesQuery};
@@ -8,6 +12,10 @@ const GET_SERIES_TICKER: &str = "/trade-api/v2/series/{}";
 
 
 impl KalshiClient {
+    /// Get All Series.
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn get_all_series(
         &self,
         limit: Option<u16>,
@@ -34,6 +42,10 @@ impl KalshiClient {
     
 
     
+    /// Get Series By Ticker.
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn get_series_by_ticker(
         &self,
         ticker: &str,

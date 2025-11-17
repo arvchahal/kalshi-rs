@@ -1,3 +1,7 @@
+//! Portfolio module models.
+//!
+//! This module contains data structures for portfolio functionality.
+
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
 
@@ -5,6 +9,8 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Debug, Clone)]
 
 
+/// Request model for API endpoint.
+///
 pub struct AmendOrderRequest {
     pub ticker: String,
     pub side: String,
@@ -23,6 +29,8 @@ pub struct AmendOrderRequest {
 #[display("AmendOrderResponse {{ old_order: {old_order:?}, order: {order:?} }}")]
 
 
+/// Response model for API endpoint.
+///
 pub struct AmendOrderResponse {
     pub old_order: Order,
     pub order: Order,
@@ -33,6 +41,8 @@ pub struct AmendOrderResponse {
 #[display("order number {}, user number {}, side {}", order_id, user_id, side)]
 
 
+/// Order data model.
+///
 pub struct Order {
     pub order_id: String,
     pub user_id: String,
@@ -72,6 +82,8 @@ pub struct Order {
 #[derive(serde::Deserialize, Debug, Clone, Serialize)]
 
 
+/// OrderError data model.
+///
 pub struct OrderError {
     pub code: Option<String>,
     pub message: Option<String>,
@@ -83,6 +95,8 @@ pub struct OrderError {
 #[derive(serde::Deserialize, serde::Serialize)]
 
 
+/// Response model for API endpoint.
+///
 pub struct BatchCancelOrdersResponse {
     pub orders: Vec<Order>,
 }
@@ -91,6 +105,8 @@ pub struct BatchCancelOrdersResponse {
 #[derive(serde::Serialize, serde::Deserialize)]
 
 
+/// Request model for API endpoint.
+///
 pub struct BatchCancelOrdersRequest {
     pub order_ids: Vec<String>,
 }
@@ -99,6 +115,8 @@ pub struct BatchCancelOrdersRequest {
 #[derive(serde::Deserialize)]
 
 
+/// Response model for API endpoint.
+///
 pub struct BatchCreateOrdersResponse {
     pub orders: Vec<String>,
 }
@@ -107,6 +125,8 @@ pub struct BatchCreateOrdersResponse {
 #[derive(serde::Serialize)]
 
 
+/// Request model for API endpoint.
+///
 pub struct BatchCreateOrdersRequest {
     orders: Vec<Order>,
 }
@@ -115,6 +135,8 @@ pub struct BatchCreateOrdersRequest {
 #[derive(serde::Deserialize, serde::Serialize, Debug)]
 
 
+/// Response model for API endpoint.
+///
 pub struct CancelOrderResponse {
     pub order: Order,
     pub reduced_by: Option<u64>,
@@ -124,6 +146,8 @@ pub struct CancelOrderResponse {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 
 
+/// Request model for API endpoint.
+///
 pub struct CreateOrderRequest {
     pub ticker: String,
     pub side: String,
@@ -151,6 +175,8 @@ pub struct CreateOrderRequest {
 #[display("order: {}", order)]
 
 
+/// Response model for API endpoint.
+///
 pub struct CreateOrderResponse {
     pub order: Order,
 }
@@ -159,6 +185,8 @@ pub struct CreateOrderResponse {
 #[derive(serde::Serialize)]
 
 
+/// Request model for API endpoint.
+///
 pub struct CreateOrderGroupRequest {
     pub contracts_limit: u64,
 }
@@ -167,6 +195,8 @@ pub struct CreateOrderGroupRequest {
 #[derive(serde::Deserialize, Debug, Clone)]
 
 
+/// Response model for API endpoint.
+///
 pub struct CreateOrderGroupResponse {
     pub order_group_id: String,
 }
@@ -175,6 +205,8 @@ pub struct CreateOrderGroupResponse {
 #[derive(serde::Deserialize, Debug, Clone)]
 
 
+/// Response model for API endpoint.
+///
 pub struct DecreaseOrderResponse {
     pub order: Order,
 }
@@ -183,6 +215,8 @@ pub struct DecreaseOrderResponse {
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 
 
+/// Request model for API endpoint.
+///
 pub struct DecreaseOrderRequest {
     pub reduce_by: u64,
     pub reduce_to: u64,
@@ -192,6 +226,8 @@ pub struct DecreaseOrderRequest {
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 
 
+/// Response model for API endpoint.
+///
 pub struct GetBalanceResponse {
     pub balance: u64,
     pub portfolio_value: u64,
@@ -202,6 +238,8 @@ pub struct GetBalanceResponse {
 #[derive(serde::Serialize, Default, Debug, Clone)]
 
 
+/// Query parameters for API endpoint.
+///
 pub struct GetFillsParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ticker: Option<String>,
@@ -221,6 +259,8 @@ pub struct GetFillsParams {
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 
 
+/// Fill data model.
+///
 pub struct Fill {
     pub fill_id: String,
     pub trade_id: String,
@@ -245,6 +285,8 @@ pub struct Fill {
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 
 
+/// Response model for API endpoint.
+///
 pub struct GetFillsResponse {
     pub fills: Vec<Fill>,
     pub cursor: String,
@@ -274,6 +316,8 @@ pub struct OrderGroup {
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 
 
+/// Response model for API endpoint.
+///
 pub struct GetOrderGroupsResponse {
     pub order_groups: Vec<OrderGroup>,
     pub cursor: Option<String>,
@@ -308,6 +352,8 @@ pub struct GetOrdersParams {
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 
 
+/// Response model for API endpoint.
+///
 pub struct GetOrdersResponse {
     pub orders: Vec<Order>,
     pub cursor: Option<String>,
@@ -363,6 +409,8 @@ pub struct EventPosition {
 )]
 
 
+/// Response model for API endpoint.
+///
 pub struct GetPositionsResponse {
     pub cursor: Option<String>,
     pub market_positions: Vec<MarketPosition>,
@@ -443,4 +491,6 @@ pub struct DeleteOrderGroupResponse {
 }
 
 
+/// Response model for API endpoint.
+///
 pub struct ResetOrderGroupResponse {}

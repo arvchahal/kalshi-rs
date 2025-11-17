@@ -1,3 +1,7 @@
+//! Exchange module models.
+//!
+//! This module contains data structures for exchange functionality.
+
 use derive_more::Display;
 
 
@@ -5,6 +9,8 @@ use derive_more::Display;
 #[display("Announcements:{:?}", announcements)]
 
 
+/// Response model for API endpoint.
+///
 pub struct GetExchangeAnnouncementsResponse {
     pub announcements: Vec<String>,
 }
@@ -24,6 +30,8 @@ pub struct DaySchedule {
 #[display("Standard Hours: start_time:{:?}, end_time:{:?}", start_time, end_time)]
 
 
+/// StandardHours data model.
+///
 pub struct StandardHours {
     pub start_time: String,
     pub end_time: String,
@@ -45,6 +53,8 @@ pub struct StandardHours {
 )]
 
 
+/// Schedule data model.
+///
 pub struct Schedule {
     pub maintenance_windows: Vec<String>,
     pub standard_hours: Vec<StandardHours>,
@@ -55,6 +65,8 @@ pub struct Schedule {
 #[display("Exchange Schedule: {:?}", schedule)]
 
 
+/// Response model for API endpoint.
+///
 pub struct GetExchangeScheduleResponse {
     pub schedule: Schedule,
 }
@@ -69,6 +81,8 @@ pub struct GetExchangeScheduleResponse {
 )]
 
 
+/// GetExcahngeStatus data model.
+///
 pub struct GetExcahngeStatus {
     pub exchange_active: bool,
     pub exchange_estimated_resume_time: Option<String>,
@@ -80,6 +94,8 @@ pub struct GetExcahngeStatus {
 #[display("Last time user data was updated: {:?}", as_of_time)]
 
 
+/// Response model for API endpoint.
+///
 pub struct GetUserDataTimestampResponse {
     pub as_of_time: String,
 }

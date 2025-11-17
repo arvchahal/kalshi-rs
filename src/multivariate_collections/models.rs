@@ -1,3 +1,7 @@
+//! Multivariate_collections module models.
+//!
+//! This module contains data structures for multivariate_collections functionality.
+
 use derive_more::Display;
 use serde::Deserialize;
 
@@ -6,6 +10,8 @@ use serde::Deserialize;
 #[display(
     "AssociatedEvent {{ ticker: {ticker}, is_yes_only: {is_yes_only}, size_min: {size_min:?}, size_max: {size_max:?}, active_quoters: {active_quoters:?} }}"
 )]
+/// AssociatedEvent data model.
+///
 pub struct AssociatedEvent {
     pub ticker: String,
     pub is_yes_only: bool,
@@ -19,6 +25,8 @@ pub struct AssociatedEvent {
 #[display(
     "MultivariateContract {{ collection_ticker: {collection_ticker}, title: {title} }}"
 )]
+/// MultivariateContract data model.
+///
 pub struct MultivariateContract {
     pub collection_ticker: String,
     pub series_ticker: String,
@@ -41,6 +49,8 @@ pub struct MultivariateContract {
 #[display(
     "GetMultivariateEventCollectionResponse {{ multivariate_contract: {multivariate_contract} }}"
 )]
+/// Response model for API endpoint.
+///
 pub struct GetMultivariateEventCollectionResponse {
     pub multivariate_contract: MultivariateContract,
 }
@@ -50,6 +60,8 @@ pub struct GetMultivariateEventCollectionResponse {
 #[display(
     "GetMultivariateEventCollectionsResponse {{ cursor: {cursor:?}, multivariate_contracts: {multivariate_contracts:?} }}"
 )]
+/// Response model for API endpoint.
+///
 pub struct GetMultivariateEventCollectionsResponse {
     pub multivariate_contracts: Vec<MultivariateContract>,
     pub cursor: Option<String>,

@@ -72,9 +72,7 @@ pub fn get_current_timestamp_ms() -> String {
 /// Sign a request using RSA-PSS with SHA256
 ///
 /// Kalshi requires signing: timestamp + method + path
-/// Uses PSS padding with 32 byte salt length (honestly weird choice by Kalshi but whatever)
-///
-/// Supports both PKCS1 and PKCS8 PEM formats
+/// (honestly weird choice by Kalshi but whatever)
 pub fn sign_request(
     private_key_pem: &str,
     method: &str,

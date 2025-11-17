@@ -1,3 +1,7 @@
+//! Milestones module models.
+//!
+//! This module contains data structures for milestones functionality.
+
 use serde::{Deserialize, Serialize};
 #[derive(Debug, Deserialize, Serialize)]
 pub struct GetMilestonesResponse {

@@ -1,3 +1,13 @@
+//! Markets module endpoints.
+//!
+//! This module implements API endpoints for retrieving market data from Kalshi,
+//! including market lists, individual market details, orderbooks, candlesticks, and trades.
+//!
+//! # Usage
+//!
+//! All endpoint methods are available on [`KalshiClient`](crate::client::KalshiClient).
+//! See the client documentation for a complete list of available methods.
+
 use crate::client::KalshiClient;
 use crate::errors::KalshiError;
 use crate::markets::models::{
@@ -13,6 +23,26 @@ const GET_MARKET_ORDERBOOK: &str = "/trade-api/v2/markets/{}/orderbook";
 const GET_MARKET_CANDLESTICKS: &str = "/trade-api/v2/series/{}/markets/{}/candlesticks";
 
 impl KalshiClient {
+    /// Retrieves a list of markets from Kalshi.
+    ///
+    /// **Endpoint:** `GET /markets`
+    ///
+    /// # Query Parameters
+    /// - `limit` - Maximum number of markets to return
+    /// - `cursor` - Pagination cursor for retrieving additional results
+    /// - `event_ticker` - Filter by event ticker
+    /// - `series_ticker` - Filter by series ticker
+    /// - `max_close_ts` - Filter markets closing before this timestamp
+    /// - `min_close_ts` - Filter markets closing after this timestamp
+    /// - `status` - Filter by market status (e.g., "open", "closed")
+    /// - `tickers` - Comma-separated list of specific market tickers
+    ///
+    /// # Returns
+    /// [`GetMarketsResponse`] containing a vector of Market objects and optional pagination cursor
+    ///
+    /// # Models Used
+    /// - Query: [`MarketsQuery`]
+    /// - Response: [`GetMarketsResponse`]
     pub async fn get_all_markets(
         &self,
         params: &MarketsQuery,
@@ -40,6 +70,18 @@ impl KalshiClient {
     }
 
 
+    /// Retrieves detailed information for a specific market.
+    ///
+    /// **Endpoint:** `GET /markets/{ticker}`
+    ///
+    /// # Parameters
+    /// - `ticker` - The unique market ticker identifier
+    ///
+    /// # Returns
+    /// [`GetMarketResponse`] containing detailed Market information
+    ///
+    /// # Models Used
+    /// - Response: [`GetMarketResponse`]
     pub async fn get_market(
         &self,
         ticker: &str,
@@ -58,6 +100,23 @@ impl KalshiClient {
     }
 
 
+    /// Retrieves recent trade history across markets.
+    ///
+    /// **Endpoint:** `GET /markets/trades`
+    ///
+    /// # Query Parameters
+    /// - `limit` - Maximum number of trades to return
+    /// - `cursor` - Pagination cursor for additional results
+    /// - `ticker` - Filter trades for a specific market ticker
+    /// - `min_ts` - Filter trades after this timestamp
+    /// - `max_ts` - Filter trades before this timestamp
+    ///
+    /// # Returns
+    /// [`GetTradesResponse`] containing a vector of Trade objects
+    ///
+    /// # Models Used
+    /// - Query: [`GetTradesQuery`]
+    /// - Response: [`GetTradesResponse`]
     pub async fn get_trades(
         &self,
         limit: Option<u16>,
@@ -95,6 +154,22 @@ impl KalshiClient {
     }
 
 
+    /// Retrieves the current orderbook for a specific market.
+    ///
+    /// **Endpoint:** `GET /markets/{ticker}/orderbook`
+    ///
+    /// # Parameters
+    /// - `ticker` - The market ticker identifier
+    ///
+    /// # Query Parameters
+    /// - `depth` - Number of price levels to return (capped at 100)
+    ///
+    /// # Returns
+    /// [`GetMarketOrderbookResponse`] containing the Orderbook with bid/ask levels
+    ///
+    /// # Models Used
+    /// - Query: [`OrderbookQuery`]
+    /// - Response: [`GetMarketOrderbookResponse`]
     pub async fn get_market_orderbook(
         &self,
         ticker: &str,
@@ -126,7 +201,26 @@ impl KalshiClient {
         Ok(data)
     }
 
-    
+
+    /// Retrieves historical candlestick (OHLC) data for a market.
+    ///
+    /// **Endpoint:** `GET /series/{series_ticker}/markets/{ticker}/candlesticks`
+    ///
+    /// # Parameters
+    /// - `series_ticker` - The series ticker identifier
+    /// - `ticker` - The market ticker identifier
+    ///
+    /// # Query Parameters
+    /// - `start_ts` - Start timestamp for candlestick data
+    /// - `end_ts` - End timestamp for candlestick data
+    /// - `period_interval` - Time period for each candlestick in seconds
+    ///
+    /// # Returns
+    /// [`GetMarketCandlesticksResponse`] containing a vector of Candlestick data points
+    ///
+    /// # Models Used
+    /// - Query: [`CandlesticksQuery`]
+    /// - Response: [`GetMarketCandlesticksResponse`]
     pub async fn get_market_candlesticks(
         &self,
         series_ticker: &str,

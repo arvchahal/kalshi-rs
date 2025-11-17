@@ -1,3 +1,7 @@
+//! Communications module models.
+//!
+//! This module contains data structures for communications functionality.
+
 use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetCommunicationsIDResponse {
@@ -33,6 +37,8 @@ pub struct DeleteQuoteResponse {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 
 
+/// Response model for API endpoint.
+///
 pub struct DeleteRFQResponse {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub body: Option<String>,

@@ -8,8 +8,57 @@ use reqwest::{Client, StatusCode};
 const KALSHI_API: &str = "https://api.elections.kalshi.com";
 
 
-/// Main client for interacting with the Kalshi API
-/// Handles authentication and HTTP request wrappers
+/// Main client for interacting with the Kalshi API.
+///
+/// The `KalshiClient` provides access to all Kalshi API endpoints organized by category.
+/// Create a client with [`KalshiClient::new`] and use the various methods to interact with the API.
+///
+/// # Available Endpoint Categories
+///
+/// ## Markets
+/// - [`get_all_markets`](KalshiClient::get_all_markets) - Retrieve market listings
+/// - [`get_market`](KalshiClient::get_market) - Get individual market details
+/// - [`get_trades`](KalshiClient::get_trades) - Fetch recent trades
+/// - [`get_market_orderbook`](KalshiClient::get_market_orderbook) - Get market orderbook
+/// - [`get_market_candlesticks`](KalshiClient::get_market_candlesticks) - Historical OHLC data
+///
+/// ## Portfolio
+/// - [`get_balance`](KalshiClient::get_balance) - Get account balance
+/// - [`get_positions`](KalshiClient::get_positions) - Get current positions
+/// - [`get_orders`](KalshiClient::get_orders) - List orders
+/// - [`create_order`](KalshiClient::create_order) - Place a new order
+/// - [`cancel_order`](KalshiClient::cancel_order) - Cancel an order
+/// - And many more order management methods...
+///
+/// ## Exchange
+/// - [`get_exchange_status`](KalshiClient::get_exchange_status) - Exchange operational status
+/// - [`get_exchange_schedule`](KalshiClient::get_exchange_schedule) - Trading schedule
+///
+/// ## Events & Series
+/// - [`get_events`](KalshiClient::get_events) - List events
+/// - [`get_event`](KalshiClient::get_event) - Get event details
+/// - [`get_series`](KalshiClient::get_series) - Get series information
+///
+/// # Example
+/// ```no_run
+/// use kalshi_rust_sdk::{Account, KalshiClient};
+/// use kalshi_rust_sdk::markets::models::MarketsQuery;
+///
+/// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
+/// // Create account with credentials
+/// let account = Account::from_file("kalshi_private.pem", "your-api-key-id")?;
+///
+/// // Initialize client
+/// let client = KalshiClient::new(account);
+///
+/// // Fetch markets
+/// let markets = client.get_all_markets(&MarketsQuery {
+///     limit: Some(10),
+///     ..Default::default()
+/// }).await?;
+/// # Ok(())
+/// # }
+/// ```
 pub struct KalshiClient {
     pub(crate) http_client: Client,
     pub(crate) account: Account,

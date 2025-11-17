@@ -1,3 +1,7 @@
+//! Milestones module endpoints.
+//!
+//! This module implements API endpoints for milestones operations.
+
 use crate::client::KalshiClient;
 use crate::errors::KalshiError;
 use crate::milestones::models::{
@@ -10,6 +14,12 @@ const GET_MILESTONES: &str = "/trade-api/v2/milestones";
 
 impl KalshiClient {
     
+    /// Get Milestone.
+    ///
+    /// **Endpoint:** `GET /milestones/{}`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn get_milestone(
         &self,
         id: &str,
@@ -28,6 +38,12 @@ impl KalshiClient {
     }
 
 
+    /// Get Milestones.
+    ///
+    /// **Endpoint:** `GET /milestones/{}`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn get_milestones(
         &self,
         limit: Option<u32>,

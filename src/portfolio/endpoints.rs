@@ -1,3 +1,7 @@
+//! Portfolio module endpoints.
+//!
+//! This module implements API endpoints for portfolio operations.
+
 use crate::client::KalshiClient;
 use crate::errors::KalshiError;
 use crate::portfolio::models::{
@@ -38,6 +42,12 @@ const RESET_ORDER_GROUP: &str = "/trade-api/v2/portfolio/order_groups/{}/reset";
 
 impl KalshiClient {
 
+    /// Amend Order.
+    ///
+    /// **Endpoint:** `PUT /portfolio/orders/{}/amend`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn amend_order(
         &self,
         order_id: &str,
@@ -53,6 +63,12 @@ impl KalshiClient {
     }
 
 
+    /// Batch Cancel Orders.
+    ///
+    /// **Endpoint:** `DELETE /portfolio/orders/batched`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn batch_cancel_orders(
         &self,
         body: &BatchCancelOrdersRequest,
@@ -75,6 +91,12 @@ impl KalshiClient {
     }
 
 
+    /// Batch Create Orders.
+    ///
+    /// **Endpoint:** `POST /portfolio/orders/batched`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn batch_create_orders(
         &self,
         body: &BatchCreateOrdersRequest,
@@ -88,6 +110,12 @@ impl KalshiClient {
     }
 
 
+    /// Cancel Order.
+    ///
+    /// **Endpoint:** `DELETE /portfolio/orders/{}`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn cancel_order(
         &self,
         order_id: String,
@@ -113,6 +141,12 @@ impl KalshiClient {
     }
 
 
+    /// Create Order.
+    ///
+    /// **Endpoint:** `POST /portfolio/orders`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn create_order(
         &self,
         body: &CreateOrderRequest,
@@ -126,6 +160,12 @@ impl KalshiClient {
     }
 
 
+    /// Create Order Group.
+    ///
+    /// **Endpoint:** `POST /portfolio/orders`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn create_order_group(
         &self,
         body: &CreateOrderGroupRequest,
@@ -139,6 +179,12 @@ impl KalshiClient {
     }
 
 
+    /// Decrease Order.
+    ///
+    /// **Endpoint:** `GET /portfolio/orders/{}/decrease`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn decrease_order(
         &self,
         order_id: &str,
@@ -154,6 +200,12 @@ impl KalshiClient {
     }
 
 
+    /// Delete Order Group.
+    ///
+    /// **Endpoint:** `DELETE /portfolio/order_groups/{}`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn delete_order_group(
         &self,
         order_group_id: &str,
@@ -174,6 +226,12 @@ impl KalshiClient {
     }
 
 
+    /// Get Balance.
+    ///
+    /// **Endpoint:** `GET /portfolio/balance`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn get_balance(&self) -> Result<GetBalanceResponse, KalshiError> {
         let resp = self.authenticated_get::<str>(GET_BALANCE, None).await?;
         let data: GetBalanceResponse = serde_json::from_str(&resp)
@@ -184,6 +242,12 @@ impl KalshiClient {
     }
 
 
+    /// Get Fills.
+    ///
+    /// **Endpoint:** `GET /portfolio/fills`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn get_fills(
         &self,
         params: &GetFillsParams,
@@ -206,6 +270,12 @@ impl KalshiClient {
     }
 
 
+    /// Get Order.
+    ///
+    /// **Endpoint:** `GET /portfolio/orders/{}`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn get_order(
         &self,
         order_id: &str,
@@ -220,6 +290,12 @@ impl KalshiClient {
     }
 
 
+    /// Get Order Group.
+    ///
+    /// **Endpoint:** `GET /portfolio/orders/{}`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn get_order_group(
         &self,
         order_group_id: &str,
@@ -234,6 +310,12 @@ impl KalshiClient {
     }
 
 
+    /// Get Order Groups.
+    ///
+    /// **Endpoint:** `GET /portfolio/orders/{}`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn get_order_groups(&self) -> Result<GetOrderGroupsResponse, KalshiError> {
         let resp = self.authenticated_get::<str>(GET_ORDER_GROUPS, None).await?;
         let data: GetOrderGroupsResponse = serde_json::from_str(&resp)
@@ -244,6 +326,12 @@ impl KalshiClient {
     }
 
 
+    /// Get Order Queue Position.
+    ///
+    /// **Endpoint:** `GET /portfolio/orders/{}`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn get_order_queue_position(
         &self,
         order_id: &str,
@@ -258,6 +346,12 @@ impl KalshiClient {
     }
 
 
+    /// Get Orders.
+    ///
+    /// **Endpoint:** `GET /portfolio/orders/{}`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn get_orders(
         &self,
         params: &GetOrdersParams,
@@ -280,6 +374,12 @@ impl KalshiClient {
     }
 
 
+    /// Get Positions.
+    ///
+    /// **Endpoint:** `GET /portfolio/positions`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn get_positions(
         &self,
         params: &GetPositionsParams,
@@ -302,6 +402,12 @@ impl KalshiClient {
     }
 
 
+    /// Get Queue Positions.
+    ///
+    /// **Endpoint:** `GET /portfolio/orders/queue_positions`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn get_queue_positions(
         &self,
         params: &GetQueueParams,
@@ -324,6 +430,12 @@ impl KalshiClient {
     }
 
 
+    /// Get Settlements.
+    ///
+    /// **Endpoint:** `GET /portfolio/settlements`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn get_settlements(
         &self,
         params: &GetSettlementsParams,
@@ -361,6 +473,12 @@ impl KalshiClient {
     }
 
     
+    /// Reset Order Group.
+    ///
+    /// **Endpoint:** `GET /portfolio/order_groups/{}/reset`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn reset_order_group(
         &self,
         order_group_id: &str,

@@ -1,3 +1,7 @@
+//! Series module models.
+//!
+//! This module contains data structures for series functionality.
+
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -6,6 +10,8 @@ use std::collections::HashMap;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 
 
+/// SettlementSource data model.
+///
 pub struct SettlementSource {
     pub name: Option<String>,
     pub url: Option<String>,

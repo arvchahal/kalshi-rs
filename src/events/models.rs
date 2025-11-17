@@ -1,3 +1,7 @@
+//! Events module models.
+//!
+//! This module contains data structures for events functionality.
+
 use crate::markets::models::Market;
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
@@ -12,6 +16,8 @@ use serde::{Deserialize, Serialize};
 )]
 
 
+/// Response model for API endpoint.
+///
 pub struct GetEventMetadataResponse {
     pub image_url: Option<String>,
     pub settlement_sources: Vec<SettlementSource>,
@@ -24,6 +30,8 @@ pub struct GetEventMetadataResponse {
 #[display("{} ({})", name, url)]
 
 
+/// SettlementSource data model.
+///
 pub struct SettlementSource {
     pub name: String,
     pub url: String,
@@ -34,6 +42,8 @@ pub struct SettlementSource {
 #[display("Event {} with {} markets", event.event_ticker, markets.len())]
 
 
+/// Response model for API endpoint.
+///
 pub struct GetEventResponse {
     pub event: Event,
     pub markets: Vec<Market>,
@@ -44,6 +54,8 @@ pub struct GetEventResponse {
 #[display("{} ({})", title, event_ticker)]
 
 
+/// Event data model.
+///
 pub struct Event {
     pub event_ticker: String,
     pub series_ticker: String,
@@ -64,6 +76,8 @@ pub struct Event {
 #[display("All events: {}", events.len())]
 
 
+/// Response model for API endpoint.
+///
 pub struct GetEventsResponse {
     pub events: Vec<Event>,
 }
@@ -82,6 +96,8 @@ pub struct MveSelectedLeg {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 
 
+/// PriceRange data model.
+///
 pub struct PriceRange {
     pub start: String,
     pub end: String,
@@ -92,6 +108,8 @@ pub struct PriceRange {
 #[derive(Debug, Serialize)]
 
 
+/// Query parameters for API endpoint.
+///
 pub struct EventsQuery {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub limit: Option<u16>,

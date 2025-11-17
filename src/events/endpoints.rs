@@ -1,3 +1,7 @@
+//! Events module endpoints.
+//!
+//! This module implements API endpoints for events operations.
+
 use crate::client::KalshiClient;
 use crate::errors::KalshiError;
 use crate::events::models::{

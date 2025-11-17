@@ -1,3 +1,7 @@
+//! Api_keys module endpoints.
+//!
+//! This module implements API endpoints for api_keys operations.
+
 use crate::api_keys::models::{
     ApiKey, CreateApiKeyResponse, DeleteApiKeyResponse, ListApiKeysResponse,
 };
@@ -39,7 +43,7 @@ impl KalshiClient {
         Ok(data)
     }
 
-    
+
     /// DELETE /trade-api/v2/api_keys/{api_key}/
     /// delete an API key if it exists else returns error
     ///

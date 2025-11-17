@@ -1,3 +1,7 @@
+//! Communications module endpoints.
+//!
+//! This module implements API endpoints for communications operations.
+
 use crate::client::KalshiClient;
 use crate::communications::models::{
     Accept, AcceptQuoteResponse, ConfirmQuoteResponse, CreateQuoteRequest,
@@ -23,6 +27,12 @@ const CREATE_RFQ: &str = "/trade-api/v2/communications/rfqs";
 impl KalshiClient {
 
 
+    /// Accept Quote.
+    ///
+    /// **Endpoint:** `GET /communications/quotes/{quote_id}/accept`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn accept_quote(
         &self,
         quote_id: &str,
@@ -37,6 +47,12 @@ impl KalshiClient {
     }
 
 
+    /// Confirm Quote.
+    ///
+    /// **Endpoint:** `GET /communications/quotes/{quote_id}/confirm`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn confirm_quote(
         &self,
         quote_id: &str,
@@ -49,6 +65,12 @@ impl KalshiClient {
     }
 
 
+    /// Create Quote.
+    ///
+    /// **Endpoint:** `POST /communications/quotes`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn create_quote(
         &self,
         body: CreateQuoteRequest,
@@ -62,6 +84,12 @@ impl KalshiClient {
     }
 
 
+    /// Get Rfq.
+    ///
+    /// **Endpoint:** `GET /communications/rfqs/{}`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn get_rfq(&self, rfq_id: &str) -> Result<GetRFQResponse, KalshiError> {
         let url = GET_RFQ.replace("{}", rfq_id);
         let resp = self.authenticated_get::<str>(&url, None).await?;
@@ -112,6 +140,12 @@ impl KalshiClient {
     }
 
 
+    /// Delete Quote.
+    ///
+    /// **Endpoint:** `DELETE /communications/quotes/{}`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn delete_quote(
         &self,
         quote_id: &str,
@@ -125,6 +159,12 @@ impl KalshiClient {
             .map_err(|e| KalshiError::ParseError(e))?;
         Ok(data)
     }
+    /// Delete Rfq.
+    ///
+    /// **Endpoint:** `DELETE /communications/rfqs/{}`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn delete_rfq(
         &self,
         rfq_id: &str,
@@ -140,6 +180,12 @@ impl KalshiClient {
     }
 
 
+    /// Get Communications Id.
+    ///
+    /// **Endpoint:** `GET /communications/id`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn get_communications_id(
         &self,
     ) -> Result<GetCommunicationsIDResponse, KalshiError> {

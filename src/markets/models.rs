@@ -1,8 +1,17 @@
+//! Markets module models.
+//!
+//! This module contains data structures for Kalshi market data, including market information,
+//! pricing, orderbooks, candlesticks, and trades.
+
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 
+/// Represents a single market on the Kalshi platform.
+///
+/// Contains comprehensive market data including pricing, volume, liquidity,
+/// and settlement information for binary prediction markets.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 
 
@@ -88,6 +97,9 @@ pub struct Market {
 }
 
 
+/// Represents a selected leg in a multivariate event (MVE) collection.
+///
+/// Used for markets that are part of composite multi-outcome events.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 
 
@@ -98,6 +110,7 @@ pub struct MveSelectedLeg {
 }
 
 
+/// Defines a price range for market trading with specified step increments.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 
 
@@ -108,6 +121,9 @@ pub struct PriceRange {
 }
 
 
+/// Response from `GET /markets` endpoint.
+///
+/// Contains a list of markets with optional cursor for pagination.
 #[derive(Debug, Clone, Serialize, Deserialize, Display)]
 #[display("All markets {:?}", markets)]
 
@@ -118,6 +134,9 @@ pub struct GetMarketsResponse {
 }
 
 
+/// Response from `GET /markets/{ticker}` endpoint.
+///
+/// Returns detailed information for a single market.
 #[derive(Debug, Clone, Serialize, Deserialize, Display)]
 #[display("Market {:?}", market)]
 
@@ -127,7 +146,10 @@ pub struct GetMarketResponse {
 }
 
 
-#[derive(Serialize)]
+/// Query parameters for `GET /markets` endpoint.
+///
+/// All fields are optional filters for market retrieval.
+#[derive(Serialize, Default)]
 
 
 pub struct MarketsQuery {
@@ -150,6 +172,9 @@ pub struct MarketsQuery {
 }
 
 
+/// Response from `GET /markets/{ticker}/orderbook` endpoint.
+///
+/// Contains the current orderbook with bid/ask levels.
 #[derive(serde::Deserialize, Display, Debug)]
 
 
@@ -158,6 +183,10 @@ pub struct GetMarketOrderbookResponse {
 }
 
 
+/// Market orderbook containing yes/no bid and ask levels.
+///
+/// Each level is represented as a tuple of (price, quantity).
+/// Prices are available in both cents and dollar representations.
 #[derive(serde::Deserialize, Display, Debug)]
 #[display(
     "No(cents, total shares available) {:?} \nNo(dollars, shares available): {:?} \nYes(cents, total shares available) {:?} \nYes(dollars, shares available): {:?}",
@@ -168,6 +197,8 @@ pub struct GetMarketOrderbookResponse {
 )]
 
 
+/// Orderbook data model.
+///
 pub struct Orderbook {
     pub no: Option<Vec<(u64, u64)>>,
     pub no_dollars: Option<Vec<(String, u64)>>,
@@ -176,6 +207,7 @@ pub struct Orderbook {
 }
 
 
+/// Query parameters for `GET /markets/{ticker}/orderbook` endpoint.
 #[derive(Serialize)]
 
 
@@ -185,6 +217,9 @@ pub struct OrderbookQuery {
 }
 
 
+/// Response from `GET /series/{series_ticker}/markets/{ticker}/candlesticks` endpoint.
+///
+/// Returns historical candlestick (OHLC) data for a market.
 #[derive(Debug, Clone, Deserialize, Display)]
 #[display(
     "candles: {} markets (adjusted_end_ts={})",
@@ -193,12 +228,18 @@ pub struct OrderbookQuery {
 )]
 
 
+/// Response model for API endpoint.
+///
 pub struct GetMarketCandlesticksResponse {
     pub market_candlesticks: Vec<Candlestick>,
     pub market_ticker: String,
 }
 
 
+/// A single candlestick data point representing market activity for a time period.
+///
+/// Contains OHLC (Open, High, Low, Close) data for both yes and no sides,
+/// along with volume and open interest statistics.
 #[derive(Debug, Clone, Deserialize, Display)]
 #[display(
     "ts={} vol={} oi={:?} price[{}] bid[{}] ask[{}]",
@@ -211,6 +252,8 @@ pub struct GetMarketCandlesticksResponse {
 )]
 
 
+/// Candlestick data model.
+///
 pub struct Candlestick {
     pub end_period_ts: i64,
     pub open_interest: Option<u32>,
@@ -225,6 +268,9 @@ pub struct Candlestick {
 }
 
 
+/// Statistical price information for a candlestick period.
+///
+/// Contains OHLC values, min/max/mean statistics, and previous period comparisons.
 #[derive(Debug, Clone, Deserialize, Display)]
 #[display(
     "prev={:?} o={:?} h={:?} l={:?} c={:?}",
@@ -236,6 +282,8 @@ pub struct Candlestick {
 )]
 
 
+/// PriceStats data model.
+///
 pub struct PriceStats {
     pub open: Option<u32>,
     pub open_dollars: Option<String>,
@@ -256,6 +304,7 @@ pub struct PriceStats {
 }
 
 
+/// OHLC (Open, High, Low, Close) data for one side of the market (yes or no).
 #[derive(Debug, Clone, Deserialize, Display)]
 #[display("O/H/L/C={}/{}/{}/{}", "self.open", "self.high", "self.low", "self.close")]
 pub struct SideOhlc {
@@ -270,6 +319,7 @@ pub struct SideOhlc {
 }
 
 
+/// Query parameters for `GET /series/{series_ticker}/markets/{ticker}/candlesticks` endpoint.
 #[derive(Serialize)]
 pub struct CandlesticksQuery {
     pub start_ts: i64,
@@ -278,6 +328,7 @@ pub struct CandlesticksQuery {
 }
 
 
+/// Query parameters for `GET /markets/trades` endpoint.
 #[derive(Serialize)]
 pub struct GetTradesQuery {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -293,6 +344,9 @@ pub struct GetTradesQuery {
 }
 
 
+/// Response from `GET /markets/trades` endpoint.
+///
+/// Returns a list of recent trades with optional pagination cursor.
 #[derive(Debug, Clone, Deserialize, Display)]
 #[display("All trades available: {:?}", trades)]
 pub struct GetTradesResponse {
@@ -301,6 +355,9 @@ pub struct GetTradesResponse {
 }
 
 
+/// Represents a single trade execution on a market.
+///
+/// Contains trade details including price, quantity, side, and timestamp.
 #[derive(serde::Deserialize, Display, Debug, Clone)]
 #[display("Trade: {} {} @ ${} ({})", ticker, count, price, taker_side)]
 pub struct Trade {

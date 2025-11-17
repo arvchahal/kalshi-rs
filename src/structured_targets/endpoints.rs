@@ -1,3 +1,7 @@
+//! Structured_targets module endpoints.
+//!
+//! This module implements API endpoints for structured_targets operations.
+
 use crate::KalshiClient;
 use crate::errors::KalshiError;
 use crate::structured_targets::models::{
@@ -14,6 +18,12 @@ const STRUCTURED_TARGET: &str = "/trade-api/v2/structured_targets/{}";
 impl KalshiClient {
 
     
+    /// Get All Structured Targets.
+    ///
+    /// **Endpoint:** `GET /structured_targets`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn get_all_structured_targets(
         &self,
         limit: Option<u64>,
@@ -41,6 +51,12 @@ impl KalshiClient {
     }
 
 
+    /// Get Structured Target.
+    ///
+    /// **Endpoint:** `GET /structured_targets/{}`
+    ///
+    /// # Returns
+    /// Result with response data or error
     pub async fn get_structured_target(
         &self,
         structured_target_id: &str,
