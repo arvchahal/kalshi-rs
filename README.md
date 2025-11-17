@@ -155,6 +155,6 @@ If you're implementing newly released Kalshi endpoints, improving error handling
 ## License
 
 This project is licensed under the **MIT License**.
-See [`LICENSE`](LICENSE-MIT) for details.
+See [`LICENSE`](LICENSE) for details.
 
 
