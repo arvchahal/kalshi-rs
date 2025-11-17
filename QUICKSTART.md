@@ -593,7 +593,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 - **Source Code**: Browse the SDK source at https://github.com/arvchahal/kalshi-rs
 - **Tests**: Clone the repo and Run `cargo test` to see integration tests with real API calls but you will need to add your own private key and api key id and their paths by exporting them. see setup_client method for more
 
-g
+
 ## Summary
 
 - **58 endpoints** across 10 modules
