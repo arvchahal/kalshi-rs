@@ -1,8 +1,12 @@
 use crate::client::KalshiClient;
 use crate::errors::KalshiError;
 use crate::series::models::{GetSeriesListResponse, GetSeriesResponse, SeriesQuery};
+
+
 const GET_SERIES_LIST: &str = "/trade-api/v2/series";
 const GET_SERIES_TICKER: &str = "/trade-api/v2/series/{}";
+
+
 impl KalshiClient {
     pub async fn get_all_series(
         &self,
@@ -27,6 +31,9 @@ impl KalshiClient {
             .map_err(|e| KalshiError::Other(format!("Parse error: {e}.")))?;
         Ok(data)
     }
+    
+
+    
     pub async fn get_series_by_ticker(
         &self,
         ticker: &str,

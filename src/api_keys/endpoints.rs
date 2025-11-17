@@ -1,13 +1,19 @@
 use crate::api_keys::models::{
     ApiKey, CreateApiKeyResponse, DeleteApiKeyResponse, ListApiKeysResponse,
 };
+
+
 use crate::client::KalshiClient;
 use crate::errors::KalshiError;
 use serde_json::json;
+
+
 const GET_API_KEY: &str = "/trade-api/v2/api_keys";
 const GENERATE_API_KEY: &str = "/trade-api/v2/api_keys/generate";
 const DELETE_API_KEY: &str = "/trade-api/v2/api_keys/{}";
+
 impl KalshiClient {
+
     /// GET /api-keys
     /// List all API keys for the authenticated user
     pub async fn get_api_keys(&self) -> Result<Vec<ApiKey>, KalshiError> {
@@ -16,6 +22,8 @@ impl KalshiClient {
             .map_err(|e| KalshiError::Other(format!("Parse error: {e}. Body: {body}")))?;
         Ok(data.api_keys)
     }
+
+
     /// POST /users/api-keys/generate
     /// Generate a new API key (alternative endpoint)
     pub async fn generate_api_key(
@@ -30,6 +38,8 @@ impl KalshiClient {
             ))?;
         Ok(data)
     }
+
+    
     /// DELETE /trade-api/v2/api_keys/{api_key}/
     /// delete an API key if it exists else returns error
     ///

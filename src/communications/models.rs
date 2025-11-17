@@ -4,14 +4,20 @@ pub struct GetCommunicationsIDResponse {
     #[serde(alias = "communcation_id")]
     pub communications_id: String,
 }
+
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetRFQResponse {
     pub rfq: RFQ,
 }
+
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateQuoteResponse {
     pub id: String,
 }
+
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateQuoteRequest {
     pub rfq_id: String,
@@ -19,24 +25,33 @@ pub struct CreateQuoteRequest {
     pub no_bid: String,
     pub rest_remainder: bool,
 }
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DeleteQuoteResponse {
     pub body: Option<String>,
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
+
+
 pub struct DeleteRFQResponse {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub body: Option<String>,
 }
+
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AcceptQuoteResponse {
     pub body: Option<String>,
 }
+
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Accept {
     Yes,
     No,
 }
+
+
 impl Accept {
     pub fn from_str(s: &str) -> Result<Accept, String> {
         match s {
@@ -46,10 +61,14 @@ impl Accept {
         }
     }
 }
+
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ConfirmQuoteResponse {
     pub body: Option<String>,
 }
+
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateRFQRequest {
     pub market_ticker: String,
@@ -63,16 +82,22 @@ pub struct CreateRFQRequest {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub subtrader_id: Option<String>,
 }
+
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateRFQResponse {
     pub id: String,
 }
+
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetRFQsResponse {
     pub rfqs: Vec<RFQ>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cursor: Option<String>,
 }
+
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RFQ {
     pub id: String,
@@ -97,12 +122,16 @@ pub struct RFQ {
     pub created_ts: String,
     pub status: String,
 }
+
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct MveLogs {
     event_ticker: Option<String>,
     market_ticker: Option<String>,
     side: Option<String>,
 }
+
+
 #[derive(Debug, Serialize)]
 pub struct GetQuotesQuery {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -122,16 +151,22 @@ pub struct GetQuotesQuery {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub rfq_id: Option<String>,
 }
+
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetQuotesResponse {
     pub quotes: Vec<Quote>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cursor: Option<String>,
 }
+
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetQuoteResponse {
     pub quote: Quote,
 }
+
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Quote {
     pub id: String,

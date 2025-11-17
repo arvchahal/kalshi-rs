@@ -6,6 +6,8 @@ use crate::communications::models::{
     GetQuotesResponse, GetRFQResponse, GetRFQsResponse,
 };
 use crate::errors::KalshiError;
+
+
 const ACCEPT_QUOTE: &str = "/trade-api/v2/communications/quotes/{quote_id}/accept";
 const CONFIRM_QUOTE: &str = "/trade-api/v2/communications/quotes/{quote_id}/confirm";
 const CREATE_QUOTE: &str = "/trade-api/v2/communications/quotes";
@@ -17,7 +19,10 @@ const GET_QUOTE: &str = "/trade-api/v2/communications/quotes/{}";
 const GET_COMMUNICATIONS_ID: &str = "/trade-api/v2/communications/id";
 const GET_RFQS: &str = "/trade-api/v2/communications/rfqs";
 const CREATE_RFQ: &str = "/trade-api/v2/communications/rfqs";
+
 impl KalshiClient {
+
+
     pub async fn accept_quote(
         &self,
         quote_id: &str,
@@ -30,6 +35,8 @@ impl KalshiClient {
             .map_err(|e| KalshiError::Other(format!("Parse error: {e}")))?;
         Ok(data)
     }
+
+
     pub async fn confirm_quote(
         &self,
         quote_id: &str,
@@ -40,6 +47,8 @@ impl KalshiClient {
             .map_err(|e| KalshiError::Other(format!("Parse error: {e}")))?;
         Ok(data)
     }
+
+
     pub async fn create_quote(
         &self,
         body: CreateQuoteRequest,
@@ -51,6 +60,8 @@ impl KalshiClient {
             .map_err(|e| KalshiError::Other(format!("Parse error: {e}")))?;
         Ok(data)
     }
+
+
     pub async fn get_rfq(&self, rfq_id: &str) -> Result<GetRFQResponse, KalshiError> {
         let url = GET_RFQ.replace("{}", rfq_id);
         let resp = self.authenticated_get::<str>(&url, None).await?;
@@ -58,6 +69,8 @@ impl KalshiClient {
             .map_err(|e| KalshiError::Other(format!("Parse error: {e}")))?;
         Ok(data)
     }
+
+
     /// GET /trade-api/v2/communications/quotes
     /// Returns all quotes matching the query criteria
     pub async fn get_quotes(
@@ -97,6 +110,8 @@ impl KalshiClient {
             ))?;
         Ok(data)
     }
+
+
     pub async fn delete_quote(
         &self,
         quote_id: &str,
@@ -123,6 +138,8 @@ impl KalshiClient {
             .map_err(|e| KalshiError::ParseError(e))?;
         Ok(data)
     }
+
+
     pub async fn get_communications_id(
         &self,
     ) -> Result<GetCommunicationsIDResponse, KalshiError> {
@@ -131,6 +148,8 @@ impl KalshiClient {
             .map_err(|e| KalshiError::Other(format!("Parse error: {e}")))?;
         Ok(data)
     }
+
+
     /// GET /trade-api/v2/communications/rfqs
     /// Returns all RFQs for the authenticated user
     pub async fn get_rfqs(&self) -> Result<GetRFQsResponse, KalshiError> {
@@ -141,6 +160,8 @@ impl KalshiClient {
             ))?;
         Ok(data)
     }
+
+
     /// POST /trade-api/v2/communications/rfqs
     /// Creates a new RFQ. You can have a maximum of 100 open RFQs at a time.
     pub async fn create_rfq(
@@ -154,6 +175,8 @@ impl KalshiClient {
             ))?;
         Ok(data)
     }
+
+
     /// GET /trade-api/v2/communications/quotes/{quote_id}
     /// Gets a single quote by its ID
     pub async fn get_quote(

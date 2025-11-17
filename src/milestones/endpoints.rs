@@ -3,9 +3,13 @@ use crate::errors::KalshiError;
 use crate::milestones::models::{
     GetMilestoneResponse, GetMilestonesResponse, MilestonesQuery,
 };
+
 const GET_MILESTONE: &str = "/trade-api/v2/milestones/{}";
 const GET_MILESTONES: &str = "/trade-api/v2/milestones";
+
+
 impl KalshiClient {
+    
     pub async fn get_milestone(
         &self,
         id: &str,
@@ -22,6 +26,8 @@ impl KalshiClient {
             })?;
         Ok(data)
     }
+
+
     pub async fn get_milestones(
         &self,
         limit: Option<u32>,

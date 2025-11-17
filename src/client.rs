@@ -2,13 +2,23 @@ use crate::auth::Account;
 use crate::errors::KalshiError;
 use crate::helpers;
 use reqwest::{Client, StatusCode};
+
+
+// Kalshi API base URL for production
 const KALSHI_API: &str = "https://api.elections.kalshi.com";
+
+
+/// Main client for interacting with the Kalshi API
+/// Handles authentication and HTTP request wrappers
 pub struct KalshiClient {
     pub(crate) http_client: Client,
     pub(crate) account: Account,
     pub(crate) base_url: String,
 }
+
+
 impl KalshiClient {
+    /// Create a new KalshiClient with default API endpoint
     pub fn new(user: Account) -> KalshiClient {
         KalshiClient {
             http_client: Client::new(),
@@ -16,6 +26,10 @@ impl KalshiClient {
             base_url: KALSHI_API.to_string(),
         }
     }
+
+
+    /// Create a new KalshiClient with custom API endpoint
+    /// Useful for testing or using different API environments
     pub fn new_with_config(
         user: Account,
         configuration: Option<String>,
@@ -26,6 +40,8 @@ impl KalshiClient {
             base_url: configuration.unwrap_or_else(|| KALSHI_API.to_string()),
         }
     }
+
+
     /// Wrapper for authenticated GET requests
     pub async fn authenticated_get<T>(
         &self,
@@ -44,6 +60,8 @@ impl KalshiClient {
             )
             .await
     }
+
+
     /// Wrapper for authenticated POST requests
     pub async fn authenticated_post<T>(
         &self,
@@ -62,6 +80,8 @@ impl KalshiClient {
             )
             .await
     }
+
+
     /// Wrapper for authenticated DELETE requests
     pub async fn authenticated_delete<T>(
         &self,
@@ -80,10 +100,14 @@ impl KalshiClient {
             )
             .await
     }
+
+
     /// Wrapper for unauthenticated GET requests
     pub async fn unauthenticated_get(&self, path: &str) -> Result<String, KalshiError> {
         helpers::unauthenticated_get(&self.http_client, &self.base_url, path).await
     }
+
+
     /// Wrapper for authenticated put requests
     pub async fn authenticated_put<T>(
         &self,

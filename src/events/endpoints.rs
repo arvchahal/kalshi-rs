@@ -3,9 +3,17 @@ use crate::errors::KalshiError;
 use crate::events::models::{
     EventsQuery, GetEventMetadataResponse, GetEventResponse, GetEventsResponse,
 };
+
+
 const GET_EVENTS: &str = "/trade-api/v2/events";
+
+
 const GET_EVENT: &str = "/trade-api/v2/events/{}";
+
+
 const GET_EVENT_META: &str = "/trade-api/v2/events/{}/metadata";
+
+
 impl KalshiClient {
     /// get
     /// Returns all available events (optionally filterable by limit, cursor, etc.)

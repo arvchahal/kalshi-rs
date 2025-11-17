@@ -3,9 +3,17 @@ use crate::errors::KalshiError;
 use crate::structured_targets::models::{
     GetStructuredTargetResponse, GetStructuredTargetsResponse, StructuredTargetsQuery,
 };
+
+
 const STRUCTURED_TARGETS: &str = "/trade-api/v2/structured_targets";
+
+
 const STRUCTURED_TARGET: &str = "/trade-api/v2/structured_targets/{}";
+
+
 impl KalshiClient {
+
+    
     pub async fn get_all_structured_targets(
         &self,
         limit: Option<u64>,
@@ -31,6 +39,8 @@ impl KalshiClient {
             ))?;
         Ok(data)
     }
+
+
     pub async fn get_structured_target(
         &self,
         structured_target_id: &str,

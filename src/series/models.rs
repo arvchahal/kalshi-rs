@@ -1,12 +1,20 @@
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
+
+
 pub struct SettlementSource {
     pub name: Option<String>,
     pub url: Option<String>,
 }
+
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
+
+
 pub struct Series {
     pub ticker: String,
     pub frequency: String,
@@ -25,16 +33,22 @@ pub struct Series {
     #[serde(default)]
     pub product_metadata: Option<serde_json::Value>,
 }
+
+
 #[derive(Debug, Clone, Serialize, Deserialize, Display)]
 #[display("All series retrieved ({}) entries", series.len())]
 pub struct GetSeriesListResponse {
     pub series: Vec<Series>,
 }
+
+
 #[derive(Debug, Clone, Serialize, Deserialize, Display)]
 #[display("Series details for {}", series.ticker)]
 pub struct GetSeriesResponse {
     pub series: Series,
 }
+
+
 #[derive(Debug, Serialize)]
 pub struct SeriesQuery {
     #[serde(skip_serializing_if = "Option::is_none")]

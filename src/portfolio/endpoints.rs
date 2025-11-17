@@ -12,6 +12,8 @@ use crate::portfolio::models::{
     GetSettlementsParams, GetSettlementsResponse, GetTotalRestingOrderValueResponse,
     ResetOrderGroupResponse,
 };
+
+
 const AMEND_ORDER: &str = "/trade-api/v2/portfolio/orders/{}/amend";
 const BATCH_CANCEL_ORDERS: &str = "/trade-api/v2/portfolio/orders/batched";
 const BATCH_CREATE_ORDERS: &str = "/trade-api/v2/portfolio/orders/batched";
@@ -32,7 +34,10 @@ const GET_QUEUE_POSITIONS: &str = "/trade-api/v2/portfolio/orders/queue_position
 const GET_SETTLEMENTS: &str = "/trade-api/v2/portfolio/settlements";
 const GET_TOTAL_RESTING_ORDER_VALUE: &str = "/trade-api/v2/portfolio/summary/total_resting_order_value";
 const RESET_ORDER_GROUP: &str = "/trade-api/v2/portfolio/order_groups/{}/reset";
+
+
 impl KalshiClient {
+
     pub async fn amend_order(
         &self,
         order_id: &str,
@@ -46,6 +51,8 @@ impl KalshiClient {
             ))?;
         Ok(data)
     }
+
+
     pub async fn batch_cancel_orders(
         &self,
         body: &BatchCancelOrdersRequest,
@@ -66,6 +73,8 @@ impl KalshiClient {
             })?;
         Ok(data)
     }
+
+
     pub async fn batch_create_orders(
         &self,
         body: &BatchCreateOrdersRequest,
@@ -77,12 +86,15 @@ impl KalshiClient {
             ))?;
         Ok(data)
     }
+
+
     pub async fn cancel_order(
         &self,
         order_id: String,
     ) -> Result<CancelOrderResponse, KalshiError> {
         let url: &str = &CANCEL_ORDER.replace("{}", &order_id);
         let (status, resp) = self.authenticated_delete::<str>(url, None).await?;
+        // API sometimes returns empty body on success, which would fail JSON parsing
         if resp.trim().is_empty() {
             return Err(
                 KalshiError::Other(
@@ -99,6 +111,8 @@ impl KalshiClient {
             ))?;
         Ok(data)
     }
+
+
     pub async fn create_order(
         &self,
         body: &CreateOrderRequest,
@@ -110,6 +124,8 @@ impl KalshiClient {
             ))?;
         Ok(data)
     }
+
+
     pub async fn create_order_group(
         &self,
         body: &CreateOrderGroupRequest,
@@ -121,6 +137,8 @@ impl KalshiClient {
             ))?;
         Ok(data)
     }
+
+
     pub async fn decrease_order(
         &self,
         order_id: &str,
@@ -134,12 +152,15 @@ impl KalshiClient {
             ))?;
         Ok(data)
     }
+
+
     pub async fn delete_order_group(
         &self,
         order_group_id: &str,
     ) -> Result<DeleteOrderGroupResponse, KalshiError> {
         let url = DELETE_ORDER_GROUP.replace("{}", order_group_id);
         let (status, resp) = self.authenticated_delete::<str>(&url, None).await?;
+        // Delete operations might return empty body with 204 status, which is valid
         if status.as_u16() == 204 || resp.trim().is_empty() {
             return Ok(DeleteOrderGroupResponse {
                 body: None,
@@ -151,6 +172,8 @@ impl KalshiClient {
             ))?;
         Ok(data)
     }
+
+
     pub async fn get_balance(&self) -> Result<GetBalanceResponse, KalshiError> {
         let resp = self.authenticated_get::<str>(GET_BALANCE, None).await?;
         let data: GetBalanceResponse = serde_json::from_str(&resp)
@@ -159,6 +182,8 @@ impl KalshiClient {
             ))?;
         Ok(data)
     }
+
+
     pub async fn get_fills(
         &self,
         params: &GetFillsParams,
@@ -179,6 +204,8 @@ impl KalshiClient {
             ))?;
         Ok(data)
     }
+
+
     pub async fn get_order(
         &self,
         order_id: &str,
@@ -191,6 +218,8 @@ impl KalshiClient {
             ))?;
         Ok(data)
     }
+
+
     pub async fn get_order_group(
         &self,
         order_group_id: &str,
@@ -203,6 +232,8 @@ impl KalshiClient {
             ))?;
         Ok(data)
     }
+
+
     pub async fn get_order_groups(&self) -> Result<GetOrderGroupsResponse, KalshiError> {
         let resp = self.authenticated_get::<str>(GET_ORDER_GROUPS, None).await?;
         let data: GetOrderGroupsResponse = serde_json::from_str(&resp)
@@ -211,6 +242,8 @@ impl KalshiClient {
             ))?;
         Ok(data)
     }
+
+
     pub async fn get_order_queue_position(
         &self,
         order_id: &str,
@@ -223,6 +256,8 @@ impl KalshiClient {
             ))?;
         Ok(data)
     }
+
+
     pub async fn get_orders(
         &self,
         params: &GetOrdersParams,
@@ -243,6 +278,8 @@ impl KalshiClient {
             ))?;
         Ok(data)
     }
+
+
     pub async fn get_positions(
         &self,
         params: &GetPositionsParams,
@@ -263,6 +300,8 @@ impl KalshiClient {
             ))?;
         Ok(data)
     }
+
+
     pub async fn get_queue_positions(
         &self,
         params: &GetQueueParams,
@@ -283,6 +322,8 @@ impl KalshiClient {
             ))?;
         Ok(data)
     }
+
+
     pub async fn get_settlements(
         &self,
         params: &GetSettlementsParams,
@@ -303,6 +344,8 @@ impl KalshiClient {
             ))?;
         Ok(data)
     }
+
+
     ///Endpoint for getting the total value, in cents, of resting orders. This endpoint is only intended for use by FCM members (rare). Note: If you’re uncertain about this endpoint, it likely does not apply to you.
     pub async fn get_total_resting_order_value(
         &self,
@@ -316,11 +359,14 @@ impl KalshiClient {
             ))?;
         Ok(data)
     }
+
+    
     pub async fn reset_order_group(
         &self,
         order_group_id: &str,
     ) -> Result<ResetOrderGroupResponse, KalshiError> {
         let url = RESET_ORDER_GROUP.replace("{}", order_group_id);
+        // API requires a body even though reset doesn't need any parameters
         let empty_body = serde_json::json!({});
         let (status, resp) = self.authenticated_put(&url, Some(&empty_body)).await?;
         if status.is_success() {

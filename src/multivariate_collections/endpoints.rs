@@ -5,6 +5,8 @@ use crate::multivariate_collections::models::{
 };
 const GET_MVE_COL: &str = "/trade-api/v2/multivariate_event_collections/{}";
 const GET_MVE_COLS: &str = "/trade-api/v2/multivariate_event_collections/";
+
+
 impl KalshiClient {
     pub async fn get_multivariate_event_collection(
         &self,
@@ -18,6 +20,9 @@ impl KalshiClient {
             ))?;
         Ok(data)
     }
+
+
+    
     pub async fn get_multivariate_event_collections(
         &self,
     ) -> Result<GetMultivariateEventCollectionsResponse, KalshiError> {

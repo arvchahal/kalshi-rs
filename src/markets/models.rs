@@ -1,7 +1,11 @@
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
+
+
 pub struct Market {
     pub ticker: String,
     pub event_ticker: String,
@@ -82,30 +86,50 @@ pub struct Market {
     #[serde(default)]
     pub primary_participant_key: Option<String>,
 }
+
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
+
+
 pub struct MveSelectedLeg {
     pub event_ticker: String,
     pub market_ticker: String,
     pub side: String,
 }
+
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
+
+
 pub struct PriceRange {
     pub start: String,
     pub end: String,
     pub step: String,
 }
+
+
 #[derive(Debug, Clone, Serialize, Deserialize, Display)]
 #[display("All markets {:?}", markets)]
+
+
 pub struct GetMarketsResponse {
     pub cursor: Option<String>,
     pub markets: Vec<Market>,
 }
+
+
 #[derive(Debug, Clone, Serialize, Deserialize, Display)]
 #[display("Market {:?}", market)]
+
+
 pub struct GetMarketResponse {
     pub market: Market,
 }
+
+
 #[derive(Serialize)]
+
+
 pub struct MarketsQuery {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub limit: Option<u16>,
@@ -124,10 +148,16 @@ pub struct MarketsQuery {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tickers: Option<String>,
 }
+
+
 #[derive(serde::Deserialize, Display, Debug)]
+
+
 pub struct GetMarketOrderbookResponse {
     pub orderbook: Orderbook,
 }
+
+
 #[derive(serde::Deserialize, Display, Debug)]
 #[display(
     "No(cents, total shares available) {:?} \nNo(dollars, shares available): {:?} \nYes(cents, total shares available) {:?} \nYes(dollars, shares available): {:?}",
@@ -136,27 +166,39 @@ pub struct GetMarketOrderbookResponse {
     yes,
     yes_dollars
 )]
+
+
 pub struct Orderbook {
     pub no: Option<Vec<(u64, u64)>>,
     pub no_dollars: Option<Vec<(String, u64)>>,
     pub yes: Option<Vec<(u64, u64)>>,
     pub yes_dollars: Option<Vec<(String, u64)>>,
 }
+
+
 #[derive(Serialize)]
+
+
 pub struct OrderbookQuery {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub depth: Option<u128>,
 }
+
+
 #[derive(Debug, Clone, Deserialize, Display)]
 #[display(
     "candles: {} markets (adjusted_end_ts={})",
     "self.market_tickers.len()",
     "self.adjusted_end_ts"
 )]
+
+
 pub struct GetMarketCandlesticksResponse {
     pub market_candlesticks: Vec<Candlestick>,
     pub market_ticker: String,
 }
+
+
 #[derive(Debug, Clone, Deserialize, Display)]
 #[display(
     "ts={} vol={} oi={:?} price[{}] bid[{}] ask[{}]",
@@ -167,6 +209,8 @@ pub struct GetMarketCandlesticksResponse {
     "self.yes_bid",
     "self.yes_ask"
 )]
+
+
 pub struct Candlestick {
     pub end_period_ts: i64,
     pub open_interest: Option<u32>,
@@ -179,6 +223,8 @@ pub struct Candlestick {
     #[serde(default)]
     pub no_bid: Option<SideOhlc>,
 }
+
+
 #[derive(Debug, Clone, Deserialize, Display)]
 #[display(
     "prev={:?} o={:?} h={:?} l={:?} c={:?}",
@@ -188,6 +234,8 @@ pub struct Candlestick {
     "self.low",
     "self.close"
 )]
+
+
 pub struct PriceStats {
     pub open: Option<u32>,
     pub open_dollars: Option<String>,
@@ -206,6 +254,8 @@ pub struct PriceStats {
     pub previous: Option<u32>,
     pub previous_dollars: Option<String>,
 }
+
+
 #[derive(Debug, Clone, Deserialize, Display)]
 #[display("O/H/L/C={}/{}/{}/{}", "self.open", "self.high", "self.low", "self.close")]
 pub struct SideOhlc {
@@ -218,12 +268,16 @@ pub struct SideOhlc {
     pub close: u32,
     pub close_dollars: String,
 }
+
+
 #[derive(Serialize)]
 pub struct CandlesticksQuery {
     pub start_ts: i64,
     pub end_ts: i64,
     pub period_interval: u32,
 }
+
+
 #[derive(Serialize)]
 pub struct GetTradesQuery {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -237,12 +291,16 @@ pub struct GetTradesQuery {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub max_ts: Option<u64>,
 }
+
+
 #[derive(Debug, Clone, Deserialize, Display)]
 #[display("All trades available: {:?}", trades)]
 pub struct GetTradesResponse {
     pub cursor: Option<String>,
     pub trades: Vec<Trade>,
 }
+
+
 #[derive(serde::Deserialize, Display, Debug, Clone)]
 #[display("Trade: {} {} @ ${} ({})", ticker, count, price, taker_side)]
 pub struct Trade {

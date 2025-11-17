@@ -1,6 +1,10 @@
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
+
+
 #[derive(Serialize, Debug, Clone)]
+
+
 pub struct AmendOrderRequest {
     pub ticker: String,
     pub side: String,
@@ -13,14 +17,22 @@ pub struct AmendOrderRequest {
     pub no_price_dollars: Option<String>,
     pub count: Option<u64>,
 }
+
+
 #[derive(Deserialize, Display, Debug, Clone)]
 #[display("AmendOrderResponse {{ old_order: {old_order:?}, order: {order:?} }}")]
+
+
 pub struct AmendOrderResponse {
     pub old_order: Order,
     pub order: Order,
 }
+
+
 #[derive(Deserialize, Debug, Clone, Serialize, Display)]
 #[display("order number {}, user number {}, side {}", order_id, user_id, side)]
+
+
 pub struct Order {
     pub order_id: String,
     pub user_id: String,
@@ -55,35 +67,63 @@ pub struct Order {
     pub cancel_order_on_pause: Option<bool>,
     pub order_error: Option<OrderError>,
 }
+
+
 #[derive(serde::Deserialize, Debug, Clone, Serialize)]
+
+
 pub struct OrderError {
     pub code: Option<String>,
     pub message: Option<String>,
     pub details: Option<String>,
     pub service: Option<String>,
 }
+
+
 #[derive(serde::Deserialize, serde::Serialize)]
+
+
 pub struct BatchCancelOrdersResponse {
     pub orders: Vec<Order>,
 }
+
+
 #[derive(serde::Serialize, serde::Deserialize)]
+
+
 pub struct BatchCancelOrdersRequest {
     pub order_ids: Vec<String>,
 }
+
+
 #[derive(serde::Deserialize)]
+
+
 pub struct BatchCreateOrdersResponse {
     pub orders: Vec<String>,
 }
+
+
 #[derive(serde::Serialize)]
+
+
 pub struct BatchCreateOrdersRequest {
     orders: Vec<Order>,
 }
+
+
 #[derive(serde::Deserialize, serde::Serialize, Debug)]
+
+
 pub struct CancelOrderResponse {
     pub order: Order,
     pub reduced_by: Option<u64>,
 }
+
+
 #[derive(Serialize, Deserialize, Debug, Clone)]
+
+
 pub struct CreateOrderRequest {
     pub ticker: String,
     pub side: String,
@@ -105,35 +145,63 @@ pub struct CreateOrderRequest {
     pub order_group_id: Option<String>,
     pub cancel_order_on_pause: Option<bool>,
 }
+
+
 #[derive(Deserialize, Serialize, Debug, Clone, Display)]
 #[display("order: {}", order)]
+
+
 pub struct CreateOrderResponse {
     pub order: Order,
 }
+
+
 #[derive(serde::Serialize)]
+
+
 pub struct CreateOrderGroupRequest {
     pub contracts_limit: u64,
 }
+
+
 #[derive(serde::Deserialize, Debug, Clone)]
+
+
 pub struct CreateOrderGroupResponse {
     pub order_group_id: String,
 }
+
+
 #[derive(serde::Deserialize, Debug, Clone)]
+
+
 pub struct DecreaseOrderResponse {
     pub order: Order,
 }
+
+
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+
+
 pub struct DecreaseOrderRequest {
     pub reduce_by: u64,
     pub reduce_to: u64,
 }
+
+
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+
+
 pub struct GetBalanceResponse {
     pub balance: u64,
     pub portfolio_value: u64,
     pub updated_ts: u64,
 }
+
+
 #[derive(serde::Serialize, Default, Debug, Clone)]
+
+
 pub struct GetFillsParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ticker: Option<String>,
@@ -148,7 +216,11 @@ pub struct GetFillsParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cursor: Option<String>,
 }
+
+
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+
+
 pub struct Fill {
     pub fill_id: String,
     pub trade_id: String,
@@ -168,34 +240,52 @@ pub struct Fill {
     pub created_time: String,
     pub ts: u64,
 }
+
+
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+
+
 pub struct GetFillsResponse {
     pub fills: Vec<Fill>,
     pub cursor: String,
 }
+
+
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct GetOrderResponse {
     pub order: Order,
 }
+
+
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct GetOrderGroupResponse {
     pub is_auto_cancel_enabled: bool,
     pub orders: Vec<String>,
 }
+
+
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct OrderGroup {
     pub id: String,
     pub is_auto_cancel_enabled: bool,
 }
+
+
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+
+
 pub struct GetOrderGroupsResponse {
     pub order_groups: Vec<OrderGroup>,
     pub cursor: Option<String>,
 }
+
+
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct GetOrderQueuePositionResponse {
     pub queue_position: u64,
 }
+
+
 #[derive(serde::Serialize, Default, Debug, Clone)]
 pub struct GetOrdersParams {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -213,11 +303,17 @@ pub struct GetOrdersParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cursor: Option<String>,
 }
+
+
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+
+
 pub struct GetOrdersResponse {
     pub orders: Vec<Order>,
     pub cursor: Option<String>,
 }
+
+
 #[derive(serde::Serialize, Default, Debug, Clone)]
 pub struct GetPositionsParams {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -233,6 +329,8 @@ pub struct GetPositionsParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub event_ticker: Option<String>,
 }
+
+
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct MarketPosition {
     pub market_ticker: Option<String>,
@@ -243,6 +341,8 @@ pub struct MarketPosition {
     pub resting_order_count: Option<u64>,
     pub total_traded: Option<u64>,
 }
+
+
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct EventPosition {
     pub event_ticker: Option<String>,
@@ -253,32 +353,44 @@ pub struct EventPosition {
     pub resting_order_count: Option<u64>,
     pub total_traded: Option<u64>,
 }
+
+
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone, Display)]
 #[display(
     "all market positions {:?}, all event positions: {:?}",
     market_positions,
     event_positions
 )]
+
+
 pub struct GetPositionsResponse {
     pub cursor: Option<String>,
     pub market_positions: Vec<MarketPosition>,
     pub event_positions: Vec<EventPosition>,
 }
+
+
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct GetQueuePositionsResponse {
     pub queue_positions: Vec<QueuePositionObj>,
 }
+
+
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct QueuePositionObj {
     order_id: String,
     market_ticker: String,
     queue_position: u64,
 }
+
+
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct GetQueueParams {
     pub market_tickers: Option<String>,
     pub event_ticker: Option<String>,
 }
+
+
 #[derive(serde::Serialize, Default, Debug, Clone)]
 pub struct GetSettlementsParams {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -294,6 +406,8 @@ pub struct GetSettlementsParams {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub max_ts: Option<u64>,
 }
+
+
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Settlement {
     pub ticker: String,
@@ -308,17 +422,25 @@ pub struct Settlement {
     pub fee_cost: Option<String>,
     pub value: u64,
 }
+
+
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct GetSettlementsResponse {
     pub settlements: Vec<Settlement>,
     pub cursor: String,
 }
+
+
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct GetTotalRestingOrderValueResponse {
     pub total_resting_order_value: u64,
 }
+
+
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct DeleteOrderGroupResponse {
     pub body: Option<String>,
 }
+
+
 pub struct ResetOrderGroupResponse {}

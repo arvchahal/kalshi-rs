@@ -3,14 +3,19 @@ use serde::{Deserialize, Serialize};
 pub struct GetMilestonesResponse {
     pub milestones: Vec<Milestone>,
 }
+
+
 #[derive(Debug, Deserialize, Serialize)]
 pub struct GetMilestoneResponse {
     pub milestone: Milestone,
 }
+
+
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Milestone {
     pub id: String,
 }
+
 #[derive(Debug, Serialize)]
 pub struct MilestonesQuery {
     #[serde(skip_serializing_if = "Option::is_none")]

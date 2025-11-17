@@ -5,11 +5,15 @@ use crate::exchange::models::{
     GetExcahngeStatus, GetExchangeAnnouncementsResponse, GetExchangeScheduleResponse,
     GetUserDataTimestampResponse,
 };
+
+
 const GET_EXCHANGE_ANNOUNCEMENTS: &str = "/trade-api/v2/exchange/announcements";
 const GET_EXCHANGE_SCHEDULE: &str = "/trade-api/v2/exchange/schedule";
 const GET_EXCHANGE_STATUS: &str = "/trade-api/v2/exchange/status";
 const GET_USER_DATA_TIMESTAMP: &str = "/trade-api/v2/exchange/user_data_timestamp";
+
 impl KalshiClient {
+
     pub async fn get_exchange_announcements(
         &self,
     ) -> Result<GetExchangeAnnouncementsResponse, KalshiError> {
@@ -25,6 +29,8 @@ impl KalshiClient {
             ))?;
         Ok(data)
     }
+
+
     pub async fn get_exchange_schedule(
         &self,
     ) -> Result<GetExchangeScheduleResponse, KalshiError> {
@@ -35,6 +41,8 @@ impl KalshiClient {
             ))?;
         Ok(data)
     }
+
+
     pub async fn get_exchange_status(&self) -> Result<GetExcahngeStatus, KalshiError> {
         let resp = self.unauthenticated_get(GET_EXCHANGE_STATUS).await?;
         let data: GetExcahngeStatus = serde_json::from_str(&resp)
@@ -47,6 +55,8 @@ impl KalshiClient {
             })?;
         Ok(data)
     }
+
+
     pub async fn get_user_data_timestamp(
         &self,
     ) -> Result<GetUserDataTimestampResponse, KalshiError> {

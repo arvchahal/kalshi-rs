@@ -1,5 +1,7 @@
 use derive_more::Display;
 use serde::Deserialize;
+
+
 #[derive(Deserialize, Display, Debug, Clone)]
 #[display(
     "AssociatedEvent {{ ticker: {ticker}, is_yes_only: {is_yes_only}, size_min: {size_min:?}, size_max: {size_max:?}, active_quoters: {active_quoters:?} }}"
@@ -11,6 +13,8 @@ pub struct AssociatedEvent {
     pub size_min: Option<u64>,
     pub active_quoters: Vec<String>,
 }
+
+
 #[derive(Deserialize, Display, Debug, Clone)]
 #[display(
     "MultivariateContract {{ collection_ticker: {collection_ticker}, title: {title} }}"
@@ -31,6 +35,8 @@ pub struct MultivariateContract {
     pub size_max: u64,
     pub functional_description: String,
 }
+
+
 #[derive(Deserialize, Display, Debug, Clone)]
 #[display(
     "GetMultivariateEventCollectionResponse {{ multivariate_contract: {multivariate_contract} }}"
@@ -38,6 +44,8 @@ pub struct MultivariateContract {
 pub struct GetMultivariateEventCollectionResponse {
     pub multivariate_contract: MultivariateContract,
 }
+
+
 #[derive(Deserialize, Display, Debug, Clone)]
 #[display(
     "GetMultivariateEventCollectionsResponse {{ cursor: {cursor:?}, multivariate_contracts: {multivariate_contracts:?} }}"

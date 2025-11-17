@@ -5,16 +5,19 @@ use crate::markets::models::{
     GetMarketResponse, GetMarketsResponse, GetTradesQuery, GetTradesResponse,
     MarketsQuery, OrderbookQuery,
 };
+
 const GET_MARKETS: &str = "/trade-api/v2/markets";
 const GET_MARKET: &str = "/trade-api/v2/markets/{}";
 const GET_TRADES: &str = "/trade-api/v2/markets/trades";
 const GET_MARKET_ORDERBOOK: &str = "/trade-api/v2/markets/{}/orderbook";
 const GET_MARKET_CANDLESTICKS: &str = "/trade-api/v2/series/{}/markets/{}/candlesticks";
+
 impl KalshiClient {
     pub async fn get_all_markets(
         &self,
         params: &MarketsQuery,
     ) -> Result<GetMarketsResponse, KalshiError> {
+        // Only append '?' if there are actual query params to avoid malformed URLs
         let query = serde_urlencoded::to_string(&params)
             .map_err(|e| KalshiError::Other(
                 format!("Failed to serialize params: {}", e),
@@ -35,6 +38,8 @@ impl KalshiClient {
             })?;
         Ok(data)
     }
+
+
     pub async fn get_market(
         &self,
         ticker: &str,
@@ -51,6 +56,8 @@ impl KalshiClient {
             })?;
         Ok(data)
     }
+
+
     pub async fn get_trades(
         &self,
         limit: Option<u16>,
@@ -86,6 +93,8 @@ impl KalshiClient {
             })?;
         Ok(data)
     }
+
+
     pub async fn get_market_orderbook(
         &self,
         ticker: &str,
@@ -116,6 +125,8 @@ impl KalshiClient {
             })?;
         Ok(data)
     }
+
+    
     pub async fn get_market_candlesticks(
         &self,
         series_ticker: &str,
@@ -124,6 +135,7 @@ impl KalshiClient {
         end_ts: i64,
         period_interval: u32,
     ) -> Result<GetMarketCandlesticksResponse, KalshiError> {
+        // First {} is series_ticker, second {} is market ticker - order matters here
         let base_url = GET_MARKET_CANDLESTICKS
             .replacen("{}", series_ticker, 1)
             .replacen("{}", ticker, 1);
