@@ -1,5 +1,5 @@
-use kalshi_rust_sdk::KalshiClient;
-use kalshi_rust_sdk::auth::Account;
+use kalshi_rs::KalshiClient;
+use kalshi_rs::auth::Account;
 #[tokio::main]
 ///2 main ways to set up auth
 ///first is most reccoemnded

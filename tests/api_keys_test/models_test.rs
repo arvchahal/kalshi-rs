@@ -1,4 +1,4 @@
-use kalshi_rust_sdk::api_keys::models::*;
+use kalshi_rs::api_keys::models::*;
 #[test]
 fn test_api_key_deserialization() {
     let json = r#"{"api_key_id":"k","name":"n"}"#;

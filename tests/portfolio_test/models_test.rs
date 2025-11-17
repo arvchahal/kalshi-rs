@@ -1,4 +1,4 @@
-use kalshi_rust_sdk::portfolio::models::*;
+use kalshi_rs::portfolio::models::*;
 #[test]
 fn test_order_deserialization() {
     let json = r#"{"order_id":"o","user_id":"u","client_order_id":"c","ticker":"t","side":"yes","action":"buy","type":"limit","status":"resting"}"#;

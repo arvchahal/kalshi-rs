@@ -1,5 +1,5 @@
 use crate::common::setup_client;
-use kalshi_rust_sdk::events::models::*;
+use kalshi_rs::events::models::*;
 use std::time::Duration;
 use tokio::time::sleep;
 /// ALL EVENTS TESTS

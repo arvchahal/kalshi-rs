@@ -1,5 +1,5 @@
 use crate::common::setup_client;
-use kalshi_rust_sdk::markets::models::*;
+use kalshi_rs::markets::models::*;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tokio::time::sleep;
 /// MARKETS LIST TESTS

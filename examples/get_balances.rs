@@ -1,6 +1,6 @@
-use kalshi_rust_sdk::KalshiClient;
-use kalshi_rust_sdk::auth::Account;
-use kalshi_rust_sdk::portfolio::models::*;
+use kalshi_rs::KalshiClient;
+use kalshi_rs::auth::Account;
+use kalshi_rs::portfolio::models::*;
 #[tokio::main]
 /// get your balances
 ///

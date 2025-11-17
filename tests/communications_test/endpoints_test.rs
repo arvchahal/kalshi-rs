@@ -1,6 +1,6 @@
 use crate::common::setup_client;
-use kalshi_rust_sdk::communications::models::*;
-use kalshi_rust_sdk::markets::models::MarketsQuery;
+use kalshi_rs::communications::models::*;
+use kalshi_rs::markets::models::MarketsQuery;
 use std::time::Duration;
 use tokio::time::sleep;
 /// =============================================================================

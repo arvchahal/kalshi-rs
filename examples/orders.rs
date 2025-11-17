@@ -1,7 +1,7 @@
-use kalshi_rust_sdk::KalshiClient;
-use kalshi_rust_sdk::auth::Account;
-use kalshi_rust_sdk::markets::models::*;
-use kalshi_rust_sdk::portfolio::models::*;
+use kalshi_rs::KalshiClient;
+use kalshi_rs::auth::Account;
+use kalshi_rs::markets::models::*;
+use kalshi_rs::portfolio::models::*;
 #[tokio::main]
 /// Create, cancel, and batch manage orders
 ///

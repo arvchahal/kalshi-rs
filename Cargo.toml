@@ -21,7 +21,7 @@ reqwest = { version = "0.12", features = ["json"] }
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-derive_more = "2.0"
+derive_more = { version = "2.0.1", features = ["full"] }
 rsa = "0.9"
 sha2 = "0.10"
 base64 = "0.22"
@@ -33,3 +33,4 @@ serde_urlencoded = "0.7"
 prettyplease = "0.2"
 syn = { version = "2", features = ["full", "parsing"] }
 walkdir = "2"
+

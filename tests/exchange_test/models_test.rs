@@ -1,4 +1,4 @@
-use kalshi_rust_sdk::exchange::models::*;
+use kalshi_rs::exchange::models::*;
 #[test]
 fn test_announcements_deserialization() {
     let json = r#"{"announcements":[]}"#;

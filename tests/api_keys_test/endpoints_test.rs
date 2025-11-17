@@ -1,10 +1,8 @@
 use crate::common::setup_client;
-use kalshi_rust_sdk::api_keys::models::*;
+use kalshi_rs::api_keys::models::*;
 use std::time::Duration;
 use tokio::time::sleep;
-/// =============================================================================
-/// API KEYS ENDPOINTS TESTS
-/// =============================================================================
+/// api keys endpoints except the one where you provide your own api key because I was lazy
 #[tokio::test]
 async fn test_get_api_keys_list() {
     let client = setup_client();

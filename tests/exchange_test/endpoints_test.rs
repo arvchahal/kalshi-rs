@@ -1,5 +1,5 @@
 use crate::common::setup_client;
-use kalshi_rust_sdk::exchange::models::*;
+use kalshi_rs::exchange::models::*;
 use std::time::Duration;
 use tokio::time::sleep;
 /// =============================================================================

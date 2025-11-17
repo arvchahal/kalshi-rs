@@ -1,5 +1,5 @@
 use crate::common::setup_client;
-use kalshi_rust_sdk::series::models::*;
+use kalshi_rs::series::models::*;
 use tokio::time::{sleep, Duration};
 #[tokio::test]
 async fn test_get_all_series() {

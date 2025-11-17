@@ -1,4 +1,4 @@
-use kalshi_rust_sdk::structured_targets::models::*;
+use kalshi_rs::structured_targets::models::*;
 #[test]
 fn test_structured_target_deserialization() {
     let json = r#"{

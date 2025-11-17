@@ -1,5 +1,5 @@
 use crate::common::setup_client;
-use kalshi_rust_sdk::structured_targets::models::*;
+use kalshi_rs::structured_targets::models::*;
 use tokio::time::{sleep, Duration};
 #[tokio::test]
 async fn test_get_all_structured_targets() {

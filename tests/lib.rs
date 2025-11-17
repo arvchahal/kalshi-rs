@@ -1,4 +1,4 @@
-use kalshi_rust_sdk::portfolio;
+use kalshi_rs::portfolio;
 pub mod common;
 pub mod events_test;
 pub mod exchange_test;

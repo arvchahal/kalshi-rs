@@ -1,5 +1,5 @@
 use crate::common::setup_client;
-use kalshi_rust_sdk::portfolio::models::*;
+use kalshi_rs::portfolio::models::*;
 use std::time::Duration;
 use tokio::time::sleep;
 #[tokio::test]
@@ -242,7 +242,7 @@ async fn test_get_queue_positions() {
     let client = setup_client();
     let markets = client
         .get_all_markets(
-            &kalshi_rust_sdk::markets::models::MarketsQuery {
+            &kalshi_rs::markets::models::MarketsQuery {
                 limit: Some(1),
                 cursor: None,
                 event_ticker: None,
