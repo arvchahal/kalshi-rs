@@ -2,9 +2,7 @@ use crate::common::setup_client;
 use kalshi_rust_sdk::events::models::*;
 use std::time::Duration;
 use tokio::time::sleep;
-/// =============================================================================
 /// ALL EVENTS TESTS
-/// =============================================================================
 #[tokio::test]
 async fn test_get_all_events_basic() {
     let client = setup_client();
@@ -48,9 +46,7 @@ async fn test_get_all_events_with_cursor() {
     );
     println!("Pagination test completed (server may ignore cursor).");
 }
-/// =============================================================================
 /// SINGLE EVENT TESTS
-/// =============================================================================
 #[tokio::test]
 async fn test_get_event_single() {
     let client = setup_client();
@@ -120,16 +116,12 @@ async fn test_get_event_metadata() {
         println!("Settlement Source: {} ({})", src.name, src.url);
     }
 }
-/// =============================================================================
 /// COMPREHENSIVE EVENTS TEST
-/// =============================================================================
 #[tokio::test]
 async fn test_events_endpoints_comprehensive() {
     let client = setup_client();
-    println!("\n{}", "=".repeat(80));
     println!("COMPREHENSIVE EVENTS ENDPOINTS TEST");
     println!("{}\n", "=".repeat(80));
-    println!("1. Getting all events...");
     let params = EventsQuery {
         limit: Some(5),
         cursor: None,
@@ -156,7 +148,5 @@ async fn test_events_endpoints_comprehensive() {
     } else {
         println!("No events available for detailed test run.");
     }
-    println!("{}", "=".repeat(80));
     println!("ALL EVENTS ENDPOINT TESTS PASSED");
-    println!("{}\n", "=".repeat(80));
 }

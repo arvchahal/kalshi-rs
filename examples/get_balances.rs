@@ -41,10 +41,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let orders = client.get_orders(&orders_params).await?;
     println!("\nPending Orders ({}):", orders.orders.len());
     for order in orders.orders.iter().take(5) {
-        if let (Some(remaining), Some(price)) = (
-            order.remaining_count,
-            order.yes_price,
-        ) {
+        if let (Some(remaining), Some(price))
+            = (order.remaining_count, order.yes_price) {
             println!("  {} - {} @ {} cents", order.ticker, remaining, price);
         }
     }

@@ -96,6 +96,7 @@ jobs:
           KALSHI_API_KEY_ID: ${{ secrets.KALSHI_API_KEY_ID }}
         run: |
           echo "$KALSHI_PRIVATE_KEY" > kalshi_private.pem
+          echo "KALSHI_PK_FILE_PATH=kalshi_private.pem" >> $GITHUB_ENV
           echo "KALSHI_API_KEY_ID=$KALSHI_API_KEY_ID" >> $GITHUB_ENV
 
       - name: Run live API tests (endpoints)
