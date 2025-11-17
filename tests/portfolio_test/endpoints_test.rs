@@ -25,13 +25,15 @@ async fn test_get_positions_default() {
 async fn test_get_positions_with_limit() {
     let client = setup_client();
     let params = GetPositionsParams {
-        limit: Some(10),
+        limit: Some(2),
         ..Default::default()
     };
     let result = client.get_positions(&params).await;
     assert!(result.is_ok());
     let positions = result.unwrap();
-    assert!(positions.market_positions.len() <= 10);
+    println!("{:?}", positions.market_positions.len());
+    assert!(positions.market_positions.len() <= 3);
+    
 }
 #[tokio::test]
 async fn test_get_positions_unsettled_only() {

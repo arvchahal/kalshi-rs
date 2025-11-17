@@ -254,7 +254,8 @@ pub struct EventPosition {
     pub resting_order_count: Option<u64>,
     pub total_traded: Option<u64>,
 }
-#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, Display)]
+#[display("all market positions {:?}, all event positions: {:?}", market_positions, event_positions)]
 pub struct GetPositionsResponse {
     pub cursor: Option<String>,
     pub market_positions: Vec<MarketPosition>,

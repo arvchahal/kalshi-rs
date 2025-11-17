@@ -5,7 +5,7 @@ use crate::client::KalshiClient;
 use crate::errors::KalshiError;
 use serde_json::json;
 const GET_API_KEY: &str = "/trade-api/v2/api_keys";
-const GENERATE_API_KEY: &str = "/trade-api/v2/api_keys/generate/";
+const GENERATE_API_KEY: &str = "/trade-api/v2/api_keys/generate"; //TODO sometimes you need generate/ othertimes it does not need to make ticket with kalshi team
 const DELETE_API_KEY: &str = "/trade-api/v2/api_keys/{}";
 impl KalshiClient {
     /// GET /api-keys
