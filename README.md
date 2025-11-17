@@ -7,7 +7,7 @@
 <img alt="build status" src="https://img.shields.io/github/actions/workflow/status/arvchahal/kalshi-rs/tests.yaml?branch=master&style=for-the-badge" height="20">
 
 <br>
-A fast, strongly-typed Rust SDK for the **Kalshi exchange API**.
+A fast, strongly-typed Rust SDK for the Public Kalshi API with almost all endpoints supported.
 
 <br>
 
