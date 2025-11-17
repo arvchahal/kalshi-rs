@@ -113,7 +113,7 @@ export KALSHI_PRIVATE_KEY_PATH="path/to/your/kalshi_private.pem"
 
 You can generate these keys from the Kalshi dashboard:
 
-➡ **API Keys Setup:** [https://docs.kalshi.com/introduction/#authentication](https://docs.kalshi.com/introduction/#authentication)
+ **API Keys Setup:** [API keys setup](https://docs.kalshi.com/getting_started/api_keys)
 
 Then run:
 
