@@ -240,7 +240,16 @@ async fn test_get_order_groups() {
 async fn test_get_queue_positions() {
     let client = setup_client();
     let markets = client
-        .get_all_markets(Some(1), None, None, None, None, None, None, None)
+        .get_all_markets(&kalshi_rust_sdk::markets::models::MarketsQuery {
+            limit: Some(1),
+            cursor: None,
+            event_ticker: None,
+            series_ticker: None,
+            max_close_ts: None,
+            min_close_ts: None,
+            status: None,
+            tickers: None,
+        })
         .await;
     if markets.is_err() || markets.as_ref().unwrap().markets.is_empty() {
         println!("Skipping - no markets available for queue position test");

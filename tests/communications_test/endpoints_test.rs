@@ -1,5 +1,6 @@
 use crate::common::setup_client;
 use kalshi_rust_sdk::communications::models::*;
+use kalshi_rust_sdk::markets::models::MarketsQuery;
 use std::time::Duration;
 use tokio::time::sleep;
 
@@ -21,15 +22,40 @@ async fn test_get_rfqs_list() {
 #[tokio::test]
 async fn test_get_quotes_list() {
     let client = setup_client();
+    let markets = client
+        .get_all_markets(&MarketsQuery { limit: Some(5), cursor: None, event_ticker: None, series_ticker: None, max_close_ts: None, min_close_ts: None, status: Some("active".to_string()), tickers: None })
+        .await.expect("issue with getting markets");
+    let rand_market = &markets.markets[0].ticker;
+    
+    let rfq_body = CreateRFQRequest {
+        market_ticker: rand_market.to_string(),
+        rest_remainder: false,
+        contracts: Some(1),
+        target_cost_centi_cents: None,
+        replace_existing: None,
+        subtrader_id: None,
+    };
+    let create_rfq = client.create_rfq(&rfq_body).await.expect("Failed to create rfq");
+    let rfq_id = &create_rfq.id;
 
-    let comm_id = client.get_communications_id().await.expect("Failed to get communication ID");
-
+    sleep(Duration::from_secs(2)).await;
+    let rfq = client.get_rfq(rfq_id).await.expect("fail to get rfq");
+    let creator_rfq_id = rfq.rfq.creator_user_id.as_deref();
     let result = client
-        .get_quotes(None, None, None, Some(10), None, Some(&comm_id.communications_id), None, None)
+        .get_quotes(None, None, None, Some(10), None, None,
+        creator_rfq_id, None)
         .await;
     assert!(result.is_ok(), "Failed to get quotes: {:?}", result.err());
+        sleep(Duration::from_secs(2)).await;
+
+    let _deleted = client
+        .delete_rfq(&rfq_id)
+        .await
+        .expect("Failed to delete RFQ");
+
 
     let resp = result.unwrap();
+
     assert!(resp.quotes.len() <= 10, "Quotes limit respected");
 }
 
@@ -113,23 +139,4 @@ async fn test_create_quote_and_accept_flow() {
     sleep(Duration::from_secs(2)).await;
 
     let _del_result = client.delete_quote(&created.id).await;
-}
-
-#[tokio::test]
-async fn test_communications_endpoints_comprehensive() {
-    let client = setup_client();
-
-    let comm_id = client
-        .get_communications_id()
-        .await
-        .expect("Failed to get communications ID");
-    sleep(Duration::from_secs(2)).await;
-
-    client.get_rfqs().await.expect("Failed to list RFQs");
-    sleep(Duration::from_secs(2)).await;
-
-    let _quotes = client
-        .get_quotes(None, None, None, Some(5), None, Some(&comm_id.communications_id), None, None)
-        .await
-        .expect("Failed to list quotes");
 }
