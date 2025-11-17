@@ -4,7 +4,6 @@
 
 use kalshi_rust_sdk::KalshiClient;
 use kalshi_rust_sdk::auth::Account;
-use kalshi_rust_sdk::portfolio::models::*;
 #[tokio::main]
 async fn main()-> Result<(), Box<dyn std::error::Error>>{
     //2 main ways to set up auth

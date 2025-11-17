@@ -94,7 +94,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     for trade in trades.trades.iter().take(5) {
         println!(
             "      {} contracts @ ${:.2} ({})",
-            trade.count, trade.price, trade.take_side
+            trade.count, trade.price, trade.taker_side
         );
     }
 
