@@ -14,7 +14,9 @@ impl KalshiClient {
         params: &EventsQuery,
     ) -> Result<GetEventsResponse, KalshiError> {
         let query = serde_urlencoded::to_string(params)
-            .map_err(|e| KalshiError::Other(format!("Failed to serialize params: {}", e)))?;
+            .map_err(|e| KalshiError::Other(
+                format!("Failed to serialize params: {}", e),
+            ))?;
         let url = if query.is_empty() {
             GET_EVENTS.to_string()
         } else {

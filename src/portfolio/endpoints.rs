@@ -53,12 +53,10 @@ impl KalshiClient {
         let (status, resp) = self
             .authenticated_delete(BATCH_CANCEL_ORDERS, Some(&body))
             .await?;
-
-        // Check for 200 
         if status.as_u16() != 200 {
-            return Err(KalshiError::Other(
-                format!("Expected 200 OK, got {}: {}", status, resp)
-            ));
+            return Err(
+                KalshiError::Other(format!("Expected 200 OK, got {}: {}", status, resp)),
+            );
         }
         let data: BatchCancelOrdersResponse = serde_json::from_str(&resp)
             .map_err(|e| {
@@ -85,14 +83,16 @@ impl KalshiClient {
     ) -> Result<CancelOrderResponse, KalshiError> {
         let url: &str = &CANCEL_ORDER.replace("{}", &order_id);
         let (status, resp) = self.authenticated_delete::<str>(url, None).await?;
-
-        // Handle empty response from DELETE endpoint (though cancel_order typically returns order data)
         if resp.trim().is_empty() {
-            return Err(KalshiError::Other(
-                format!("Empty response from cancel_order API (status: {}). This is unexpected - the API should return the canceled order.", status)
-            ));
+            return Err(
+                KalshiError::Other(
+                    format!(
+                        "Empty response from cancel_order API (status: {}). This is unexpected - the API should return the canceled order.",
+                        status
+                    ),
+                ),
+            );
         }
-
         let data: CancelOrderResponse = serde_json::from_str(&resp)
             .map_err(|e| KalshiError::Other(
                 format!("Parse error: {e}. Response: {resp}"),
@@ -140,12 +140,11 @@ impl KalshiClient {
     ) -> Result<DeleteOrderGroupResponse, KalshiError> {
         let url = DELETE_ORDER_GROUP.replace("{}", order_group_id);
         let (status, resp) = self.authenticated_delete::<str>(&url, None).await?;
-
-        // DELETE endpoints often return 204 No Content with empty body
         if status.as_u16() == 204 || resp.trim().is_empty() {
-            return Ok(DeleteOrderGroupResponse { body: None });
+            return Ok(DeleteOrderGroupResponse {
+                body: None,
+            });
         }
-
         let data: DeleteOrderGroupResponse = serde_json::from_str(&resp)
             .map_err(|e| KalshiError::Other(
                 format!("Failed to serialize request body: {}", e),

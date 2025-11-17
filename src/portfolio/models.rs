@@ -21,7 +21,6 @@ pub struct AmendOrderResponse {
 }
 #[derive(Deserialize, Debug, Clone, Serialize, Display)]
 #[display("order number {}, user number {}, side {}", order_id, user_id, side)]
-
 pub struct Order {
     pub order_id: String,
     pub user_id: String,
@@ -255,7 +254,11 @@ pub struct EventPosition {
     pub total_traded: Option<u64>,
 }
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone, Display)]
-#[display("all market positions {:?}, all event positions: {:?}", market_positions, event_positions)]
+#[display(
+    "all market positions {:?}, all event positions: {:?}",
+    market_positions,
+    event_positions
+)]
 pub struct GetPositionsResponse {
     pub cursor: Option<String>,
     pub market_positions: Vec<MarketPosition>,

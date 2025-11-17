@@ -169,12 +169,9 @@ where
         .header("KALSHI-ACCESS-KEY", key_id)
         .header("KALSHI-ACCESS-TIMESTAMP", &timestamp)
         .header("KALSHI-ACCESS-SIGNATURE", signature);
-
-    // Add JSON body if provided
     if let Some(b) = body {
         request = request.json(b);
     }
-
     let resp = request.send().await?;
     let status = resp.status();
     let response_body = resp.text().await?;

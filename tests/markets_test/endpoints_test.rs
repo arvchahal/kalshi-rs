@@ -7,7 +7,18 @@ use tokio::time::sleep;
 async fn test_get_all_markets_basic() {
     let client = setup_client();
     let result = client
-        .get_all_markets(&MarketsQuery { limit: Some(5), cursor: None, event_ticker: None, series_ticker: None, max_close_ts: None, min_close_ts: None, status: Some("active".to_string()), tickers: None })
+        .get_all_markets(
+            &MarketsQuery {
+                limit: Some(5),
+                cursor: None,
+                event_ticker: None,
+                series_ticker: None,
+                max_close_ts: None,
+                min_close_ts: None,
+                status: Some("active".to_string()),
+                tickers: None,
+            },
+        )
         .await;
     assert!(result.is_ok(), "Failed to get markets: {:?}", result.err());
     let response = result.unwrap();
@@ -26,7 +37,18 @@ async fn test_get_all_markets_basic() {
 async fn test_get_all_markets_with_event_ticker_filter() {
     let client = setup_client();
     let base = client
-        .get_all_markets(&MarketsQuery { limit: Some(1), cursor: None, event_ticker: None, series_ticker: None, max_close_ts: None, min_close_ts: None, status: None, tickers: None })
+        .get_all_markets(
+            &MarketsQuery {
+                limit: Some(1),
+                cursor: None,
+                event_ticker: None,
+                series_ticker: None,
+                max_close_ts: None,
+                min_close_ts: None,
+                status: None,
+                tickers: None,
+            },
+        )
         .await
         .unwrap();
     if base.markets.is_empty() {
@@ -36,7 +58,18 @@ async fn test_get_all_markets_with_event_ticker_filter() {
     let event_ticker = base.markets[0].event_ticker.clone();
     println!("Filtering by event_ticker={}", event_ticker);
     let result = client
-        .get_all_markets(&MarketsQuery { limit: Some(5), cursor: None, event_ticker: Some(event_ticker.clone()), series_ticker: None, max_close_ts: None, min_close_ts: None, status: None, tickers: None })
+        .get_all_markets(
+            &MarketsQuery {
+                limit: Some(5),
+                cursor: None,
+                event_ticker: Some(event_ticker.clone()),
+                series_ticker: None,
+                max_close_ts: None,
+                min_close_ts: None,
+                status: None,
+                tickers: None,
+            },
+        )
         .await;
     assert!(result.is_ok(), "Failed to filter markets by event_ticker");
     let filtered = result.unwrap();
@@ -50,7 +83,18 @@ async fn test_get_all_markets_with_event_ticker_filter() {
 async fn test_get_single_market() {
     let client = setup_client();
     let markets = client
-        .get_all_markets(&MarketsQuery { limit: Some(1), cursor: None, event_ticker: None, series_ticker: None, max_close_ts: None, min_close_ts: None, status: Some("active".to_string()), tickers: None })
+        .get_all_markets(
+            &MarketsQuery {
+                limit: Some(1),
+                cursor: None,
+                event_ticker: None,
+                series_ticker: None,
+                max_close_ts: None,
+                min_close_ts: None,
+                status: Some("active".to_string()),
+                tickers: None,
+            },
+        )
         .await
         .unwrap();
     if markets.markets.is_empty() {
@@ -72,7 +116,18 @@ async fn test_get_single_market() {
 async fn test_get_market_orderbook() {
     let client = setup_client();
     let markets = client
-        .get_all_markets(&MarketsQuery { limit: Some(1), cursor: None, event_ticker: None, series_ticker: None, max_close_ts: None, min_close_ts: None, status: Some("active".to_string()), tickers: None })
+        .get_all_markets(
+            &MarketsQuery {
+                limit: Some(1),
+                cursor: None,
+                event_ticker: None,
+                series_ticker: None,
+                max_close_ts: None,
+                min_close_ts: None,
+                status: Some("active".to_string()),
+                tickers: None,
+            },
+        )
         .await
         .unwrap();
     if markets.markets.is_empty() {
@@ -92,7 +147,18 @@ async fn test_get_market_orderbook() {
 async fn test_get_trades_recent() {
     let client = setup_client();
     let markets = client
-        .get_all_markets(&MarketsQuery { limit: Some(1), cursor: None, event_ticker: None, series_ticker: None, max_close_ts: None, min_close_ts: None, status: Some("active".to_string()), tickers: None })
+        .get_all_markets(
+            &MarketsQuery {
+                limit: Some(1),
+                cursor: None,
+                event_ticker: None,
+                series_ticker: None,
+                max_close_ts: None,
+                min_close_ts: None,
+                status: Some("active".to_string()),
+                tickers: None,
+            },
+        )
         .await
         .unwrap();
     if markets.markets.is_empty() {
@@ -116,7 +182,18 @@ async fn test_get_trades_recent() {
 async fn test_get_market_candlesticks() {
     let client = setup_client();
     let markets = client
-        .get_all_markets(&MarketsQuery { limit: Some(1), cursor: None, event_ticker: None, series_ticker: None, max_close_ts: None, min_close_ts: None, status: Some("active".to_string()), tickers: None })
+        .get_all_markets(
+            &MarketsQuery {
+                limit: Some(1),
+                cursor: None,
+                event_ticker: None,
+                series_ticker: None,
+                max_close_ts: None,
+                min_close_ts: None,
+                status: Some("active".to_string()),
+                tickers: None,
+            },
+        )
         .await
         .unwrap();
     if markets.markets.is_empty() {
@@ -161,7 +238,18 @@ async fn test_markets_endpoints_comprehensive() {
     println!("{}\n", "=".repeat(80));
     println!("1. Getting all markets...");
     let markets = client
-        .get_all_markets(&MarketsQuery { limit: Some(5), cursor: None, event_ticker: None, series_ticker: None, max_close_ts: None, min_close_ts: None, status: Some("active".to_string()), tickers: None })
+        .get_all_markets(
+            &MarketsQuery {
+                limit: Some(5),
+                cursor: None,
+                event_ticker: None,
+                series_ticker: None,
+                max_close_ts: None,
+                min_close_ts: None,
+                status: Some("active".to_string()),
+                tickers: None,
+            },
+        )
         .await
         .expect("Failed to get markets");
     println!("   Markets retrieved: {}\n", markets.markets.len());

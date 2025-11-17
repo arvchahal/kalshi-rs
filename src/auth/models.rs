@@ -3,7 +3,6 @@ pub struct Account {
     private_key_pem: String,
     key_id: String,
 }
-
 impl Account {
     /// Create a new Account directly with credentials
     ///
@@ -19,7 +18,6 @@ impl Account {
     pub fn new(private_key_pem: String, key_id: String) -> Self {
         Self { private_key_pem, key_id }
     }
-
     /// Load private key from a file path with API key ID
     ///
     /// Accepts both relative and absolute paths:
@@ -39,11 +37,9 @@ impl Account {
         let private_key_pem = std::fs::read_to_string(path)?;
         Ok(Self::new(private_key_pem, key_id.into()))
     }
-
     pub fn private_key_pem(&self) -> &str {
         &self.private_key_pem
     }
-
     pub fn key_id(&self) -> &str {
         &self.key_id
     }

@@ -1,5 +1,4 @@
 use kalshi_rust_sdk::structured_targets::models::*;
-
 #[test]
 fn test_structured_target_deserialization() {
     let json = r#"{
@@ -13,7 +12,6 @@ fn test_structured_target_deserialization() {
         "source_id": "source-123",
         "last_updated_ts": "2024-01-15T10:30:00Z"
     }"#;
-
     let target: StructuredTarget = serde_json::from_str(json).unwrap();
     assert_eq!(target.id, "test-id-123");
     assert_eq!(target.name, "Test Target");
@@ -22,7 +20,6 @@ fn test_structured_target_deserialization() {
     assert_eq!(target.last_updated_ts, "2024-01-15T10:30:00Z");
     assert!(target.details.is_object());
 }
-
 #[test]
 fn test_get_structured_targets_response_deserialization() {
     let json = r#"{
@@ -46,14 +43,12 @@ fn test_get_structured_targets_response_deserialization() {
         ],
         "cursor": "next-page-cursor"
     }"#;
-
     let response: GetStructuredTargetsResponse = serde_json::from_str(json).unwrap();
     assert_eq!(response.structured_targets.len(), 2);
     assert_eq!(response.cursor, Some("next-page-cursor".to_string()));
     assert_eq!(response.structured_targets[0].id, "target-1");
     assert_eq!(response.structured_targets[1].id, "target-2");
 }
-
 #[test]
 fn test_get_structured_targets_response_no_cursor() {
     let json = r#"{
@@ -69,12 +64,10 @@ fn test_get_structured_targets_response_no_cursor() {
         ],
         "cursor": null
     }"#;
-
     let response: GetStructuredTargetsResponse = serde_json::from_str(json).unwrap();
     assert_eq!(response.structured_targets.len(), 1);
     assert_eq!(response.cursor, None);
 }
-
 #[test]
 fn test_get_structured_target_response_deserialization() {
     let json = r#"{
@@ -90,28 +83,30 @@ fn test_get_structured_target_response_deserialization() {
             "last_updated_ts": "2024-03-15T14:30:00Z"
         }
     }"#;
-
     let response: GetStructuredTargetResponse = serde_json::from_str(json).unwrap();
     assert_eq!(response.structured_target.id, "single-target");
     assert_eq!(response.structured_target.name, "Single Target");
     assert_eq!(response.structured_target.r#type, "venue");
     assert_eq!(response.structured_target.source_id, Some("venue-src".to_string()));
 }
-
 #[test]
 fn test_structured_targets_query_serialization() {
-    let query = StructuredTargetsQuery { limit: Some(10), cursor: None };
+    let query = StructuredTargetsQuery {
+        limit: Some(10),
+        cursor: None,
+    };
     let serialized = serde_urlencoded::to_string(&query).unwrap();
     assert_eq!(serialized, "limit=10");
 }
-
 #[test]
 fn test_structured_targets_query_no_limit() {
-    let query = StructuredTargetsQuery { limit: None, cursor: None };
+    let query = StructuredTargetsQuery {
+        limit: None,
+        cursor: None,
+    };
     let serialized = serde_urlencoded::to_string(&query).unwrap();
     assert_eq!(serialized, "");
 }
-
 #[test]
 fn test_structured_targets_query_with_cursor() {
     let query = StructuredTargetsQuery {
@@ -121,7 +116,6 @@ fn test_structured_targets_query_with_cursor() {
     let serialized = serde_urlencoded::to_string(&query).unwrap();
     assert_eq!(serialized, "limit=5&cursor=test-cursor-123");
 }
-
 #[test]
 fn test_structured_targets_query_cursor_only() {
     let query = StructuredTargetsQuery {
@@ -131,7 +125,6 @@ fn test_structured_targets_query_cursor_only() {
     let serialized = serde_urlencoded::to_string(&query).unwrap();
     assert_eq!(serialized, "cursor=cursor-abc");
 }
-
 #[test]
 fn test_structured_target_display() {
     let target = StructuredTarget {
@@ -142,14 +135,12 @@ fn test_structured_target_display() {
         source_id: Some("src-id".to_string()),
         last_updated_ts: "2024-01-01T00:00:00Z".to_string(),
     };
-
     let display = format!("{}", target);
     assert!(display.contains("test-id"));
     assert!(display.contains("Test Name"));
     assert!(display.contains("test_type"));
     assert!(display.contains("src-id"));
 }
-
 #[test]
 fn test_structured_target_with_complex_details() {
     let json = r#"{
@@ -168,28 +159,22 @@ fn test_structured_target_with_complex_details() {
         "source_id": "nba-api",
         "last_updated_ts": "2024-11-14T00:00:00Z"
     }"#;
-
     let target: StructuredTarget = serde_json::from_str(json).unwrap();
     assert_eq!(target.id, "complex-target");
-    
-    // Verify details can be accessed as JSON
     let details = &target.details;
     assert_eq!(details["team_name"], "Golden State Warriors");
-    assert_eq!(details["stats"]["wins"], 45);
+    assert_eq!(details["stats"] ["wins"], 45);
 }
-
 #[test]
 fn test_empty_structured_targets_list() {
     let json = r#"{
         "structured_targets": [],
         "cursor": null
     }"#;
-
     let response: GetStructuredTargetsResponse = serde_json::from_str(json).unwrap();
     assert!(response.structured_targets.is_empty());
     assert_eq!(response.cursor, None);
 }
-
 #[test]
 fn test_structured_target_missing_source_id() {
     let json = r#"{
@@ -199,7 +184,6 @@ fn test_structured_target_missing_source_id() {
         "details": {},
         "last_updated_ts": "2024-01-15T10:30:00Z"
     }"#;
-
     let target: StructuredTarget = serde_json::from_str(json).unwrap();
     assert_eq!(target.id, "test-id-123");
     assert_eq!(target.source_id, None);

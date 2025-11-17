@@ -59,7 +59,6 @@ pub struct PriceRange {
     pub end: String,
     pub step: String,
 }
-
 #[derive(Debug, Serialize)]
 pub struct EventsQuery {
     #[serde(skip_serializing_if = "Option::is_none")]

@@ -9,7 +9,10 @@ impl KalshiClient {
         limit: Option<u16>,
         cursor: Option<&str>,
     ) -> Result<GetSeriesListResponse, KalshiError> {
-        let params = SeriesQuery { limit, cursor: cursor.map(|s| s.to_string()) };
+        let params = SeriesQuery {
+            limit,
+            cursor: cursor.map(|s| s.to_string()),
+        };
         let query = serde_urlencoded::to_string(&params)
             .map_err(|e| KalshiError::Other(
                 format!("Failed to serialize params: {}", e),
@@ -21,9 +24,7 @@ impl KalshiClient {
         };
         let resp = self.unauthenticated_get(&url).await?;
         let data: GetSeriesListResponse = serde_json::from_str(&resp)
-            .map_err(|e| KalshiError::Other(
-                format!("Parse error: {e}."),
-            ))?;
+            .map_err(|e| KalshiError::Other(format!("Parse error: {e}.")))?;
         Ok(data)
     }
     pub async fn get_series_by_ticker(

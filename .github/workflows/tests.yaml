@@ -41,8 +41,8 @@
       steps:
         - uses: actions/checkout@v3
         - uses: dtolnay/rust-toolchain@stable
-        - name: Check formatting
-          run: cargo fmt --check
+        - name: Check formatting with prettyplease
+          run: cargo run --bin format_check
         - name: Run clippy
           run: cargo clippy -- -D warnings
 
