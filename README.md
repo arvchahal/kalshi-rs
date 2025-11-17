@@ -15,7 +15,9 @@ A fast, strongly-typed Rust SDK for the Public Kalshi API with almost all endpoi
 
 `kalshi-rs` is a Rust client that mirrors the structure and behavior of the
 official **Kalshi Python SDK**
-➡ [https://docs.kalshi.com/sdks/python/quickstart](https://docs.kalshi.com/sdks/python/quickstart)
+ [https://docs.kalshi.com/sdks/python/quickstart](https://docs.kalshi.com/sdks/python/quickstart)
+
+
 
 This means:
 
@@ -35,6 +37,7 @@ The crate supports:
 * fetching portfolio and positions
 * error handling consistent with Kalshi’s API responses
 
+The best way to get started is to look at the examples below, the examples in the [examples directory](examples) and in the [quickstart guide](QUICKSTART) and for contirbutions and understanding how the repo is structured the [/src readme](SRC/README)
 <br>
 
 ## Installation
