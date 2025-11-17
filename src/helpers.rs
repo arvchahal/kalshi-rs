@@ -145,12 +145,16 @@ where
     Ok((status, text))
 }
 /// Make an authenticated DELETE request
-pub(crate) async fn authenticated_delete(
+pub(crate) async fn authenticated_delete<T>(
     http_client: &Client,
     base_url: &str,
     account: &Account,
     path: &str,
-) -> Result<(StatusCode, String), KalshiError> {
+    body: Option<&T>,
+) -> Result<(StatusCode, String), KalshiError>
+where
+    T: serde::Serialize + ?Sized,
+{
     let base = base_url.trim_end_matches('/');
     let url = format!("{}{}", base, path);
     let parsed = Url::parse(&url).map_err(|e| KalshiError::Other(e.to_string()))?;
@@ -160,19 +164,24 @@ pub(crate) async fn authenticated_delete(
         "DELETE",
         &signed_path,
     )?;
-    let resp = http_client
+    let mut request = http_client
         .delete(parsed.as_str())
         .header("KALSHI-ACCESS-KEY", key_id)
         .header("KALSHI-ACCESS-TIMESTAMP", &timestamp)
-        .header("KALSHI-ACCESS-SIGNATURE", signature)
-        .send()
-        .await?;
-    let status = resp.status();
-    let body = resp.text().await?;
-    if !status.is_success() {
-        return Err(KalshiError::Other(format!("HTTP {}: {}", status, body)));
+        .header("KALSHI-ACCESS-SIGNATURE", signature);
+
+    // Add JSON body if provided
+    if let Some(b) = body {
+        request = request.json(b);
     }
-    Ok((status, body))
+
+    let resp = request.send().await?;
+    let status = resp.status();
+    let response_body = resp.text().await?;
+    if !status.is_success() {
+        return Err(KalshiError::Other(format!("HTTP {}: {}", status, response_body)));
+    }
+    Ok((status, response_body))
 }
 ///method to convert strings to utc timestamps.. pretty useful for the responses we get back
 pub(crate) fn str_to_utc(timestamp: &str) -> DateTime<Utc> {

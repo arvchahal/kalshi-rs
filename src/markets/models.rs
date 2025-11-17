@@ -244,14 +244,14 @@ pub struct GetTradesResponse {
     pub trades: Vec<Trade>,
 }
 #[derive(serde::Deserialize, Display, Debug, Clone)]
-#[display("Trade: {} {} @ ${} ({})", ticker, count, price, take_side)]
+#[display("Trade: {} {} @ ${} ({})", ticker, count, price, taker_side)]
 pub struct Trade {
     pub count: i64,
     pub created_time: String,
     pub no_price: u64,
     pub no_price_dollars: String,
     pub price: f64,
-    pub take_side: String,
+    pub taker_side: String,
     pub ticker: String,
     pub trade_id: String,
     pub yes_price: u64,

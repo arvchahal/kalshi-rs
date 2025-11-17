@@ -76,6 +76,7 @@ impl KalshiClient {
                 &self.base_url,
                 &self.account,
                 path,
+                body,
             )
             .await
     }

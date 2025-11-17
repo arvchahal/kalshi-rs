@@ -6,6 +6,7 @@ use tokio::time::sleep;
 
 #[tokio::test]
 async fn test_get_milestones_basic() {
+    tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
     let client = setup_client();
 
     let result = client.get_milestones(Some(10)).await;

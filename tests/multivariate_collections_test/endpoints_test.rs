@@ -5,6 +5,7 @@ use tokio::time::sleep;
 
 #[tokio::test]
 async fn test_get_multivariate_event_collections_list() {
+    tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
     let client = setup_client();
 
     let result = client.get_multivariate_event_collections().await;

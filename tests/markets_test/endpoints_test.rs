@@ -2,9 +2,7 @@ use crate::common::setup_client;
 use kalshi_rust_sdk::markets::models::*;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tokio::time::sleep;
-/// =============================================================================
 /// MARKETS LIST TESTS
-/// =============================================================================
 #[tokio::test]
 async fn test_get_all_markets_basic() {
     let client = setup_client();
@@ -47,9 +45,7 @@ async fn test_get_all_markets_with_event_ticker_filter() {
     }
     println!("Markets filtered successfully by event_ticker");
 }
-/// =============================================================================
 /// SINGLE MARKET TEST
-/// =============================================================================
 #[tokio::test]
 async fn test_get_single_market() {
     let client = setup_client();
@@ -71,9 +67,7 @@ async fn test_get_single_market() {
         .market.category, market.market.status
     );
 }
-/// =============================================================================
 /// MARKET ORDERBOOK TEST
-/// =============================================================================
 #[tokio::test]
 async fn test_get_market_orderbook() {
     let client = setup_client();
@@ -93,9 +87,7 @@ async fn test_get_market_orderbook() {
     println!("Orderbook retrieved for market {}", ticker);
     println!("{:?}", orderbook.orderbook);
 }
-/// =============================================================================
 /// TRADES TEST
-/// =============================================================================
 #[tokio::test]
 async fn test_get_trades_recent() {
     let client = setup_client();
@@ -116,12 +108,10 @@ async fn test_get_trades_recent() {
     let trades = result.unwrap();
     println!("Trades retrieved: {}", trades.trades.len());
     for t in trades.trades.iter().take(3) {
-        println!("Trade: {} @ ${} ({})", t.count, t.price, t.take_side);
+        println!("Trade: {} @ ${} ({})", t.count, t.price, t.taker_side);
     }
 }
-/// =============================================================================
 /// CANDLESTICKS TEST
-/// =============================================================================
 #[tokio::test]
 async fn test_get_market_candlesticks() {
     let client = setup_client();

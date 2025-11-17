@@ -54,15 +54,16 @@ impl KalshiClient {
             .authenticated_delete(BATCH_CANCEL_ORDERS, Some(&body))
             .await?;
 
-        // DELETE endpoints often return 204 No Content with empty body
-        if status.as_u16() == 204 || resp.trim().is_empty() {
-            return Ok(BatchCancelOrdersResponse { orders: vec![] });
+        // Check for 200 
+        if status.as_u16() != 200 {
+            return Err(KalshiError::Other(
+                format!("Expected 200 OK, got {}: {}", status, resp)
+            ));
         }
-
         let data: BatchCancelOrdersResponse = serde_json::from_str(&resp)
             .map_err(|e| {
                 KalshiError::Other(
-                    format!("Parse error: {e}. Response: {resp}, status{status}"),
+                    format!("Parse error: {e}. Response: {resp}, status: {status}"),
                 )
             })?;
         Ok(data)
