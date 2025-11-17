@@ -19,7 +19,7 @@ impl Account {
     ///
     /// # Example
     /// ```no_run
-    /// use kalshi_rust_sdk::auth::Account;
+    /// use kalshi_rs::auth::Account;
     ///
     pub fn new(private_key_pem: String, key_id: String) -> Self {
         Self { private_key_pem, key_id }

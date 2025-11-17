@@ -41,8 +41,8 @@ const KALSHI_API: &str = "https://api.elections.kalshi.com";
 ///
 /// # Example
 /// ```no_run
-/// use kalshi_rust_sdk::{Account, KalshiClient};
-/// use kalshi_rust_sdk::markets::models::MarketsQuery;
+/// use kalshi_rs::{Account, KalshiClient};
+/// use kalshi_rs::markets::models::MarketsQuery;
 ///
 /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
 /// // Create account with credentials
