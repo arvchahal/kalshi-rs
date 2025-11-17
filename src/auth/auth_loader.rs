@@ -11,6 +11,7 @@ use std::io;
 use std::time::{SystemTime, UNIX_EPOCH};
 const KALSHI_PK_FILE_PATH: &str = "KALSHI_PK_FILE_PATH";
 const KALSHI_API_KEY_ID: &str = "KALSHI_API_KEY_ID";
+///helpers to load auth from a file
 pub fn load_auth_from_file() -> io::Result<Account> {
     let api_key_id = env::var(KALSHI_API_KEY_ID)
         .map_err(|_| {
@@ -20,7 +21,8 @@ pub fn load_auth_from_file() -> io::Result<Account> {
                 "KALSHI_API_KEY_ID environment variable not set",
             )
         })?;
-    let pk_file_path = env::var(KALSHI_PK_FILE_PATH)
+    
+    let pk_file_path = env::var(KALSHI_PK_FILE_PATH) // another way to load pk from 
         .map_err(|_| {
             eprintln!("{} is not set. Exiting.", KALSHI_PK_FILE_PATH);
             io::Error::new(
@@ -28,6 +30,7 @@ pub fn load_auth_from_file() -> io::Result<Account> {
                 "KALSHI_PK_FILE_PATH environment variable not set... please set an env variable to your Private key file path location (global or relative path works to run these tests)",
             )
         })?;
+
     let private_key_pem = fs::read_to_string(&pk_file_path)
         .map_err(|e| {
             eprintln!("error {}", e);
@@ -36,6 +39,7 @@ pub fn load_auth_from_file() -> io::Result<Account> {
     println!("Loaded private key from {}", & pk_file_path);
     Ok(Account::new(private_key_pem, api_key_id))
 }
+/// simple helper that gets the current ts for signing only used once TODO might delete
 pub fn get_current_timestamp_ms() -> String {
     let start = SystemTime::now();
     let since_the_epoch = start
@@ -44,6 +48,7 @@ pub fn get_current_timestamp_ms() -> String {
     let in_ms = since_the_epoch.as_millis();
     in_ms.to_string()
 }
+///signs a request pretty simply ngl hate how kalshi did this why...
 pub fn sign_request(
     private_key_pem: &str,
     method: &str,

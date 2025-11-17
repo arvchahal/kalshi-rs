@@ -1,6 +1,10 @@
 use kalshi_rust_sdk::KalshiClient;
 use kalshi_rust_sdk::auth::Account;
 #[tokio::main]
+///2 main ways to set up auth
+///first is most reccoemnded
+///first export your kalshi api key id using export KALSHI_API_KEY_ID="YOUR API KEY"
+///then provide the path to your kalshi private key can be absolute or relativate path
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let api_key_id = std::env::var("KALSHI_API_KEY_ID")
         .expect("KALSHI_API_KEY_ID must be set");

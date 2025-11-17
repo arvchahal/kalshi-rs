@@ -3,6 +3,9 @@ use kalshi_rust_sdk::auth::Account;
 use kalshi_rust_sdk::markets::models::*;
 use std::time::{SystemTime, UNIX_EPOCH};
 #[tokio::main]
+/// Get market data: orderbook, trades, and candlesticks
+///
+/// Run with: cargo run --example market_data
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let api_key_id = std::env::var("KALSHI_API_KEY_ID")
         .expect("KALSHI_API_KEY_ID must be set");

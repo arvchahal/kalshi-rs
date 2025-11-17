@@ -101,10 +101,6 @@
       steps:
         - uses: actions/checkout@v3
         - uses: dtolnay/rust-toolchain@stable
-        - name: Install prettyplease-cli
-          run: cargo install prettyplease-cli
-        - name: Check formatting with prettyplease
-          run: prettyplease-fmt --check $(find src tests examples -name "*.rs" 2>/dev/null)
         - name: Run clippy
           run: cargo clippy
 

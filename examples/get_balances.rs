@@ -2,6 +2,10 @@ use kalshi_rust_sdk::KalshiClient;
 use kalshi_rust_sdk::auth::Account;
 use kalshi_rust_sdk::portfolio::models::*;
 #[tokio::main]
+/// get your balances
+///
+///Run with: cargo run --example get_balances
+///
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let api_key_id = std::env::var("KALSHI_API_KEY_ID")
         .expect("KALSHI_API_KEY_ID must be set");

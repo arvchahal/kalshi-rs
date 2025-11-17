@@ -3,6 +3,9 @@ use kalshi_rust_sdk::auth::Account;
 use kalshi_rust_sdk::markets::models::*;
 use kalshi_rust_sdk::portfolio::models::*;
 #[tokio::main]
+/// Create, cancel, and batch manage orders
+///
+/// Run with: cargo run --example orders
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let api_key_id = std::env::var("KALSHI_API_KEY_ID")
         .expect("KALSHI_API_KEY_ID must be set");

@@ -2,6 +2,9 @@ use kalshi_rust_sdk::KalshiClient;
 use kalshi_rust_sdk::auth::Account;
 use kalshi_rust_sdk::markets::models::*;
 #[tokio::main]
+/// Browse and filter markets using MarketsQuery
+///
+/// Run with: cargo run --example browse_markets
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let api_key_id = std::env::var("KALSHI_API_KEY_ID")
         .expect("KALSHI_API_KEY_ID must be set");
