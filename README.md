@@ -1,34 +1,152 @@
+# kalshi-rs
 
-# kalshi-rust-sdk
+=====================
 
-## Description
+[<img alt="github" src="https://img.shields.io/badge/github-arnavchahal/kalshi--rs-8da0cb?style=for-the-badge&labelColor=555555&logo=github" height="20">](https://github.com/arnavchahal/kalshi-rs)
+[<img alt="crates.io" src="https://img.shields.io/crates/v/kalshi-rs.svg?style=for-the-badge&color=fc8d62&logo=rust" height="20">](https://crates.io/crates/kalshi-rs)
+[<img alt="docs.rs" src="https://img.shields.io/badge/docs.rs-kalshi--rs-66c2a5?style=for-the-badge&labelColor=555555&logo=docs.rs" height="20">](https://docs.rs/kalshi-rs)
+[<img alt="build status" src="https://img.shields.io/github/actions/workflow/status/arnavchahal/kalshi-rs/ci.yml?branch=main&style=for-the-badge" height="20">](https://github.com/arnavchahal/kalshi-rs/actions?query=branch%3Amain)
 
-A Rust SDK for interacting with the Kalshi trading API. Kalshi is an event-based prediction market platform where users can trade on the outcomes of real-world events. This project provides a Rust interface to Kalshi's trading API, enabling developers to build trading applications and market analysis tools. The SDK handles authentication, market data retrieval, API key management, and exchange information queries.
+A fast, strongly-typed Rust SDK for the **Kalshi exchange API**.
 
-This implementation is based on the official [Kalshi Trading API documentation](https://trading-api.readme.io/reference/getting-started) and follows the architecture of the [Kalshi Python SDK](https://docs.kalshi.com/python-sdk/). The API uses REST endpoints with JSON responses, and authentication is handled via RSA-signed requests using the KALSHI-ACCESS-KEY, KALSHI-ACCESS-TIMESTAMP, and KALSHI-ACCESS-SIGNATURE headers as specified in the API documentation.
+<br>
 
-The project follows a modular design with separate modules for different API categories (authentication, markets, API keys, exchange data), mirroring the structure of Kalshi's official Python SDK API classes.
+## Overview
 
-Third-party crates used: **reqwest** (HTTP client), **tokio** (async runtime), **serde/serde_json** (JSON serialization), **rsa/sha2/base64** (RSA cryptography for request signing), **url** (URL parsing), and **derive_more** (derive macros).
+`kalshi-rs` is a Rust client that mirrors the structure and behavior of the
+official **Kalshi Python SDK**
+➡ [https://docs.kalshi.com/sdks/python/quickstart](https://docs.kalshi.com/sdks/python/quickstart)
 
-## Installation
+This means:
 
-**Prerequisites:** Rust installed via rustup, a Kalshi account, and API credentials.
+* method names match the Python SDK whenever possible
+* request/response structures follow the same shape
+* authentication and request signing work *exactly* like the official version
+* examples from the Python docs can be translated to Rust easily
 
-**Setup:**
-1. Clone the repository and navigate to the project directory
-2. Create a file named `kalshi_private.txt` in the project root containing your RSA private key in PEM format
-3. Set your Kalshi API key ID as an environment variable
-4. Compile and install:
-```bash
-cargo build --release
+If you’ve used Kalshi’s Python SDK, the Rust version will feel immediately familiar.
+
+The crate supports:
+
+* authentication using your Kalshi API key & PEM private key
+* listing and querying markets
+* retrieving orderbooks, trades, candlesticks
+* creating, canceling, and managing orders
+* fetching portfolio and positions
+* error handling consistent with Kalshi’s API responses
+
+<br>
+
+## Quickstart Example
+
+```rust
+use kalshi_rs::{KalshiClient, Account};
+use kalshi_rs::markets::models::MarketsQuery;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let api_key_id = std::env::var("KALSHI_API_KEY_ID")?;
+    let account = Account::from_file("kalshi_private.pem", api_key_id)?;
+    let client = KalshiClient::new(account);
+
+    let params = MarketsQuery {
+        status: Some("active".into()),
+        limit: Some(10),
+        ..Default::default()
+    };
+
+    let markets = client.get_all_markets(&params).await?;
+    for m in markets.markets {
+        println!("{} — {}", m.ticker, m.title);
+    }
+
+    Ok(())
+}
 ```
 
-## How to use
+<br>
 
-After compilation and setup, run the main binary to interact with the Kalshi API:
-```bash
-cargo run
+## Placing and Canceling an Order
+
+```rust
+use kalshi_rs::portfolio::models::CreateOrderRequest;
+
+let order = CreateOrderRequest {
+    ticker: "KXWTAMATCH".into(),
+    action: "buy".into(),
+    side: "yes".into(),
+    count: 1,
+    type_: Some("limit".into()),
+    yes_price: Some(3),
+    ..Default::default()
+};
+
+let placed = client.create_order(&order).await?;
+println!("Order ID: {}", placed.order.order_id);
+
+client.cancel_order(placed.order.order_id.clone()).await?;
+println!("Order canceled.");
 ```
 
-The SDK provides methods for API key management (list, generate, delete), retrieving exchange information (status, announcements, schedule), and accessing market data.
+<br>
+
+## Running Tests
+
+Several tests interact with the real Kalshi API.
+You **must** set your environment variables:
+
+```bash
+export KALSHI_API_KEY_ID="your_key_id"
+export KALSHI_PRIVATE_KEY_PATH="path/to/your/kalshi_private.pem"
+```
+
+You can generate these keys from the Kalshi dashboard:
+
+➡ **API Keys Setup:** [https://docs.kalshi.com/introduction/#authentication](https://docs.kalshi.com/introduction/#authentication)
+
+Then run:
+
+```bash
+cargo test -- --nocapture
+```
+
+Tests involving trading endpoints will make **real requests**, so be mindful of costs.
+
+<br>
+
+## Design Philosophy
+
+`kalshi-rs` intentionally follows the **official Python SDK’s structure and naming** to make the transition between languages seamless. If the Python docs say:
+
+```python
+client.markets.get_markets(...)
+```
+
+You can expect the Rust version to expose an equivalent:
+
+```rust
+client.get_all_markets(...)
+```
+
+The goal is clarity, reliability, and easy adoption — not reinvention.
+
+<br>
+
+## Contributing
+
+Contributions are welcome!
+
+* create a branch
+* add your features / improvements
+* open a pull request
+
+If you're implementing newly released Kalshi endpoints, improving error handling, or adding examples, all PRs are appreciated.
+
+<br>
+
+## License
+
+This project is licensed under the **MIT License**.
+See [`LICENSE`](LICENSE-MIT) for details.
+
+
