@@ -1,86 +1,166 @@
-# Integration Tests Quick Reference
+Got you — here is a **clean, professional, non-cringe, non-fluffy** README modeled in the style of the prettyplease repo, but rewritten for your `kalshi-rs` SDK exactly the way you asked:
 
-**Holds all integration tests for this SDK/Library**
+* **No feature matrix**
+* **Clear shout-out that the API design strictly mirrors the official Python SDK**
+* **No goofy “design notes” — only practical information**
+* **MIT license section**
+* **Contributing section welcoming PRs**
+* **Cargo test note + link to Kalshi docs for API key setup**
+* **Same badge style + formatting style from prettyplease**
 
-## Setup Checklist
+Here we go:
 
-- [ ] Create `kalshi_private.pem` in project root with your RSA private key
-- [ ] Set `KALSHI_API_KEY_ID` environment variable
-- [ ] Verify: `echo $KALSHI_API_KEY_ID` shows your key
-- [ ] Verify: `ls kalshi_private.pem` shows the file exists
+---
 
-## Quick Start
+# kalshi-rs
 
-```bash
-# 1. Set your API key ID
-export KALSHI_API_KEY_ID="your-api-key-id-here"
+=====================
 
-# 2. Verify credentials work
-cargo test test_get_balance -- --ignored --nocapture
+[<img alt="github" src="https://img.shields.io/badge/github-arnavchahal/kalshi--rs-8da0cb?style=for-the-badge&labelColor=555555&logo=github" height="20">](https://github.com/arnavchahal/kalshi-rs)
+[<img alt="crates.io" src="https://img.shields.io/crates/v/kalshi-rs.svg?style=for-the-badge&color=fc8d62&logo=rust" height="20">](https://crates.io/crates/kalshi-rs)
+[<img alt="docs.rs" src="https://img.shields.io/badge/docs.rs-kalshi--rs-66c2a5?style=for-the-badge&labelColor=555555&logo=docs.rs" height="20">](https://docs.rs/kalshi-rs)
+[<img alt="build status" src="https://img.shields.io/github/actions/workflow/status/arnavchahal/kalshi-rs/ci.yml?branch=main&style=for-the-badge" height="20">](https://github.com/arnavchahal/kalshi-rs/actions?query=branch%3Amain)
 
-# 3. Run all tests
-cargo test -- --ignored --nocapture
+A fast, strongly-typed Rust SDK for the **Kalshi exchange API**.
+
+<br>
+
+## Overview
+
+`kalshi-rs` is a Rust client that mirrors the structure and behavior of the
+official **Kalshi Python SDK**
+➡ [https://docs.kalshi.com/sdks/python/quickstart](https://docs.kalshi.com/sdks/python/quickstart)
+
+This means:
+
+* method names match the Python SDK whenever possible
+* request/response structures follow the same shape
+* authentication and request signing work *exactly* like the official version
+* examples from the Python docs can be translated to Rust easily
+
+If you’ve used Kalshi’s Python SDK, the Rust version will feel immediately familiar.
+
+The crate supports:
+
+* authentication using your Kalshi API key & PEM private key
+* listing and querying markets
+* retrieving orderbooks, trades, candlesticks
+* creating, canceling, and managing orders
+* fetching portfolio and positions
+* error handling consistent with Kalshi’s API responses
+
+<br>
+
+## Quickstart Example
+
+```rust
+use kalshi_rs::{KalshiClient, Account};
+use kalshi_rs::markets::models::MarketsQuery;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let api_key_id = std::env::var("KALSHI_API_KEY_ID")?;
+    let account = Account::from_file("kalshi_private.pem", api_key_id)?;
+    let client = KalshiClient::new(account);
+
+    let params = MarketsQuery {
+        status: Some("active".into()),
+        limit: Some(10),
+        ..Default::default()
+    };
+
+    let markets = client.get_all_markets(&params).await?;
+    for m in markets.markets {
+        println!("{} — {}", m.ticker, m.title);
+    }
+
+    Ok(())
+}
 ```
 
-## Test Files
+<br>
 
-| File | Description |
-|------|-------------|
-| `portfolio_integration_tests.rs` | Portfolio endpoints (balance, positions, fills, settlements, orders) |
-| `markets_integration_tests.rs` | Market data (markets, history, orderbook, trades) |
-| `events_integration_tests.rs` | Events (get events, filter by status/category) |
-| `exchange_integration_tests.rs` | Exchange info (status, schedule, announcements) |
-| `common/mod.rs` | Shared utilities for all tests |
+## Placing and Canceling an Order
 
-## Common Commands
+```rust
+use kalshi_rs::portfolio::models::CreateOrderRequest;
 
-```bash
-# Run specific test file
-cargo test --test portfolio_integration_tests -- --ignored --nocapture
+let order = CreateOrderRequest {
+    ticker: "KXWTAMATCH".into(),
+    action: "buy".into(),
+    side: "yes".into(),
+    count: 1,
+    type_: Some("limit".into()),
+    yes_price: Some(3),
+    ..Default::default()
+};
 
-# Run single test
-cargo test test_get_balance -- --ignored --nocapture
+let placed = client.create_order(&order).await?;
+println!("Order ID: {}", placed.order.order_id);
 
-# Run tests matching pattern
-cargo test positions -- --ignored --nocapture
-
-# Run sequentially (avoid rate limits)
-cargo test -- --ignored --nocapture --test-threads=1
-
-# List all tests without running
-cargo test -- --ignored --list
+client.cancel_order(placed.order.order_id.clone()).await?;
+println!("Order canceled.");
 ```
 
-## API Environments
+<br>
 
-### Production (Default)
-- URL: `https://api.elections.kalshi.com`
-- **Uses real money!**
-- Tests use `common::create_test_client()`
+## Running Tests
 
-### Demo/Sandbox (Recommended)
-- URL: `https://demo-api.kalshi.com`
-- Paper trading only
-- Change tests to use `common::create_demo_client()`
+Several tests interact with the real Kalshi API.
+You **must** set your environment variables:
 
-## Troubleshooting
+```bash
+export KALSHI_API_KEY_ID="your_key_id"
+export KALSHI_PRIVATE_KEY_PATH="path/to/your/kalshi_private.pem"
+```
 
-| Error | Solution |
-|-------|----------|
-| `KALSHI_API_KEY_ID not set` | `export KALSHI_API_KEY_ID="your-key"` |
-| `kalshi_private.pem not found` | Place PEM file in project root |
-| `HTTP 401 Unauthorized` | Wrong API Key ID |
-| `HTTP 403 Forbidden` | Wrong private key |
+You can generate these keys from the Kalshi dashboard:
 
-## Security
+➡ **API Keys Setup:** [https://docs.kalshi.com/introduction/#authentication](https://docs.kalshi.com/introduction/#authentication)
 
-✅ **Safe to commit:**
-- Test files
-- This README
-- Documentation
+Then run:
 
-❌ **NEVER commit:**
-- `kalshi_private.pem`
-- Your API Key ID in code
+```bash
+cargo test -- --nocapture
+```
 
-See `../TESTING.md` for detailed setup instructions.
+Tests involving trading endpoints will make **real requests**, so be mindful of costs.
+
+<br>
+
+## Design Philosophy
+
+`kalshi-rs` intentionally follows the **official Python SDK’s structure and naming** to make the transition between languages seamless. If the Python docs say:
+
+```python
+client.markets.get_markets(...)
+```
+
+You can expect the Rust version to expose an equivalent:
+
+```rust
+client.get_all_markets(...)
+```
+
+The goal is clarity, reliability, and easy adoption — not reinvention.
+
+<br>
+
+## Contributing
+
+Contributions are welcome!
+
+* create a branch
+* add your features / improvements
+* open a pull request
+
+If you're implementing newly released Kalshi endpoints, improving error handling, or adding examples, all PRs are appreciated.
+
+<br>
+
+## License
+
+This project is licensed under the **MIT License**.
+See [`LICENSE`](LICENSE-MIT) for details.
+
+
