@@ -4,8 +4,7 @@
 [<img alt="github" src="https://img.shields.io/badge/github-arnavchahal/kalshi--rs-8da0cb?style=for-the-badge&labelColor=555555&logo=github" height="20">](https://github.com/arnavchahal/kalshi-rs)
 [<img alt="crates.io" src="https://img.shields.io/crates/v/kalshi-rs.svg?style=for-the-badge&color=fc8d62&logo=rust" height="20">](https://crates.io/crates/kalshi-rs)
 [<img alt="docs.rs" src="https://img.shields.io/badge/docs.rs-kalshi--rs-66c2a5?style=for-the-badge&labelColor=555555&logo=docs.rs" height="20">](https://docs.rs/kalshi-rs)
-![build status](https://img.shields.io/github/actions/workflow/status/arnavchahal/kalshi-rs/tests.yaml?branch=master&style=for-the-badge)
-
+<img alt="build status" src="https://img.shields.io/github/actions/workflow/status/arvchahal/kalshi-rs/tests.yaml?branch=master&style=for-the-badge" height="20">
 A fast, strongly-typed Rust SDK for the **Kalshi exchange API**.
 
 <br>
