@@ -102,7 +102,13 @@ impl KalshiClient {
         quote_id: &str,
     ) -> Result<DeleteQuoteResponse, KalshiError> {
         let url = DELETE_QUOTE.replace("{}", quote_id);
-        let (_, resp) = self.authenticated_delete::<str>(&url, None).await?;
+        let (status, resp) = self.authenticated_delete::<str>(&url, None).await?;
+
+        // DELETE endpoints often return 204 No Content with empty body
+        if status.as_u16() == 204 || resp.trim().is_empty() {
+            return Ok(DeleteQuoteResponse { body: None });
+        }
+
         let data: DeleteQuoteResponse = serde_json::from_str(&resp)
             .map_err(|e| KalshiError::ParseError(e))?;
         Ok(data)
@@ -112,7 +118,13 @@ impl KalshiClient {
         rfq_id: &str,
     ) -> Result<DeleteRFQResponse, KalshiError> {
         let url = DELETE_RFQ.replace("{}", rfq_id);
-        let (_, resp) = self.authenticated_delete::<str>(&url, None).await?;
+        let (status, resp) = self.authenticated_delete::<str>(&url, None).await?;
+
+        // DELETE endpoints often return 204 No Content with empty body
+        if status.as_u16() == 204 || resp.trim().is_empty() {
+            return Ok(DeleteRFQResponse { body: None });
+        }
+
         let data: DeleteRFQResponse = serde_json::from_str(&resp)
             .map_err(|e| KalshiError::ParseError(e))?;
         Ok(data)

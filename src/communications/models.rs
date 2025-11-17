@@ -5,7 +5,9 @@ pub struct GetCommunicationsIDResponse {
     pub communications_id: String,
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct GetRFQResponse {}
+pub struct GetRFQResponse {
+    pub rfq: RFQ
+}
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateQuoteResponse {
     pub id: String,
@@ -23,6 +25,7 @@ pub struct DeleteQuoteResponse {
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DeleteRFQResponse {
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub body: Option<String>,
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -77,16 +80,34 @@ pub struct GetRFQsResponse {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RFQ {
     pub id: String,
-    pub market_ticker: String,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub creator_user_id: Option<String>,
+    pub creator_id: String,
+    pub market_ticker: String,
+    pub contacts: Option<u64>,
+    // #[serde(skip_serializing_if = "Option::is_none")]
     pub rest_remainder: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub contracts: Option<i32>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub target_cost_centi_cents: Option<i32>,
+    pub mve_collection_ticker: Option<String>,
+    pub mve_selected_legs: Option<Vec<MveLogs>>,
+    pub cancellation_reason: Option<String>,
+    #[serde(alias = "cancelled_time")]
+    pub cancelled_ts:Option<String>,
+    #[serde(alias = "updated_time")]
+    pub updated_ts: Option<String>,
     #[serde(alias = "created_time")]
     pub created_ts: String,
     pub status: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct MveLogs{
+    event_ticker:Option<String>,
+    market_ticker:Option<String>,
+    side:Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -144,7 +165,8 @@ pub struct Quote {
     pub executed_ts: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cancelled_ts: Option<String>,
-    pub rest_remainder: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub rest_remainder: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cancellation_reason: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]

@@ -53,6 +53,12 @@ impl KalshiClient {
         let (status, resp) = self
             .authenticated_delete(BATCH_CANCEL_ORDERS, Some(&body))
             .await?;
+
+        // DELETE endpoints often return 204 No Content with empty body
+        if status.as_u16() == 204 || resp.trim().is_empty() {
+            return Ok(BatchCancelOrdersResponse { orders: vec![] });
+        }
+
         let data: BatchCancelOrdersResponse = serde_json::from_str(&resp)
             .map_err(|e| {
                 KalshiError::Other(
@@ -77,7 +83,15 @@ impl KalshiClient {
         order_id: String,
     ) -> Result<CancelOrderResponse, KalshiError> {
         let url: &str = &CANCEL_ORDER.replace("{}", &order_id);
-        let (_, resp) = self.authenticated_delete::<str>(url, None).await?;
+        let (status, resp) = self.authenticated_delete::<str>(url, None).await?;
+
+        // Handle empty response from DELETE endpoint (though cancel_order typically returns order data)
+        if resp.trim().is_empty() {
+            return Err(KalshiError::Other(
+                format!("Empty response from cancel_order API (status: {}). This is unexpected - the API should return the canceled order.", status)
+            ));
+        }
+
         let data: CancelOrderResponse = serde_json::from_str(&resp)
             .map_err(|e| KalshiError::Other(
                 format!("Parse error: {e}. Response: {resp}"),
@@ -124,7 +138,13 @@ impl KalshiClient {
         order_group_id: &str,
     ) -> Result<DeleteOrderGroupResponse, KalshiError> {
         let url = DELETE_ORDER_GROUP.replace("{}", order_group_id);
-        let (_, resp) = self.authenticated_delete::<str>(&url, None).await?;
+        let (status, resp) = self.authenticated_delete::<str>(&url, None).await?;
+
+        // DELETE endpoints often return 204 No Content with empty body
+        if status.as_u16() == 204 || resp.trim().is_empty() {
+            return Ok(DeleteOrderGroupResponse { body: None });
+        }
+
         let data: DeleteOrderGroupResponse = serde_json::from_str(&resp)
             .map_err(|e| KalshiError::Other(
                 format!("Failed to serialize request body: {}", e),

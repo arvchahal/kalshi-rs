@@ -9,7 +9,8 @@ use std::env;
 use std::fs;
 use std::io;
 use std::time::{SystemTime, UNIX_EPOCH};
-const PRIVATE_KEY_FILE: &str = "kalshi_private.pem";
+
+const KALSHI_PK_FILE_PATH: &str = "KALSHI_PK_FILE_PATH";
 const KALSHI_API_KEY_ID: &str = "KALSHI_API_KEY_ID";
 pub fn load_auth_from_file() -> io::Result<Account> {
     let api_key_id = env::var(KALSHI_API_KEY_ID)
@@ -20,8 +21,26 @@ pub fn load_auth_from_file() -> io::Result<Account> {
                 "KALSHI_API_KEY_ID environment variable not set",
             )
         })?;
-    let private_key_pem = fs::read_to_string(PRIVATE_KEY_FILE)?;
-    println!("Loaded private key from {}", PRIVATE_KEY_FILE);
+    let pk_file_path = env::var(KALSHI_PK_FILE_PATH)
+        .map_err(|_| {
+            eprintln!("{} is not set. Exiting.", KALSHI_PK_FILE_PATH);
+            io::Error::new(
+                io::ErrorKind::NotFound,
+                "KALSHI_PK_FILE_PATH environment variable not set... please set an env variable to your Private key file path location (global or relative path works to run these tests)",
+            )
+        })?;
+    let private_key_pem = fs::read_to_string(&pk_file_path).map_err(
+        |e|{
+            eprintln!("error {}",e);
+                io::Error::new(
+                io::ErrorKind::NotFound,
+                "new weird error reading from file",
+            )
+        }
+
+    )?;
+
+    println!("Loaded private key from {}", &pk_file_path);
     Ok(Account::new(private_key_pem, api_key_id))
 }
 pub fn get_current_timestamp_ms() -> String {
