@@ -60,9 +60,7 @@ async fn test_get_quotes_list() {
         rfq_creator_user_id: creator_rfq_id,
         rfq_id: None,
     };
-    let result = client
-        .get_quotes(&query)
-        .await;
+    let result = client.get_quotes(&query).await;
     assert!(result.is_ok(), "Failed to get quotes: {:?}", result.err());
     sleep(Duration::from_secs(2)).await;
     let _deleted = client
