@@ -1,5 +1,4 @@
 use crate::common::setup_client;
-use kalshi_rs::multivariate_collections::models::*;
 use std::time::Duration;
 use tokio::time::sleep;
 #[tokio::test]
@@ -8,11 +7,13 @@ async fn test_get_multivariate_event_collections_list() {
     let client = setup_client();
     let result = client.get_multivariate_event_collections().await;
     assert!(
-        result.is_ok(), "Failed to get multivariate collections: {:?}", result.err()
+        result.is_ok(),
+        "Failed to get multivariate collections: {:?}",
+        result.err()
     );
     let resp = result.unwrap();
     assert!(
-        ! resp.multivariate_contracts.is_empty(),
+        !resp.multivariate_contracts.is_empty(),
         "should be at least one multivariate collection"
     );
 }
@@ -29,7 +30,12 @@ async fn test_get_single_multivariate_event_collection() {
     sleep(Duration::from_secs(2)).await;
     let ticker = &list.multivariate_contracts[0].collection_ticker;
     let result = client.get_multivariate_event_collection(ticker).await;
-    assert!(result.is_ok(), "Failed for MVC {}: {:?}", ticker, result.err());
+    assert!(
+        result.is_ok(),
+        "Failed for MVC {}: {:?}",
+        ticker,
+        result.err()
+    );
 }
 #[tokio::test]
 async fn test_multivariate_collections_endpoints_all() {

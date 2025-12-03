@@ -6,7 +6,6 @@ use crate::markets::models::Market;
 use derive_more::Display;
 use serde::{Deserialize, Serialize};
 
-
 #[derive(Debug, Clone, Serialize, Deserialize, Display)]
 #[display(
     "Metadata: competition={} scope={} sources={}",
@@ -14,8 +13,6 @@ use serde::{Deserialize, Serialize};
     competition_scope.as_deref().unwrap_or("none"),
     settlement_sources.len()
 )]
-
-
 /// Response model for API endpoint.
 ///
 pub struct GetEventMetadataResponse {
@@ -25,11 +22,8 @@ pub struct GetEventMetadataResponse {
     pub competition_scope: Option<String>,
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize, Display)]
 #[display("{} ({})", name, url)]
-
-
 /// SettlementSource data model.
 ///
 pub struct SettlementSource {
@@ -37,11 +31,8 @@ pub struct SettlementSource {
     pub url: String,
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize, Display)]
 #[display("Event {} with {} markets", event.event_ticker, markets.len())]
-
-
 /// Response model for API endpoint.
 ///
 pub struct GetEventResponse {
@@ -49,11 +40,8 @@ pub struct GetEventResponse {
     pub markets: Vec<Market>,
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize, Display)]
 #[display("{} ({})", title, event_ticker)]
-
-
 /// Event data model.
 ///
 pub struct Event {
@@ -71,20 +59,15 @@ pub struct Event {
     pub available_on_brokers: bool,
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize, Display)]
 #[display("All events: {}", events.len())]
-
-
 /// Response model for API endpoint.
 ///
 pub struct GetEventsResponse {
     pub events: Vec<Event>,
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
-
 
 pub struct MveSelectedLeg {
     pub event_ticker: String,
@@ -92,9 +75,7 @@ pub struct MveSelectedLeg {
     pub side: String,
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
-
 
 /// PriceRange data model.
 ///
@@ -104,9 +85,7 @@ pub struct PriceRange {
     pub step: String,
 }
 
-
 #[derive(Debug, Serialize)]
-
 
 /// Query parameters for API endpoint.
 ///

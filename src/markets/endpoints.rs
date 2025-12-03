@@ -5,15 +5,15 @@
 //!
 //! # Usage
 //!
-//! All endpoint methods are available on [`KalshiClient`](crate::client::KalshiClient).
+//! All endpoint methods are available on [`KalshiClient`].
 //! See the client documentation for a complete list of available methods.
 
 use crate::client::KalshiClient;
 use crate::errors::KalshiError;
 use crate::markets::models::{
     CandlesticksQuery, GetMarketCandlesticksResponse, GetMarketOrderbookResponse,
-    GetMarketResponse, GetMarketsResponse, GetTradesQuery, GetTradesResponse,
-    MarketsQuery, OrderbookQuery,
+    GetMarketResponse, GetMarketsResponse, GetTradesQuery, GetTradesResponse, MarketsQuery,
+    OrderbookQuery,
 };
 
 const GET_MARKETS: &str = "/trade-api/v2/markets";
@@ -48,27 +48,21 @@ impl KalshiClient {
         params: &MarketsQuery,
     ) -> Result<GetMarketsResponse, KalshiError> {
         // Only append '?' if there are actual query params to avoid malformed URLs
-        let query = serde_urlencoded::to_string(&params)
-            .map_err(|e| KalshiError::Other(
-                format!("Failed to serialize params: {}", e),
-            ))?;
+        let query = serde_urlencoded::to_string(params)
+            .map_err(|e| KalshiError::Other(format!("Failed to serialize params: {}", e)))?;
         let url = if query.is_empty() {
             GET_MARKETS.to_string()
         } else {
             format!("{}?{}", GET_MARKETS, query)
         };
         let resp = self.unauthenticated_get(&url).await?;
-        let data: GetMarketsResponse = serde_json::from_str(&resp)
-            .map_err(|e| {
-                KalshiError::Other(
-                    format!(
-                        "Invalid Parsing response format: Parse error: {e}. Response: {resp}"
-                    ),
-                )
-            })?;
+        let data: GetMarketsResponse = serde_json::from_str(&resp).map_err(|e| {
+            KalshiError::Other(format!(
+                "Invalid Parsing response format: Parse error: {e}. Response: {resp}"
+            ))
+        })?;
         Ok(data)
     }
-
 
     /// Retrieves detailed information for a specific market.
     ///
@@ -82,23 +76,16 @@ impl KalshiClient {
     ///
     /// # Models Used
     /// - Response: [`GetMarketResponse`]
-    pub async fn get_market(
-        &self,
-        ticker: &str,
-    ) -> Result<GetMarketResponse, KalshiError> {
+    pub async fn get_market(&self, ticker: &str) -> Result<GetMarketResponse, KalshiError> {
         let url = GET_MARKET.replace("{}", ticker);
         let resp = self.unauthenticated_get(&url).await?;
-        let data: GetMarketResponse = serde_json::from_str(&resp)
-            .map_err(|e| {
-                KalshiError::Other(
-                    format!(
-                        "Invalid Parsing response format: Parse error: {e}. Response: {resp}"
-                    ),
-                )
-            })?;
+        let data: GetMarketResponse = serde_json::from_str(&resp).map_err(|e| {
+            KalshiError::Other(format!(
+                "Invalid Parsing response format: Parse error: {e}. Response: {resp}"
+            ))
+        })?;
         Ok(data)
     }
-
 
     /// Retrieves recent trade history across markets.
     ///
@@ -133,26 +120,20 @@ impl KalshiClient {
             max_ts,
         };
         let query = serde_urlencoded::to_string(&params)
-            .map_err(|e| KalshiError::Other(
-                format!("Failed to serialize params: {}", e),
-            ))?;
+            .map_err(|e| KalshiError::Other(format!("Failed to serialize params: {}", e)))?;
         let url = if query.is_empty() {
             GET_TRADES.to_string()
         } else {
             format!("{}?{}", GET_TRADES, query)
         };
         let resp = self.unauthenticated_get(&url).await?;
-        let data: GetTradesResponse = serde_json::from_str(&resp)
-            .map_err(|e| {
-                KalshiError::Other(
-                    format!(
-                        "Invalid Parsing response format: Parse error: {e}. Response: {resp}"
-                    ),
-                )
-            })?;
+        let data: GetTradesResponse = serde_json::from_str(&resp).map_err(|e| {
+            KalshiError::Other(format!(
+                "Invalid Parsing response format: Parse error: {e}. Response: {resp}"
+            ))
+        })?;
         Ok(data)
     }
-
 
     /// Retrieves the current orderbook for a specific market.
     ///
@@ -181,26 +162,20 @@ impl KalshiClient {
             depth: capped_depth,
         };
         let query = serde_urlencoded::to_string(&params)
-            .map_err(|e| KalshiError::Other(
-                format!("Failed to serialize params: {}", e),
-            ))?;
+            .map_err(|e| KalshiError::Other(format!("Failed to serialize params: {}", e)))?;
         let url = if query.is_empty() {
             base_url
         } else {
             format!("{}?{}", base_url, query)
         };
         let resp = self.unauthenticated_get(&url).await?;
-        let data: GetMarketOrderbookResponse = serde_json::from_str(&resp)
-            .map_err(|e| {
-                KalshiError::Other(
-                    format!(
-                        "Invalid Parsing response format: Parse error: {e}. Response: {resp}"
-                    ),
-                )
-            })?;
+        let data: GetMarketOrderbookResponse = serde_json::from_str(&resp).map_err(|e| {
+            KalshiError::Other(format!(
+                "Invalid Parsing response format: Parse error: {e}. Response: {resp}"
+            ))
+        })?;
         Ok(data)
     }
-
 
     /// Retrieves historical candlestick (OHLC) data for a market.
     ///
@@ -239,23 +214,18 @@ impl KalshiClient {
             period_interval,
         };
         let query = serde_urlencoded::to_string(&params)
-            .map_err(|e| KalshiError::Other(
-                format!("Failed to serialize params: {}", e),
-            ))?;
+            .map_err(|e| KalshiError::Other(format!("Failed to serialize params: {}", e)))?;
         let url = if query.is_empty() {
             base_url
         } else {
             format!("{}?{}", base_url, query)
         };
         let resp = self.unauthenticated_get(&url).await?;
-        let data: GetMarketCandlesticksResponse = serde_json::from_str(&resp)
-            .map_err(|e| {
-                KalshiError::Other(
-                    format!(
-                        "Invalid Parsing response format: Parse error: {e}. Response: {resp}"
-                    ),
-                )
-            })?;
+        let data: GetMarketCandlesticksResponse = serde_json::from_str(&resp).map_err(|e| {
+            KalshiError::Other(format!(
+                "Invalid Parsing response format: Parse error: {e}. Response: {resp}"
+            ))
+        })?;
         Ok(data)
     }
 }

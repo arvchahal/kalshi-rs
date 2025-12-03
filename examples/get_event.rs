@@ -1,13 +1,12 @@
-use kalshi_rs::KalshiClient;
 use kalshi_rs::auth::Account;
 use kalshi_rs::events::models::*;
+use kalshi_rs::KalshiClient;
 #[tokio::main]
 /// Get event details with all its markets
 ///
 ///Run with: cargo run --example get_event
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let api_key_id = std::env::var("KALSHI_API_KEY_ID")
-        .expect("KALSHI_API_KEY_ID must be set");
+    let api_key_id = std::env::var("KALSHI_API_KEY_ID").expect("KALSHI_API_KEY_ID must be set");
     let account = Account::from_file("kalshi_private.pem", api_key_id)?;
     let client = KalshiClient::new(account);
     println!("1. Listing recent events...");
@@ -43,8 +42,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("   Market: {}", market.ticker);
         println!("      Title: {}", market.title);
         println!("      Status: {}", market.status);
-        println!("      Yes Bid: {} cents ({})", market.yes_bid, market.yes_bid_dollars);
-        println!("      Yes Ask: {} cents ({})", market.yes_ask, market.yes_ask_dollars);
+        println!(
+            "      Yes Bid: {} cents ({})",
+            market.yes_bid, market.yes_bid_dollars
+        );
+        println!(
+            "      Yes Ask: {} cents ({})",
+            market.yes_ask, market.yes_ask_dollars
+        );
         println!("      Last Price: {} cents", market.last_price);
         println!("      Volume: {}", market.volume);
         println!("      Open Interest: {}", market.open_interest);
@@ -58,7 +63,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     if let Some(scope) = &metadata.competition_scope {
         println!("   Competition Scope: {}", scope);
     }
-    println!("   Settlement Sources ({}):", metadata.settlement_sources.len());
+    println!(
+        "   Settlement Sources ({}):",
+        metadata.settlement_sources.len()
+    );
     for source in metadata.settlement_sources.iter().take(3) {
         println!("      - {}: {}", source.name, source.url);
     }

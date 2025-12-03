@@ -1,14 +1,14 @@
-use kalshi_rs::KalshiClient;
 use kalshi_rs::auth::Account;
 use kalshi_rs::markets::models::*;
+use kalshi_rs::KalshiClient;
 use std::time::{SystemTime, UNIX_EPOCH};
+
 #[tokio::main]
 /// Get market data: orderbook, trades, and candlesticks
 ///
 /// Run with: cargo run --example market_data
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let api_key_id = std::env::var("KALSHI_API_KEY_ID")
-        .expect("KALSHI_API_KEY_ID must be set");
+    let api_key_id = std::env::var("KALSHI_API_KEY_ID").expect("KALSHI_API_KEY_ID must be set");
     let account = Account::from_file("kalshi_private.pem", api_key_id)?;
     let client = KalshiClient::new(account);
     println!("Fetching active markets...");
@@ -70,8 +70,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("   Last {} trades:", trades.trades.len());
     for trade in trades.trades.iter().take(5) {
         println!(
-            "      {} contracts @ ${:.2} ({})", trade.count, trade.price, trade
-            .taker_side
+            "      {} contracts @ ${:.2} ({})",
+            trade.count, trade.price, trade.taker_side
         );
     }
     println!("\n3. Market Statistics");
@@ -119,6 +119,5 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             println!("   Candlestick data not available: {}", e);
         }
     }
-    println!("Market data analysis done!");
     Ok(())
 }

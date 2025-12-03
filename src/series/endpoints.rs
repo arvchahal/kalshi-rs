@@ -6,10 +6,8 @@ use crate::client::KalshiClient;
 use crate::errors::KalshiError;
 use crate::series::models::{GetSeriesListResponse, GetSeriesResponse, SeriesQuery};
 
-
 const GET_SERIES_LIST: &str = "/trade-api/v2/series";
 const GET_SERIES_TICKER: &str = "/trade-api/v2/series/{}";
-
 
 impl KalshiClient {
     /// Get All Series.
@@ -26,9 +24,7 @@ impl KalshiClient {
             cursor: cursor.map(|s| s.to_string()),
         };
         let query = serde_urlencoded::to_string(&params)
-            .map_err(|e| KalshiError::Other(
-                format!("Failed to serialize params: {}", e),
-            ))?;
+            .map_err(|e| KalshiError::Other(format!("Failed to serialize params: {}", e)))?;
         let url = if query.is_empty() {
             GET_SERIES_LIST.to_string()
         } else {
@@ -39,9 +35,7 @@ impl KalshiClient {
             .map_err(|e| KalshiError::Other(format!("Parse error: {e}.")))?;
         Ok(data)
     }
-    
 
-    
     /// Get Series By Ticker.
     ///
     /// # Returns
@@ -53,9 +47,7 @@ impl KalshiClient {
         let url = GET_SERIES_TICKER.replace("{}", ticker);
         let resp = self.unauthenticated_get(&url).await?;
         let data: GetSeriesResponse = serde_json::from_str(&resp)
-            .map_err(|e| KalshiError::Other(
-                format!("Parse error: {e}. Response {resp}"),
-            ))?;
+            .map_err(|e| KalshiError::Other(format!("Parse error: {e}. Response {resp}")))?;
         Ok(data)
     }
 }

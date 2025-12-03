@@ -3,10 +3,8 @@ use crate::errors::KalshiError;
 use crate::helpers;
 use reqwest::{Client, StatusCode};
 
-
 // Kalshi API base URL for production
 const KALSHI_API: &str = "https://api.elections.kalshi.com";
-
 
 /// Main client for interacting with the Kalshi API.
 ///
@@ -35,9 +33,9 @@ const KALSHI_API: &str = "https://api.elections.kalshi.com";
 /// - [`get_exchange_schedule`](KalshiClient::get_exchange_schedule) - Trading schedule
 ///
 /// ## Events & Series
-/// - [`get_events`](KalshiClient::get_events) - List events
+/// - [`get_all_events`](KalshiClient::get_all_events) - List events
 /// - [`get_event`](KalshiClient::get_event) - Get event details
-/// - [`get_series`](KalshiClient::get_series) - Get series information
+/// - [`get_all_series`](KalshiClient::get_all_series) - Get series information
 ///
 /// # Example
 /// ```no_run
@@ -65,7 +63,6 @@ pub struct KalshiClient {
     pub(crate) base_url: String,
 }
 
-
 impl KalshiClient {
     /// Create a new KalshiClient with default API endpoint
     pub fn new(user: Account) -> KalshiClient {
@@ -76,20 +73,15 @@ impl KalshiClient {
         }
     }
 
-
     /// Create a new KalshiClient with custom API endpoint
     /// Useful for testing or using different API environments
-    pub fn new_with_config(
-        user: Account,
-        configuration: Option<String>,
-    ) -> KalshiClient {
+    pub fn new_with_config(user: Account, configuration: Option<String>) -> KalshiClient {
         KalshiClient {
             http_client: Client::new(),
             account: user,
             base_url: configuration.unwrap_or_else(|| KALSHI_API.to_string()),
         }
     }
-
 
     /// Wrapper for authenticated GET requests
     pub async fn authenticated_get<T>(
@@ -100,16 +92,9 @@ impl KalshiClient {
     where
         T: serde::Serialize + ?Sized,
     {
-        helpers::authenticated_get(
-                &self.http_client,
-                &self.base_url,
-                &self.account,
-                path,
-                body,
-            )
+        helpers::authenticated_get(&self.http_client, &self.base_url, &self.account, path, body)
             .await
     }
-
 
     /// Wrapper for authenticated POST requests
     pub async fn authenticated_post<T>(
@@ -121,15 +106,14 @@ impl KalshiClient {
         T: serde::Serialize + ?Sized,
     {
         helpers::authenticated_post(
-                &self.http_client,
-                &self.base_url,
-                &self.account,
-                path,
-                json_body,
-            )
-            .await
+            &self.http_client,
+            &self.base_url,
+            &self.account,
+            path,
+            json_body,
+        )
+        .await
     }
-
 
     /// Wrapper for authenticated DELETE requests
     pub async fn authenticated_delete<T>(
@@ -140,22 +124,14 @@ impl KalshiClient {
     where
         T: serde::Serialize + ?Sized,
     {
-        helpers::authenticated_delete(
-                &self.http_client,
-                &self.base_url,
-                &self.account,
-                path,
-                body,
-            )
+        helpers::authenticated_delete(&self.http_client, &self.base_url, &self.account, path, body)
             .await
     }
-
 
     /// Wrapper for unauthenticated GET requests
     pub async fn unauthenticated_get(&self, path: &str) -> Result<String, KalshiError> {
         helpers::unauthenticated_get(&self.http_client, &self.base_url, path).await
     }
-
 
     /// Wrapper for authenticated put requests
     pub async fn authenticated_put<T>(
@@ -167,12 +143,12 @@ impl KalshiClient {
         T: serde::Serialize + ?Sized,
     {
         helpers::authenticated_put(
-                &self.http_client,
-                &self.base_url,
-                &self.account,
-                path,
-                json_body,
-            )
-            .await
+            &self.http_client,
+            &self.base_url,
+            &self.account,
+            path,
+            json_body,
+        )
+        .await
     }
 }

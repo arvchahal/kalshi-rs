@@ -1,20 +1,22 @@
-use kalshi_rs::KalshiClient;
 use kalshi_rs::auth::Account;
 use kalshi_rs::portfolio::models::*;
+use kalshi_rs::KalshiClient;
 #[tokio::main]
 /// get your balances
 ///
 ///Run with: cargo run --example get_balances
 ///
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let api_key_id = std::env::var("KALSHI_API_KEY_ID")
-        .expect("KALSHI_API_KEY_ID must be set");
+    let api_key_id = std::env::var("KALSHI_API_KEY_ID").expect("KALSHI_API_KEY_ID must be set");
     let account = Account::from_file("kalshi_private.pem", api_key_id)?;
     let client = KalshiClient::new(account);
     let balance = client.get_balance().await?;
     println!("Account Balance:");
     println!("  Available: ${:.2}", balance.balance as f64 / 100.0);
-    println!("  Portfolio Value: ${:.2}", balance.portfolio_value as f64 / 100.0);
+    println!(
+        "  Portfolio Value: ${:.2}",
+        balance.portfolio_value as f64 / 100.0
+    );
     let positions_params = GetPositionsParams {
         limit: Some(10),
         ..Default::default()
@@ -34,7 +36,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("\nRecent Fills ({}):", fills.fills.len());
     for fill in fills.fills.iter() {
         println!(
-            "  {} - {} @ ${:.2}", fill.ticker, fill.count, fill.price as f64 / 100.0
+            "  {} - {} @ ${:.2}",
+            fill.ticker,
+            fill.count,
+            fill.price as f64 / 100.0
         );
     }
     let orders_params = GetOrdersParams {
@@ -45,8 +50,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let orders = client.get_orders(&orders_params).await?;
     println!("\nPending Orders ({}):", orders.orders.len());
     for order in orders.orders.iter().take(5) {
-        if let (Some(remaining), Some(price))
-            = (order.remaining_count, order.yes_price) {
+        if let (Some(remaining), Some(price)) = (order.remaining_count, order.yes_price) {
             println!("  {} - {} @ {} cents", order.ticker, remaining, price);
         }
     }

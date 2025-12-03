@@ -1,7 +1,6 @@
 use kalshi_rs::structured_targets::models::*;
 #[test]
 
-
 fn test_structured_target_deserialization() {
     let json = r#"{
         "id": "test-id-123",
@@ -23,7 +22,6 @@ fn test_structured_target_deserialization() {
     assert!(target.details.is_object());
 }
 #[test]
-
 
 fn test_get_structured_targets_response_deserialization() {
     let json = r#"{
@@ -55,7 +53,6 @@ fn test_get_structured_targets_response_deserialization() {
 }
 #[test]
 
-
 fn test_get_structured_targets_response_no_cursor() {
     let json = r#"{
         "structured_targets": [
@@ -76,7 +73,6 @@ fn test_get_structured_targets_response_no_cursor() {
 }
 #[test]
 
-
 fn test_get_structured_target_response_deserialization() {
     let json = r#"{
         "structured_target": {
@@ -95,10 +91,12 @@ fn test_get_structured_target_response_deserialization() {
     assert_eq!(response.structured_target.id, "single-target");
     assert_eq!(response.structured_target.name, "Single Target");
     assert_eq!(response.structured_target.r#type, "venue");
-    assert_eq!(response.structured_target.source_id, Some("venue-src".to_string()));
+    assert_eq!(
+        response.structured_target.source_id,
+        Some("venue-src".to_string())
+    );
 }
 #[test]
-
 
 fn test_structured_targets_query_serialization() {
     let query = StructuredTargetsQuery {
@@ -110,7 +108,6 @@ fn test_structured_targets_query_serialization() {
 }
 #[test]
 
-
 fn test_structured_targets_query_no_limit() {
     let query = StructuredTargetsQuery {
         limit: None,
@@ -120,7 +117,6 @@ fn test_structured_targets_query_no_limit() {
     assert_eq!(serialized, "");
 }
 #[test]
-
 
 fn test_structured_targets_query_with_cursor() {
     let query = StructuredTargetsQuery {
@@ -132,7 +128,6 @@ fn test_structured_targets_query_with_cursor() {
 }
 #[test]
 
-
 fn test_structured_targets_query_cursor_only() {
     let query = StructuredTargetsQuery {
         limit: None,
@@ -142,7 +137,6 @@ fn test_structured_targets_query_cursor_only() {
     assert_eq!(serialized, "cursor=cursor-abc");
 }
 #[test]
-
 
 fn test_structured_target_display() {
     let target = StructuredTarget {
@@ -160,7 +154,6 @@ fn test_structured_target_display() {
     assert!(display.contains("src-id"));
 }
 #[test]
-
 
 fn test_structured_target_with_complex_details() {
     let json = r#"{
@@ -183,10 +176,9 @@ fn test_structured_target_with_complex_details() {
     assert_eq!(target.id, "complex-target");
     let details = &target.details;
     assert_eq!(details["team_name"], "Golden State Warriors");
-    assert_eq!(details["stats"] ["wins"], 45);
+    assert_eq!(details["stats"]["wins"], 45);
 }
 #[test]
-
 
 fn test_empty_structured_targets_list() {
     let json = r#"{
@@ -198,7 +190,6 @@ fn test_empty_structured_targets_list() {
     assert_eq!(response.cursor, None);
 }
 #[test]
-
 
 fn test_structured_target_missing_source_id() {
     let json = r#"{
