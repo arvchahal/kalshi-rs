@@ -9,18 +9,15 @@ pub struct GetCommunicationsIDResponse {
     pub communications_id: String,
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetRFQResponse {
     pub rfq: RFQ,
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateQuoteResponse {
     pub id: String,
 }
-
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateQuoteRequest {
@@ -36,7 +33,6 @@ pub struct DeleteQuoteResponse {
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 
-
 /// Response model for API endpoint.
 ///
 pub struct DeleteRFQResponse {
@@ -44,12 +40,10 @@ pub struct DeleteRFQResponse {
     pub body: Option<String>,
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AcceptQuoteResponse {
     pub body: Option<String>,
 }
-
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Accept {
@@ -57,9 +51,8 @@ pub enum Accept {
     No,
 }
 
-
 impl Accept {
-    pub fn from_str(s: &str) -> Result<Accept, String> {
+    pub fn from_str_helper(s: &str) -> Result<Accept, String> {
         match s {
             "yes" | "Yes" | "YES" => Ok(Accept::Yes),
             "no" | "No" | "NO" => Ok(Accept::No),
@@ -68,12 +61,10 @@ impl Accept {
     }
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ConfirmQuoteResponse {
     pub body: Option<String>,
 }
-
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateRFQRequest {
@@ -89,12 +80,10 @@ pub struct CreateRFQRequest {
     pub subtrader_id: Option<String>,
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateRFQResponse {
     pub id: String,
 }
-
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetRFQsResponse {
@@ -102,7 +91,6 @@ pub struct GetRFQsResponse {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cursor: Option<String>,
 }
-
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RFQ {
@@ -129,14 +117,12 @@ pub struct RFQ {
     pub status: String,
 }
 
-
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct MveLogs {
     event_ticker: Option<String>,
     market_ticker: Option<String>,
     side: Option<String>,
 }
-
 
 #[derive(Debug, Serialize)]
 pub struct GetQuotesQuery {
@@ -158,7 +144,6 @@ pub struct GetQuotesQuery {
     pub rfq_id: Option<String>,
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetQuotesResponse {
     pub quotes: Vec<Quote>,
@@ -166,12 +151,10 @@ pub struct GetQuotesResponse {
     pub cursor: Option<String>,
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetQuoteResponse {
     pub quote: Quote,
 }
-
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Quote {

@@ -35,7 +35,7 @@ impl KalshiClient {
         quote_id: &str,
         accepted_side: &str,
     ) -> Result<AcceptQuoteResponse, KalshiError> {
-        let accept: Accept = Accept::from_str(accepted_side).unwrap();
+        let accept: Accept = Accept::from_str_helper(accepted_side).unwrap();
         let url = ACCEPT_QUOTE.replace("{}", quote_id);
         let resp = self
             .authenticated_get::<Accept>(&url, Some(&accept))
