@@ -2,13 +2,14 @@
 //!
 //! This module implements API endpoints for exchange operations.
 
+use std::vec;
 use crate::client::KalshiClient;
 use crate::errors::KalshiError;
 use crate::exchange::models::{
     GetExcahngeStatus, GetExchangeAnnouncementsResponse, GetExchangeScheduleResponse,
     GetUserDataTimestampResponse,
 };
-use std::vec;
+
 
 const GET_EXCHANGE_ANNOUNCEMENTS: &str = "/trade-api/v2/exchange/announcements";
 const GET_EXCHANGE_SCHEDULE: &str = "/trade-api/v2/exchange/schedule";
@@ -16,6 +17,7 @@ const GET_EXCHANGE_STATUS: &str = "/trade-api/v2/exchange/status";
 const GET_USER_DATA_TIMESTAMP: &str = "/trade-api/v2/exchange/user_data_timestamp";
 
 impl KalshiClient {
+
     /// Get Exchange Announcements.
     ///
     /// **Endpoint:** `GET /exchange/announcements`
@@ -32,9 +34,12 @@ impl KalshiClient {
             });
         }
         let data: GetExchangeAnnouncementsResponse = serde_json::from_str(&resp)
-            .map_err(|e| KalshiError::Other(format!("Parse error: {e}. Response: {resp}")))?;
+            .map_err(|e| KalshiError::Other(
+                format!("Parse error: {e}. Response: {resp}"),
+            ))?;
         Ok(data)
     }
+
 
     /// Get Exchange Schedule.
     ///
@@ -42,12 +47,17 @@ impl KalshiClient {
     ///
     /// # Returns
     /// Result with response data or error
-    pub async fn get_exchange_schedule(&self) -> Result<GetExchangeScheduleResponse, KalshiError> {
+    pub async fn get_exchange_schedule(
+        &self,
+    ) -> Result<GetExchangeScheduleResponse, KalshiError> {
         let resp = self.unauthenticated_get(GET_EXCHANGE_SCHEDULE).await?;
         let data: GetExchangeScheduleResponse = serde_json::from_str(&resp)
-            .map_err(|e| KalshiError::Other(format!("Parse error: {e}. Response: {resp}")))?;
+            .map_err(|e| KalshiError::Other(
+                format!("Parse error: {e}. Response: {resp}"),
+            ))?;
         Ok(data)
     }
+
 
     /// Get Exchange Status.
     ///
@@ -57,13 +67,17 @@ impl KalshiClient {
     /// Result with response data or error
     pub async fn get_exchange_status(&self) -> Result<GetExcahngeStatus, KalshiError> {
         let resp = self.unauthenticated_get(GET_EXCHANGE_STATUS).await?;
-        let data: GetExcahngeStatus = serde_json::from_str(&resp).map_err(|e| {
-            KalshiError::Other(format!(
-                "Invalid Parsing response format: Parse error: {e}. Response: {resp}"
-            ))
-        })?;
+        let data: GetExcahngeStatus = serde_json::from_str(&resp)
+            .map_err(|e| {
+                KalshiError::Other(
+                    format!(
+                        "Invalid Parsing response format: Parse error: {e}. Response: {resp}"
+                    ),
+                )
+            })?;
         Ok(data)
     }
+
 
     /// Get User Data Timestamp.
     ///
@@ -75,11 +89,14 @@ impl KalshiClient {
         &self,
     ) -> Result<GetUserDataTimestampResponse, KalshiError> {
         let resp = self.unauthenticated_get(GET_USER_DATA_TIMESTAMP).await?;
-        let data: GetUserDataTimestampResponse = serde_json::from_str(&resp).map_err(|e| {
-            KalshiError::Other(format!(
-                "Invalid Parsing response format: Parse error: {e}. Response: {resp}"
-            ))
-        })?;
+        let data: GetUserDataTimestampResponse = serde_json::from_str(&resp)
+            .map_err(|e| {
+                KalshiError::Other(
+                    format!(
+                        "Invalid Parsing response format: Parse error: {e}. Response: {resp}"
+                    ),
+                )
+            })?;
         Ok(data)
     }
 }

@@ -2,17 +2,22 @@
 //!
 //! This module implements API endpoints for structured_targets operations.
 
+use crate::KalshiClient;
 use crate::errors::KalshiError;
 use crate::structured_targets::models::{
     GetStructuredTargetResponse, GetStructuredTargetsResponse, StructuredTargetsQuery,
 };
-use crate::KalshiClient;
+
 
 const STRUCTURED_TARGETS: &str = "/trade-api/v2/structured_targets";
 
+
 const STRUCTURED_TARGET: &str = "/trade-api/v2/structured_targets/{}";
 
+
 impl KalshiClient {
+
+    
     /// Get All Structured Targets.
     ///
     /// **Endpoint:** `GET /structured_targets`
@@ -29,7 +34,9 @@ impl KalshiClient {
             cursor: cursor.map(|s| s.to_string()),
         };
         let query = serde_urlencoded::to_string(&params)
-            .map_err(|e| KalshiError::Other(format!("Failed to serialize params: {}", e)))?;
+            .map_err(|e| KalshiError::Other(
+                format!("Failed to serialize params: {}", e),
+            ))?;
         let url = if query.is_empty() {
             STRUCTURED_TARGETS.to_string()
         } else {
@@ -37,9 +44,12 @@ impl KalshiClient {
         };
         let resp = self.unauthenticated_get(&url).await?;
         let data: GetStructuredTargetsResponse = serde_json::from_str(&resp)
-            .map_err(|e| KalshiError::Other(format!("Parse error: {e}. Response: {resp}")))?;
+            .map_err(|e| KalshiError::Other(
+                format!("Parse error: {e}. Response: {resp}"),
+            ))?;
         Ok(data)
     }
+
 
     /// Get Structured Target.
     ///
@@ -54,7 +64,9 @@ impl KalshiClient {
         let url: String = STRUCTURED_TARGET.replace("{}", structured_target_id);
         let resp: String = self.unauthenticated_get(&url).await?;
         let data: GetStructuredTargetResponse = serde_json::from_str(&resp)
-            .map_err(|e| KalshiError::Other(format!("Parse error: {e}. Response: {resp}")))?;
+            .map_err(|e| KalshiError::Other(
+                format!("Parse error: {e}. Response: {resp}"),
+            ))?;
         Ok(data)
     }
 }

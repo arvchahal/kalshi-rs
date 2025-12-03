@@ -4,27 +4,32 @@
 
 use derive_more::Display;
 
+
 #[derive(serde::Deserialize, Display)]
 #[display("Announcements:{:?}", announcements)]
+
+
 /// Response model for API endpoint.
 ///
 pub struct GetExchangeAnnouncementsResponse {
     pub announcements: Vec<String>,
 }
 
+
 #[derive(serde::Deserialize, Display, Debug)]
-#[display(
-    "Daily Schedule: closing time{:?}, opening time{:?}",
-    close_time,
-    open_time
-)]
+#[display("Daily Schedule: closing time{:?}, opening time{:?}", close_time, open_time)]
+
+
 pub struct DaySchedule {
     pub close_time: String,
     pub open_time: String,
 }
 
+
 #[derive(serde::Deserialize, Display, Debug)]
 #[display("Standard Hours: start_time:{:?}, end_time:{:?}", start_time, end_time)]
+
+
 /// StandardHours data model.
 ///
 pub struct StandardHours {
@@ -39,12 +44,15 @@ pub struct StandardHours {
     pub sunday: Vec<DaySchedule>,
 }
 
+
 #[derive(serde::Deserialize, Display, Debug)]
 #[display(
     "Schedule: maintenance_windows:{:?}, standard_hours length:{}",
     maintenance_windows,
     standard_hours.len()
 )]
+
+
 /// Schedule data model.
 ///
 pub struct Schedule {
@@ -52,13 +60,17 @@ pub struct Schedule {
     pub standard_hours: Vec<StandardHours>,
 }
 
+
 #[derive(serde::Deserialize, Display)]
 #[display("Exchange Schedule: {:?}", schedule)]
+
+
 /// Response model for API endpoint.
 ///
 pub struct GetExchangeScheduleResponse {
     pub schedule: Schedule,
 }
+
 
 #[derive(serde::Deserialize, Display)]
 #[display(
@@ -67,6 +79,8 @@ pub struct GetExchangeScheduleResponse {
     (exchange_estimated_resume_time),
     trading_active
 )]
+
+
 /// GetExcahngeStatus data model.
 ///
 pub struct GetExcahngeStatus {
@@ -75,8 +89,11 @@ pub struct GetExcahngeStatus {
     pub trading_active: bool,
 }
 
+
 #[derive(serde::Deserialize, Display)]
 #[display("Last time user data was updated: {:?}", as_of_time)]
+
+
 /// Response model for API endpoint.
 ///
 pub struct GetUserDataTimestampResponse {

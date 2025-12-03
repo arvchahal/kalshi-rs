@@ -5,6 +5,7 @@
 use derive_more::Display;
 use serde::Deserialize;
 
+
 #[derive(Deserialize, Display, Debug, Clone)]
 #[display(
     "AssociatedEvent {{ ticker: {ticker}, is_yes_only: {is_yes_only}, size_min: {size_min:?}, size_max: {size_max:?}, active_quoters: {active_quoters:?} }}"
@@ -19,8 +20,11 @@ pub struct AssociatedEvent {
     pub active_quoters: Vec<String>,
 }
 
+
 #[derive(Deserialize, Display, Debug, Clone)]
-#[display("MultivariateContract {{ collection_ticker: {collection_ticker}, title: {title} }}")]
+#[display(
+    "MultivariateContract {{ collection_ticker: {collection_ticker}, title: {title} }}"
+)]
 /// MultivariateContract data model.
 ///
 pub struct MultivariateContract {
@@ -40,6 +44,7 @@ pub struct MultivariateContract {
     pub functional_description: String,
 }
 
+
 #[derive(Deserialize, Display, Debug, Clone)]
 #[display(
     "GetMultivariateEventCollectionResponse {{ multivariate_contract: {multivariate_contract} }}"
@@ -49,6 +54,7 @@ pub struct MultivariateContract {
 pub struct GetMultivariateEventCollectionResponse {
     pub multivariate_contract: MultivariateContract,
 }
+
 
 #[derive(Deserialize, Display, Debug, Clone)]
 #[display(

@@ -1,13 +1,14 @@
+use kalshi_rs::KalshiClient;
 use kalshi_rs::auth::Account;
 use kalshi_rs::markets::models::*;
 use kalshi_rs::portfolio::models::*;
-use kalshi_rs::KalshiClient;
 #[tokio::main]
 /// Create, cancel, and batch manage orders
 ///
 /// Run with: cargo run --example orders
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let api_key_id = std::env::var("KALSHI_API_KEY_ID").expect("KALSHI_API_KEY_ID must be set");
+    let api_key_id = std::env::var("KALSHI_API_KEY_ID")
+        .expect("KALSHI_API_KEY_ID must be set");
     let account = Account::from_file("kalshi_private.pem", api_key_id)?;
     let client = KalshiClient::new(account);
     println!("Finding an active market...");
@@ -53,6 +54,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let order_id = created.order.order_id.clone();
     println!("   Created order: {}", order_id);
     println!("   Status: {}", created.order.status);
+    tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
     println!("\n2. Canceling order...");
     let canceled = client.cancel_order(order_id.clone()).await?;
     println!("   Canceled order: {}", order_id);

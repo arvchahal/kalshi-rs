@@ -4,28 +4,39 @@
 
 use crate::client::KalshiClient;
 use crate::errors::KalshiError;
-use crate::milestones::models::{GetMilestoneResponse, GetMilestonesResponse, MilestonesQuery};
+use crate::milestones::models::{
+    GetMilestoneResponse, GetMilestonesResponse, MilestonesQuery,
+};
 
 const GET_MILESTONE: &str = "/trade-api/v2/milestones/{}";
 const GET_MILESTONES: &str = "/trade-api/v2/milestones";
 
+
 impl KalshiClient {
+    
     /// Get Milestone.
     ///
     /// **Endpoint:** `GET /milestones/{}`
     ///
     /// # Returns
     /// Result with response data or error
-    pub async fn get_milestone(&self, id: &str) -> Result<GetMilestoneResponse, KalshiError> {
+    pub async fn get_milestone(
+        &self,
+        id: &str,
+    ) -> Result<GetMilestoneResponse, KalshiError> {
         let url = GET_MILESTONE.replace("{}", id);
         let resp = self.unauthenticated_get(&url).await?;
-        let data: GetMilestoneResponse = serde_json::from_str(&resp).map_err(|e| {
-            KalshiError::Other(format!(
-                "Invalid Parsing response format: Parse error: {e}. Response: {resp}"
-            ))
-        })?;
+        let data: GetMilestoneResponse = serde_json::from_str(&resp)
+            .map_err(|e| {
+                KalshiError::Other(
+                    format!(
+                        "Invalid Parsing response format: Parse error: {e}. Response: {resp}"
+                    ),
+                )
+            })?;
         Ok(data)
     }
+
 
     /// Get Milestones.
     ///
@@ -39,18 +50,23 @@ impl KalshiClient {
     ) -> Result<GetMilestonesResponse, KalshiError> {
         let params = MilestonesQuery { limit };
         let query = serde_urlencoded::to_string(&params)
-            .map_err(|e| KalshiError::Other(format!("Failed to serialize params: {}", e)))?;
+            .map_err(|e| KalshiError::Other(
+                format!("Failed to serialize params: {}", e),
+            ))?;
         let url = if query.is_empty() {
             GET_MILESTONES.to_string()
         } else {
             format!("{}?{}", GET_MILESTONES, query)
         };
         let resp = self.unauthenticated_get(&url).await?;
-        let data: GetMilestonesResponse = serde_json::from_str(&resp).map_err(|e| {
-            KalshiError::Other(format!(
-                "Invalid Parsing response format: Parse error: {e}. Response: {resp}"
-            ))
-        })?;
+        let data: GetMilestonesResponse = serde_json::from_str(&resp)
+            .map_err(|e| {
+                KalshiError::Other(
+                    format!(
+                        "Invalid Parsing response format: Parse error: {e}. Response: {resp}"
+                    ),
+                )
+            })?;
         Ok(data)
     }
 }

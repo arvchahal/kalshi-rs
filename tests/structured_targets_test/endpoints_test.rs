@@ -1,24 +1,17 @@
 use crate::common::setup_client;
+use kalshi_rs::structured_targets::models::*;
 use tokio::time::{sleep, Duration};
 #[tokio::test]
 async fn test_get_all_structured_targets() {
     let client = setup_client();
     let result = client.get_all_structured_targets(Some(10), None).await;
-    assert!(
-        result.is_ok(),
-        "Failed to get all structured targets: {:?}",
-        result.err()
-    );
+    assert!(result.is_ok(), "Failed to get all structured targets: {:?}", result.err());
     let resp = result.unwrap();
-    println!(
-        "Retrieved {} structured targets",
-        resp.structured_targets.len()
-    );
+    println!("Retrieved {} structured targets", resp.structured_targets.len());
     if !resp.structured_targets.is_empty() {
         let first = &resp.structured_targets[0];
         println!(
-            "First target: ID={}, Name={}, Type={}",
-            first.id, first.name, first.r#type
+            "First target: ID={}, Name={}, Type={}", first.id, first.name, first.r#type
         );
     }
 }
@@ -26,19 +19,10 @@ async fn test_get_all_structured_targets() {
 async fn test_get_all_structured_targets_with_limit() {
     let client = setup_client();
     let result = client.get_all_structured_targets(Some(5), None).await;
-    assert!(
-        result.is_ok(),
-        "Failed to get structured targets with limit"
-    );
+    assert!(result.is_ok(), "Failed to get structured targets with limit");
     let resp = result.unwrap();
-    println!(
-        "Requested limit: 5, received: {} targets",
-        resp.structured_targets.len()
-    );
-    assert!(
-        !resp.structured_targets.is_empty(),
-        "Expected at least some targets"
-    );
+    println!("Requested limit: 5, received: {} targets", resp.structured_targets.len());
+    assert!(! resp.structured_targets.is_empty(), "Expected at least some targets");
 }
 #[tokio::test]
 async fn test_get_single_structured_target() {
@@ -56,17 +40,12 @@ async fn test_get_single_structured_target() {
     println!("Testing with structured target ID: {}", target_id);
     let result = client.get_structured_target(target_id).await;
     assert!(
-        result.is_ok(),
-        "Failed to get structured target {}: {:?}",
-        target_id,
-        result.err()
+        result.is_ok(), "Failed to get structured target {}: {:?}", target_id, result
+        .err()
     );
     let target = result.unwrap();
     println!("Retrieved target: {}", target.structured_target);
-    assert_eq!(
-        &target.structured_target.id, target_id,
-        "Target ID mismatch"
-    );
+    assert_eq!(& target.structured_target.id, target_id, "Target ID mismatch");
 }
 #[tokio::test]
 async fn test_structured_targets_endpoints_comprehensive() {
@@ -101,13 +80,10 @@ async fn test_structured_targets_endpoints_comprehensive() {
     println!("   Retrieved details: {}", details.structured_target);
     println!("\n3. Verifying basic structure of targets...");
     for target in &list.structured_targets {
-        assert!(!target.id.is_empty(), "Target has empty ID");
-        assert!(!target.r#type.is_empty(), "Target has empty type");
+        assert!(! target.id.is_empty(), "Target has empty ID");
+        assert!(! target.r#type.is_empty(), "Target has empty type");
     }
-    println!(
-        "   All {} targets have valid structure",
-        list.structured_targets.len()
-    );
+    println!("   All {} targets have valid structure", list.structured_targets.len());
     println!("\n{}", "=".repeat(80));
     println!("ALL STRUCTURED TARGETS TESTS PASSED");
     println!("{}\n", "=".repeat(80));
@@ -138,10 +114,7 @@ async fn test_structured_targets_pagination() {
             .iter()
             .map(|t| t.id.as_str())
             .collect();
-        assert!(
-            !page2.structured_targets.is_empty(),
-            "Page 2 should have targets"
-        );
+        assert!(! page2.structured_targets.is_empty(), "Page 2 should have targets");
         if !page1_ids.is_empty() && !page2_ids.is_empty() {
             assert_ne!(
                 page1_ids[0], page2_ids[0],
