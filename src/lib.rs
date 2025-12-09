@@ -50,6 +50,7 @@
 // Core modules
 pub mod auth;           // Authentication and credential management
 pub mod client;         // Main HTTP client
+pub mod ws_client;         // Main Websocket client
 pub mod errors;         // Error types
 pub(crate) mod helpers; // Internal HTTP helpers
 
@@ -71,3 +72,4 @@ pub mod websocket;                  // Websocket trades and orderbook updates
 // Re-exports for convenient access
 pub use auth::Account;
 pub use client::KalshiClient;
+pub use ws_client::KalshiWebsocketClient;
