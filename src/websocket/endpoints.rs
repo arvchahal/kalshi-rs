@@ -15,6 +15,7 @@ impl KalshiWebsocketClient {
     ) -> Result<(), KalshiError> {
         let id = self.get_cmd_id();
         let msg = subscribe_message(id, channels, market_tickers)?;
+        println!("{msg}");
         self.send_message(msg).await?;
         Ok(())
     }
@@ -82,8 +83,8 @@ fn subscribe_message(
             \"id\": {id},
             \"cmd\": \"subscribe\",
             \"params\": {{
-                \"channels\": [\"{channels}\"],
-                \"market_tickers\": [\"{market_tickers}\"]
+                \"channels\": {channels},
+                \"market_tickers\": {market_tickers}
             }}
         }}
         "
@@ -98,7 +99,7 @@ fn unsubscribe_message(id: u64, sids: Vec<u64>) -> Result<String, KalshiError> {
             \"id\": {id},
             \"cmd\": \"unsubscribe\",
             \"params\": {{
-                \"sids\": [\"{sids}\"],
+                \"sids\": {sids}
             }}
         }}
         "
@@ -130,8 +131,8 @@ fn add_markets_message(
             \"id\": {id},
             \"cmd\": \"update_subscription\",
             \"params\": {{
-                \"sids\": [\"{sids}\"],
-                \"market_tickers\": [\"{market_tickers}\"],
+                \"sids\": {sids},
+                \"market_tickers\": {market_tickers},
                 \"action\": \"add_markets\"
             }}
         }}
@@ -153,8 +154,8 @@ fn del_markets_message(
             \"id\": {id},
             \"cmd\": \"update_subscription\",
             \"params\": {{
-                \"sids\": [\"{sids}\"],
-                \"market_tickers\": [\"{market_tickers}\"],
+                \"sids\": {sids},
+                \"market_tickers\": {market_tickers},
                 \"action\": \"delete_markets\"
             }}
         }}
