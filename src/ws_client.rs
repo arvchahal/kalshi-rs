@@ -17,7 +17,7 @@ const WEBSOCKET_PATH: &str = "/trade-api/ws/v2";
 pub struct KalshiWebsocketClient{
     pub(crate) sender: Mutex<Option<stream::SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, Message>>>,
     pub(crate) receiver: Mutex<Option<stream::SplitStream<WebSocketStream<MaybeTlsStream<TcpStream>>>>>,
-    pub(crate) cmd_id: Mutex<u64>,
+    pub(crate) cmd_id: std::sync::Mutex<u64>,
     pub(crate) account: Account,
     pub(crate) base_url: &'static str,
 
@@ -28,14 +28,18 @@ impl KalshiWebsocketClient{
         KalshiWebsocketClient {
             sender: Mutex::new(None),
             receiver: Mutex::new(None),
-            cmd_id: Mutex::new(1_u64),
+            cmd_id: std::sync::Mutex::new(1_u64),
             account: account,
             base_url: KALSHI_WS_BASE,
         }
     }
     
-    pub(crate) async fn get_cmd_id(&self) -> u64 {
-            let mut lock = self.cmd_id.lock().await;
+    pub(crate) fn get_cmd_id(&self) -> u64 {
+            // this is the only block that aquires the lock. 
+            // .lock() only results in an err if user panics while holding lock
+            let mut lock = self.cmd_id
+                .lock()
+                .expect("aquiring lock contain cmd_id returned error");
             *lock += 1;
             *lock
     }
