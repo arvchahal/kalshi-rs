@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 
-
 // Websocket subscription responses
 #[derive(Serialize, Deserialize, Debug)]
 pub struct SubscribedResponse {
