@@ -8,7 +8,7 @@ use crate::KalshiWebsocketClient;
 // TODO: add KalshiError variants for WS
 
 impl KalshiWebsocketClient {
-    pub async fn subscribe_message(
+    pub async fn subscribe(
         &self,
         channels: Vec<&str>,
         market_tickers: Vec<&str>,
@@ -19,21 +19,21 @@ impl KalshiWebsocketClient {
         Ok(())
     }
 
-    pub async fn unsubscribe_message(&self, sids: Vec<u64>) -> Result<(), KalshiError> {
+    pub async fn unsubscribe(&self, sids: Vec<u64>) -> Result<(), KalshiError> {
         let id = self.get_cmd_id();
         let msg = unsubscribe_message(id, sids)?;
         self.send_message(msg).await?;
         Ok(())
     }
 
-    pub async fn list_subscriptions_message(&self) -> Result<(), KalshiError> {
+    pub async fn list_subscriptions(&self) -> Result<(), KalshiError> {
         let id = self.get_cmd_id();
         let msg = list_subscriptions_message(id);
         self.send_message(msg).await?;
         Ok(())
     }
 
-    pub async fn add_markets_message(
+    pub async fn add_markets(
         &self,
         sids: Vec<u64>,
         market_tickers: Vec<&str>,
@@ -44,7 +44,7 @@ impl KalshiWebsocketClient {
         Ok(())
     }
 
-    pub async fn del_markets_message(
+    pub async fn del_markets(
         &self,
         sids: Vec<u64>,
         market_tickers: Vec<&str>,
