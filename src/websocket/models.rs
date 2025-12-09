@@ -42,7 +42,9 @@ pub struct OrderbookSnapshotMessage {
     pub market_ticker: String,
     pub market_id: String,
     pub yes: Option<Vec<(u8, u64)>>,
+    pub yes_dollars: Option<Vec<(String, u64)>>,
     pub no: Option<Vec<(u8, u64)>>,
+    pub no_dollars: Option<Vec<(String, u64)>>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -58,6 +60,7 @@ pub struct OrderbookDeltaMessage {
     pub market_ticker: String,
     pub market_id: String,
     pub price: u8,
+    pub price_dollars: String,
     pub delta: i64,
     pub side: String,
     pub ts: String,
@@ -77,7 +80,9 @@ pub struct TradeUpdateMessage {
     pub trade_id: String,
     pub market_ticker: String,
     pub yes_price: u8,
+    pub yes_price_dollars: String,
     pub no_price: u8,
+    pub no_price_dollars: String,
     pub count: u64,
     pub taker_side: String,
     pub ts: u64,
