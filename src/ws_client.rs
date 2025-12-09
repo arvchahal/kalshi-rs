@@ -11,7 +11,7 @@ use crate::errors::KalshiError;
 use crate::auth::Account;
 use crate::helpers::create_auth_headers;
 
-const KALSHI_WS_BASE: &str = "wss://api.elections.kalshi.com/";
+const KALSHI_WS_BASE: &str = "wss://api.elections.kalshi.com";
 const WEBSOCKET_PATH: &str = "/trade-api/ws/v2";
 
 pub struct KalshiWebsocketClient{
@@ -19,7 +19,7 @@ pub struct KalshiWebsocketClient{
     pub(crate) receiver: Mutex<Option<stream::SplitStream<WebSocketStream<MaybeTlsStream<TcpStream>>>>>,
     pub(crate) cmd_id: Mutex<u64>,
     pub(crate) account: Account,
-    pub(crate) base_url: String,
+    pub(crate) base_url: &'static str,
 
 }
 
@@ -30,7 +30,7 @@ impl KalshiWebsocketClient{
             receiver: Mutex::new(None),
             cmd_id: Mutex::new(1_u64),
             account: account,
-            base_url: KALSHI_WS_BASE.to_string(),
+            base_url: KALSHI_WS_BASE,
         }
     }
     
@@ -64,7 +64,9 @@ impl KalshiWebsocketClient{
             WEBSOCKET_PATH 
         )?;
         // build request for promotion
-        let uri = http::Uri::from_static("hello");
+        let uri_string = self.base_url.to_string() + WEBSOCKET_PATH;
+        let uri = http::Uri::try_from(uri_string.as_str())
+            .map_err(|e| KalshiError::Other(format!("{e}")))?;
         let request = ClientRequestBuilder::new(uri)
             .with_header("KALSHI-ACCESS-KEY", key_id)
             .with_header("KALSHI-ACCESS-TIMESTAMP", timestamp)
