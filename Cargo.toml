@@ -33,4 +33,5 @@ serde_urlencoded = "0.7"
 prettyplease = "0.2"
 syn = { version = "2", features = ["full", "parsing"] }
 walkdir = "2"
+tokio-tungstenite = "0.28.0"
 

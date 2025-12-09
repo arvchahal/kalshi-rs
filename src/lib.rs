@@ -65,6 +65,7 @@ pub mod multivariate_collections;   // Multivariate event collections
 pub mod portfolio;                  // Portfolio and position management
 pub mod series;                     // Series data
 pub mod structured_targets;         // Structured target markets
+pub mod websocket;                  // Websocket trades and orderbook updates
 
 
 // Re-exports for convenient access
