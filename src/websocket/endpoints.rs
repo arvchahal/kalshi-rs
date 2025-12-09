@@ -1,6 +1,12 @@
+use futures_util::{SinkExt, StreamExt, stream};
+use tokio_tungstenite::tungstenite::Message;
+
 use crate::KalshiWebsocketClient;
 use crate::errors::KalshiError;
 use crate::websocket::models;
+
+// TODO: add KalshiError variants for WS
+
 
 impl KalshiWebsocketClient {
     pub async fn subscribe_message(
@@ -53,6 +59,27 @@ impl KalshiWebsocketClient {
         let msg = del_markets_message(id, sids, market_tickers)?;
         self.send_message(msg).await?;
         Ok(())
+    }
+
+    pub async fn next_message(
+        &self,
+    ) -> Option<Result<Message, KalshiError>>{
+        // aquire lock
+        let mut lock = self.receiver.lock().await;
+        // await next message while holding lock
+        let next = lock
+            .as_mut()
+            .unwrap()
+            .next()
+            .await;
+        // mapping errs
+        match next{
+            Some(res) => {
+                Some(res.map_err(|e| KalshiError::Other(format!("{e}"))))
+            },
+            None => None
+        }
+        
     }
 }
 
