@@ -16,16 +16,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     client.connect().await?;
 
     // subscribe to orderbook delta channel for ticker
-    let channels: Vec<&str> = vec!["orderbook_delta"];
-    let tickers: Vec<&str> = vec!["KXBTCD-25DEC0916-T92999.99"];
     client.subscribe(
-        channels,
-        tickers,
+        vec!["orderbook_delta"],
+        vec!["KXBTC2025100-25DEC31-100000"],
     ).await?;
 
     // print messages as they arrive
     loop {
-        let msg = client.next_message().await;
-        println!("{msg:?}");
+        let message = client.next_message().await;
+        println!("{message:?}")
     }
 }

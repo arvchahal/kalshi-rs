@@ -103,7 +103,7 @@ impl KalshiWebsocketClient{
     }
 
     pub(crate) async fn send_message(&self, message: String) -> Result<(), KalshiError> {
-        let tung_message = tokio_tungstenite::tungstenite::Message::text(message);
+        let tung_message = Message::text(message);
         let mut lock = self.sender.lock().await;
         // TODO: pattern match this and clean True
         if lock.is_some() {
