@@ -15,7 +15,6 @@ impl KalshiWebsocketClient {
     ) -> Result<(), KalshiError> {
         let id = self.get_cmd_id();
         let msg = subscribe_message(id, channels, market_tickers)?;
-        println!("{msg}");
         self.send_message(msg).await?;
         Ok(())
     }

@@ -8,15 +8,17 @@ use crate::errors::KalshiError;
 #[derive(Debug)]
 pub enum KalshiSocketMessage {
     // Textual messages
-    SubscribedResponse(SubscribedResponse), // response to a sent message indicating success
-    ErrorResponse(ErrorResponse),           // response to a sent message indicating failure
-    OrderbookSnapshot(OrderbookSnapshot),   // snapshot of orderbook, first message from a orderbook_delta subscription
-    OrderbookDelta(OrderbookDelta),         // orderbook change
-    TradeUpdate(TradeUpdate),               // trade executed between two parties
-    TickerUpdate(TickerUpdate),             // tick update on market
-    UserFill(UserFill),                     // user order fill update
-    MarketPosition(MarketPosition),         // market position update
-    Unparseable(String),                    // fallback type in case not able to parse output correctly
+    SubscribedResponse(SubscribedResponse),     // response to a sent subscribed message indicating success
+    UnsubscribedResponse(UnsubscribedResponse), // response to a sent unsubscribe message indicating success
+    OkResponse(OkResponse),                     // response to a sent message indicating failure
+    ErrorResponse(ErrorResponse),               // response to a sent message indicating failure
+    OrderbookSnapshot(OrderbookSnapshot),       // snapshot of orderbook, first message from a orderbook_delta subscription
+    OrderbookDelta(OrderbookDelta),             // orderbook change
+    TradeUpdate(TradeUpdate),                   // trade executed between two parties
+    TickerUpdate(TickerUpdate),                 // tick update on market
+    UserFill(UserFill),                         // user order fill update
+    MarketPosition(MarketPosition),             // market position update
+    Unparseable(String),                        // fallback type in case not able to parse output correctly
     // Heartbeat
     Ping,
     Pong,
@@ -48,36 +50,78 @@ impl KalshiSocketMessage {
             .ok_or(String::from("could not determine message type"))?;
         let socket_message = match msg_type.as_str() {
             "subscribed" => {
-                let inner = serde_json::from_str::<SubscribedResponse>(&s)?;
-                KalshiSocketMessage::SubscribedResponse(inner)
+                let inner = serde_json::from_str::<SubscribedResponse>(&s);
+                match inner {
+                    Ok(res) => KalshiSocketMessage::SubscribedResponse(res),
+                    Err(_) => KalshiSocketMessage::Unparseable(s),
+                }
+            }
+            "unsubscribed" => {
+                let inner = serde_json::from_str::<UnsubscribedResponse>(&s);
+                match inner {
+                    Ok(res) => KalshiSocketMessage::UnsubscribedResponse(res),
+                    Err(_) => KalshiSocketMessage::Unparseable(s),
+                }
+            }
+            "error" => {
+                let inner = serde_json::from_str::<ErrorResponse>(&s);
+                match inner {
+                    Ok(res) => KalshiSocketMessage::ErrorResponse(res),
+                    Err(_) => KalshiSocketMessage::Unparseable(s),
+                }
+            }
+            "ok" => {
+                let inner = serde_json::from_str::<OkResponse>(&s);
+                match inner {
+                    Ok(res) => KalshiSocketMessage::OkResponse(res),
+                    Err(_) => KalshiSocketMessage::Unparseable(s),
+                }
             }
             "orderbook_snapshot" => {
-                let inner = serde_json::from_str::<OrderbookSnapshot>(&s)?;
-                KalshiSocketMessage::OrderbookSnapshot(inner)
+                let inner = serde_json::from_str::<OrderbookSnapshot>(&s);
+                match inner {
+                    Ok(res) => KalshiSocketMessage::OrderbookSnapshot(res),
+                    Err(_) => KalshiSocketMessage::Unparseable(s),
+                }
             }
             "orderbook_delta" => {
-                let inner = serde_json::from_str::<OrderbookDelta>(&s)?;
-                KalshiSocketMessage::OrderbookDelta(inner)
+                let inner = serde_json::from_str::<OrderbookDelta>(&s);
+                match inner {
+                    Ok(res) => KalshiSocketMessage::OrderbookDelta(res),
+                    Err(_) => KalshiSocketMessage::Unparseable(s),
+                }
             }
             "trade" => {
-                let inner = serde_json::from_str::<TradeUpdate>(&s)?;
-                KalshiSocketMessage::TradeUpdate(inner)
+                let inner = serde_json::from_str::<TradeUpdate>(&s);
+                match inner {
+                    Ok(res) => KalshiSocketMessage::TradeUpdate(res),
+                    Err(_) => KalshiSocketMessage::Unparseable(s),
+                }
             }
             "ticker" => {
-                let inner = serde_json::from_str::<TickerUpdate>(&s)?;
-                KalshiSocketMessage::TickerUpdate(inner)
+                let inner = serde_json::from_str::<TickerUpdate>(&s);
+                match inner {
+                    Ok(res) => KalshiSocketMessage::TickerUpdate(res),
+                    Err(_) => KalshiSocketMessage::Unparseable(s),
+                }
             }
             "fill" => {
-                let inner = serde_json::from_str::<UserFill>(&s)?;
-                KalshiSocketMessage::UserFill(inner)
+                let inner = serde_json::from_str::<UserFill>(&s);
+                match inner {
+                    Ok(res) => KalshiSocketMessage::UserFill(res),
+                    Err(_) => KalshiSocketMessage::Unparseable(s),
+                }
             }
             "market_position" => {
-                let inner = serde_json::from_str::<MarketPosition>(&s)?;
-                KalshiSocketMessage::MarketPosition(inner)
+                let inner = serde_json::from_str::<MarketPosition>(&s);
+                match inner {
+                    Ok(res) => KalshiSocketMessage::MarketPosition(res),
+                    Err(_) => KalshiSocketMessage::Unparseable(s),
+                }
             }
             _ => KalshiSocketMessage::Unparseable(s),
         };
-        
+
         Ok(socket_message)
     }
 
@@ -124,7 +168,11 @@ pub struct OkResponse {
     pub r#type: String,
     pub id: i64,
     pub sid: i64,
-    pub seq: i64,
+    pub msg: OkResponseMessage,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct OkResponseMessage {
     pub market_tickers: Vec<String>,
 }
 
@@ -132,7 +180,6 @@ pub struct OkResponse {
 pub struct ErrorResponse {
     pub r#type: String,
     pub id: i64,
-    pub code: i64,
     pub msg: ErrorResponseMessage,
 }
 
