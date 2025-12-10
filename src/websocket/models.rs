@@ -257,6 +257,7 @@ pub struct TickerUpdate {
     pub msg: TickerUpdateMessage,
 }
 
+#[allow(nonstandard_style)]
 #[derive(Deserialize, Debug)]
 pub struct TickerUpdateMessage {
     pub market_ticker: String,

@@ -1,9 +1,7 @@
 use futures_util::{SinkExt, StreamExt, stream};
-use reqwest::Client;
 use tokio::net::TcpStream;
 use tokio::sync::Mutex;
 use tokio_tungstenite::tungstenite::{ClientRequestBuilder, http};
-use tokio_tungstenite::tungstenite::client::IntoClientRequest;
 use tokio_tungstenite::{MaybeTlsStream, WebSocketStream};
 use tokio_tungstenite::{connect_async, tungstenite::Message};
 

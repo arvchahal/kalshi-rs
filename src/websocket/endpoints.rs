@@ -1,8 +1,8 @@
-use futures_util::{stream, SinkExt, StreamExt};
+use futures_util::StreamExt;
 use tokio_tungstenite::tungstenite::Message;
 
 use crate::errors::KalshiError;
-use crate::websocket::models::{self, KalshiSocketMessage};
+use crate::websocket::models::KalshiSocketMessage;
 use crate::KalshiWebsocketClient;
 
 // TODO: add KalshiError variants for WS
