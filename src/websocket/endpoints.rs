@@ -2,7 +2,7 @@ use futures_util::{stream, SinkExt, StreamExt};
 use tokio_tungstenite::tungstenite::Message;
 
 use crate::errors::KalshiError;
-use crate::websocket::models;
+use crate::websocket::models::{self, KalshiSocketMessage};
 use crate::KalshiWebsocketClient;
 
 // TODO: add KalshiError variants for WS
@@ -56,7 +56,7 @@ impl KalshiWebsocketClient {
         Ok(())
     }
 
-    pub async fn next_message(&self) -> Result<Message, KalshiError> {
+    async fn next_unparsed_message(&self) -> Result<Message, KalshiError> {
         // aquire lock
         let mut lock = self.receiver.lock().await;
         // await next message while holding lock
@@ -66,6 +66,11 @@ impl KalshiWebsocketClient {
             Some(res) => res.map_err(|e| KalshiError::Other(format!("{e}"))),
             None => Err(KalshiError::Other("Next message resolved to None".into())),
         }
+    }
+
+    pub async fn next_message(&self) -> Result<KalshiSocketMessage, KalshiError> {
+        let message = self.next_unparsed_message().await?;
+        TryInto::<KalshiSocketMessage>::try_into(message)
     }
 }
 
@@ -162,3 +167,4 @@ fn del_markets_message(
         "
     ))
 }
+
