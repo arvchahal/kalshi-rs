@@ -1,7 +1,11 @@
-use serde::{Deserialize, Serialize};
+use std::str::FromStr;
+
+use serde::Deserialize;
 use tokio_tungstenite::tungstenite;
 
+use crate::errors::KalshiError;
 
+#[derive(Debug)]
 pub enum KalshiSocketMessage {
     // Textual messages
     SubscribedResponse(SubscribedResponse), // response to a sent message indicating success
@@ -12,6 +16,7 @@ pub enum KalshiSocketMessage {
     TickerUpdate(TickerUpdate),             // tick update on market
     UserFill(UserFill),                     // user order fill update
     MarketPosition(MarketPosition),         // market position update
+    Unparseable(String),                    // fallback type in case not able to parse output correctly
     // Heartbeat
     Ping,
     Pong,
@@ -21,27 +26,100 @@ pub enum KalshiSocketMessage {
     Close(Option<tungstenite::protocol::frame::CloseFrame>),
 }
 
+impl TryFrom<tungstenite::Message> for KalshiSocketMessage {
+    type Error = KalshiError;
+    fn try_from(msg: tungstenite::Message) -> Result<KalshiSocketMessage, Self::Error> {
+        match msg {
+            tungstenite::Message::Text(text) => Self::from_textual_message(text.to_string()),
+            tungstenite::Message::Ping(_) => Ok(Self::Ping),
+            tungstenite::Message::Pong(_) => Ok(Self::Pong),
+            tungstenite::Message::Binary(b) => Ok(Self::Binary(b)),
+            tungstenite::Message::Close(c) => Ok(Self::Close(c)),
+            tungstenite::Message::Frame(f) => Ok(Self::Frame(f)),
+        }
+    }
+}
+
+impl KalshiSocketMessage {
+    pub fn from_textual_message(
+        s: String,
+    ) -> Result<KalshiSocketMessage, KalshiError> {
+        let msg_type = Self::determine_type(&s.clone())
+            .ok_or(String::from("could not determine message type"))?;
+        let socket_message = match msg_type.as_str() {
+            "subscribed" => {
+                let inner = serde_json::from_str::<SubscribedResponse>(&s)?;
+                KalshiSocketMessage::SubscribedResponse(inner)
+            }
+            "orderbook_snapshot" => {
+                let inner = serde_json::from_str::<OrderbookSnapshot>(&s)?;
+                KalshiSocketMessage::OrderbookSnapshot(inner)
+            }
+            "orderbook_delta" => {
+                let inner = serde_json::from_str::<OrderbookDelta>(&s)?;
+                KalshiSocketMessage::OrderbookDelta(inner)
+            }
+            "trade" => {
+                let inner = serde_json::from_str::<TradeUpdate>(&s)?;
+                KalshiSocketMessage::TradeUpdate(inner)
+            }
+            "ticker" => {
+                let inner = serde_json::from_str::<TickerUpdate>(&s)?;
+                KalshiSocketMessage::TickerUpdate(inner)
+            }
+            "fill" => {
+                let inner = serde_json::from_str::<UserFill>(&s)?;
+                KalshiSocketMessage::UserFill(inner)
+            }
+            "market_position" => {
+                let inner = serde_json::from_str::<MarketPosition>(&s)?;
+                KalshiSocketMessage::MarketPosition(inner)
+            }
+            _ => KalshiSocketMessage::Unparseable(s),
+        };
+        
+        Ok(socket_message)
+    }
+
+    fn determine_type(msg: &str) -> Option<String> {
+        let msg_object = serde_json::Value::from_str(&msg).ok()?;
+
+        let msg_type_value = match msg_object {
+            serde_json::Value::Object(obj) => {
+                let val = obj.get("type")?;
+                val.clone()
+            }
+            _ => return None,
+        };
+
+        match msg_type_value {
+            serde_json::Value::String(s) => return Some(s),
+            _ => return None,
+        }
+    }
+}
+
 // Websocket subscription responses
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct SubscribedResponse {
     pub r#type: String,
     pub id: i64,
     pub msg: SubscribedResponseMessage,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct SubscribedResponseMessage {
     pub channel: String,
     pub sid: i64,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct UnsubscribedResponse {
     pub r#type: String,
     pub sid: i64,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct OkResponse {
     pub r#type: String,
     pub id: i64,
@@ -50,7 +128,7 @@ pub struct OkResponse {
     pub market_tickers: Vec<String>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct ErrorResponse {
     pub r#type: String,
     pub id: i64,
@@ -58,14 +136,14 @@ pub struct ErrorResponse {
     pub msg: ErrorResponseMessage,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct ErrorResponseMessage {
     pub code: i64,
     pub msg: String,
 }
 
 // Orderbook update channel
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct OrderbookSnapshot {
     pub r#type: String,
     pub sid: i64,
@@ -73,7 +151,7 @@ pub struct OrderbookSnapshot {
     pub msg: OrderbookSnapshotMessage,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct OrderbookSnapshotMessage {
     pub market_ticker: String,
     pub market_id: String,
@@ -83,7 +161,7 @@ pub struct OrderbookSnapshotMessage {
     pub no_dollars: Option<Vec<(String, i64)>>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct OrderbookDelta {
     pub r#type: String,
     pub sid: i64,
@@ -91,7 +169,7 @@ pub struct OrderbookDelta {
     pub msg: OrderbookDeltaMessage,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct OrderbookDeltaMessage {
     pub market_ticker: String,
     pub market_id: String,
@@ -103,7 +181,7 @@ pub struct OrderbookDeltaMessage {
 }
 
 // Public trades channel
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct TradeUpdate {
     pub r#type: String,
     pub sid: i64,
@@ -111,7 +189,7 @@ pub struct TradeUpdate {
     pub msg: TradeUpdateMessage,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct TradeUpdateMessage {
     pub trade_id: String,
     pub market_ticker: String,
@@ -125,14 +203,14 @@ pub struct TradeUpdateMessage {
 }
 
 // Ticker updates channel
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct TickerUpdate {
     pub r#type: String,
     pub sid: i64,
     pub msg: TickerUpdateMessage,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct TickerUpdateMessage {
     pub market_ticker: String,
     pub price: u8,
@@ -150,14 +228,14 @@ pub struct TickerUpdateMessage {
 }
 
 // User order fills channel
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct UserFill {
     pub r#type: String,
     pub sid: i64,
     pub msg: UserFillMessage,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct UserFillMessage {
     pub trade_id: String,
     pub order_id: String,
@@ -175,14 +253,14 @@ pub struct UserFillMessage {
 }
 
 // Market position updates channel
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct MarketPosition {
     pub r#type: String,
     pub sid: i64,
     pub msg: UserFillMessage,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct MarketPositionMessage {
     pub user_id: String,
     pub market_ticker: String,
