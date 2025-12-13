@@ -1,5 +1,4 @@
 use crate::common::setup_client;
-use kalshi_rs::api_keys::models::*;
 use std::time::Duration;
 use tokio::time::sleep;
 /// api keys endpoints except the one where you provide your own api key because I was lazy
@@ -37,7 +36,7 @@ async fn test_generate_and_delete_api_key() {
                 println!("Delete body: {}", body);
             }
         }
-        Err(e) => {
+        Err(_e) => {
             panic!("Failed to delete key {}", created.api_key_id);
         }
     }

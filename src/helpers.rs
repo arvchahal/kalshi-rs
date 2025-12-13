@@ -1,7 +1,7 @@
 use crate::auth::Account;
 use crate::auth::auth_loader::{get_current_timestamp_ms, sign_request};
 use crate::errors::KalshiError;
-use chrono::{DateTime, Utc};
+// use chrono::{DateTime, Utc};
 use reqwest::{Client, StatusCode};
 /// Helper functions for making authenticated and unauthenticated HTTP requests
 use url::Url;
@@ -199,9 +199,9 @@ where
 }
 
 
-///method to convert strings to utc timestamps.. pretty useful for the responses we get back
-pub(crate) fn str_to_utc(timestamp: &str) -> DateTime<Utc> {
-    DateTime::parse_from_str(timestamp, "%Y-%m-%dT%H:%M:%SZ")
-        .expect("Failed to parse from str to utc... string might not be in utc")
-        .with_timezone(&Utc)
-}
+//method to convert strings to utc timestamps.. pretty useful for the responses we get back
+// pub(crate) fn str_to_utc(timestamp: &str) -> DateTime<Utc> {
+//     DateTime::parse_from_str(timestamp, "%Y-%m-%dT%H:%M:%SZ")
+//         .expect("Failed to parse from str to utc... string might not be in utc")
+//         .with_timezone(&Utc)
+// }

@@ -1,5 +1,4 @@
 use crate::common::setup_client;
-use kalshi_rs::milestones::models::*;
 use std::time::Duration;
 use tokio::time::sleep;
 #[tokio::test]

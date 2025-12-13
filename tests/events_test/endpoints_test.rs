@@ -86,7 +86,6 @@ async fn test_get_event_with_markets_check() {
     println!(
         "Event {} has {} markets", response.event.event_ticker, response.markets.len()
     );
-    assert!(response.markets.len() >= 0, "Expected 0 or more markets per event");
 }
 /// =============================================================================
 /// EVENT METADATA TESTS

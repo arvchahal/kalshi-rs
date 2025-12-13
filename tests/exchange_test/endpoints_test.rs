@@ -1,10 +1,7 @@
 use crate::common::setup_client;
-use kalshi_rs::exchange::models::*;
 use std::time::Duration;
 use tokio::time::sleep;
-/// =============================================================================
 /// EXCHANGE ANNOUNCEMENTS TESTS
-/// =============================================================================
 #[tokio::test]
 async fn test_get_exchange_announcements() {
     let client = setup_client();
@@ -18,9 +15,7 @@ async fn test_get_exchange_announcements() {
         println!("First announcement: {}", announcements.announcements[0]);
     }
 }
-/// =============================================================================
 /// EXCHANGE SCHEDULE TESTS
-/// =============================================================================
 #[tokio::test]
 async fn test_get_exchange_schedule() {
     let client = setup_client();
@@ -40,9 +35,7 @@ async fn test_get_exchange_schedule() {
         );
     }
 }
-/// =============================================================================
 /// EXCHANGE STATUS TESTS
-/// =============================================================================
 #[tokio::test]
 async fn test_get_exchange_status() {
     let client = setup_client();
@@ -62,9 +55,7 @@ async fn test_get_exchange_status() {
         "trading_active not boolean"
     );
 }
-/// =============================================================================
 /// USER DATA TIMESTAMP TESTS
-/// =============================================================================
 #[tokio::test]
 async fn test_get_user_data_timestamp() {
     let client = setup_client();
@@ -77,9 +68,7 @@ async fn test_get_user_data_timestamp() {
         "Invalid timestamp format: {}", timestamp.as_of_time
     );
 }
-/// =============================================================================
 /// COMPREHENSIVE EXCHANGE TEST
-/// =============================================================================
 #[tokio::test]
 async fn test_exchange_endpoints_comprehensive() {
     let client = setup_client();
