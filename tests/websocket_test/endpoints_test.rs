@@ -1,9 +1,9 @@
 use crate::common::setup_ws_client;
 use kalshi_rs::websocket::models::*;
 
-const TEST_MARKET_TICKER: &str = "KXBTC2025100-25DEC31-100000";
-const TEST_ADD_MARKET_TICKER: &str = "KXETHMAXY-25DEC31-4999.99";
-const CHANNELS: [&str; 5] = ["orderbook_delta", "trade", "fill", "ticker", "market_positions"];
+use super::constants::TEST_MARKET_TICKER;
+use super::constants::TEST_ADD_MARKET_TICKER;
+use super::constants::CHANNELS;
 
 #[tokio::test]
 async fn test_subscribe(){
@@ -11,7 +11,7 @@ async fn test_subscribe(){
     client.connect().await.unwrap();
     // send subscription
     client.subscribe(
-        vec![CHANNELS[0]], 
+        vec![CHANNELS[2]], 
         vec![TEST_MARKET_TICKER]
     ).await.unwrap();
     // wait for a SubscribedResponse
@@ -38,7 +38,7 @@ async fn test_unsubscribe(){
     client.connect().await.unwrap();
     // send subscription
     client.subscribe(
-        vec![CHANNELS[0]], 
+        vec![CHANNELS[2]], 
         vec![TEST_MARKET_TICKER]
     ).await.unwrap();
     // wait for a message
@@ -95,7 +95,7 @@ async fn test_add_markets(){
     let client = setup_ws_client();
     client.connect().await.unwrap();
     client.subscribe(
-        vec![CHANNELS[0]], 
+        vec![CHANNELS[2]], 
         vec![TEST_MARKET_TICKER]
     ).await.unwrap();
     client.add_markets(
@@ -123,7 +123,7 @@ async fn test_del_markets(){
     let client = setup_ws_client();
     client.connect().await.unwrap();
     client.subscribe(
-        vec![CHANNELS[0]], 
+        vec![CHANNELS[2]], 
         vec![TEST_MARKET_TICKER]
     ).await.unwrap();
     client.add_markets(
