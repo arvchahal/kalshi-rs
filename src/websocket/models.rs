@@ -8,17 +8,17 @@ use crate::errors::KalshiError;
 #[derive(Debug)]
 pub enum KalshiSocketMessage {
     // Textual messages
-    SubscribedResponse(SubscribedResponse),     // response to a sent subscribed message indicating success
+    SubscribedResponse(SubscribedResponse), // response to a sent subscribed message indicating success
     UnsubscribedResponse(UnsubscribedResponse), // response to a sent unsubscribe message indicating success
     OkResponse(OkResponse),                     // response to a sent message indicating failure
     ErrorResponse(ErrorResponse),               // response to a sent message indicating failure
-    OrderbookSnapshot(OrderbookSnapshot),       // snapshot of orderbook, first message from a orderbook_delta subscription
-    OrderbookDelta(OrderbookDelta),             // orderbook change
-    TradeUpdate(TradeUpdate),                   // trade executed between two parties
-    TickerUpdate(TickerUpdate),                 // tick update on market
-    UserFill(UserFill),                         // user order fill update
-    MarketPosition(MarketPosition),             // market position update
-    Unparseable(String),                        // fallback type in case not able to parse output correctly
+    OrderbookSnapshot(OrderbookSnapshot), // snapshot of orderbook, first message from a orderbook_delta subscription
+    OrderbookDelta(OrderbookDelta),       // orderbook change
+    TradeUpdate(TradeUpdate),             // trade executed between two parties
+    TickerUpdate(TickerUpdate),           // tick update on market
+    UserFill(UserFill),                   // user order fill update
+    MarketPosition(MarketPosition),       // market position update
+    Unparseable(String), // fallback type in case not able to parse output correctly
     // Heartbeat
     Ping,
     Pong,
@@ -43,9 +43,7 @@ impl TryFrom<tungstenite::Message> for KalshiSocketMessage {
 }
 
 impl KalshiSocketMessage {
-    pub fn from_textual_message(
-        s: String,
-    ) -> Result<KalshiSocketMessage, KalshiError> {
+    pub fn from_textual_message(s: String) -> Result<KalshiSocketMessage, KalshiError> {
         let msg_type = Self::determine_type(&s.clone())
             .ok_or(String::from("could not determine message type"))?;
         let socket_message = match msg_type.as_str() {
@@ -272,7 +270,7 @@ pub struct TickerUpdateMessage {
     pub dollar_volume: i64,
     pub dollar_open_interest: i64,
     pub ts: i64,
-    pub Clock: i64, // idk why api makes this upper case 
+    pub Clock: i64, // idk why api makes this upper case
 }
 
 // User order fills channel
@@ -318,4 +316,3 @@ pub struct MarketPositionMessage {
     pub fees_paid: i64,
     pub volume: i64,
 }
-

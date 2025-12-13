@@ -166,4 +166,3 @@ fn del_markets_message(
         "
     ))
 }
-
