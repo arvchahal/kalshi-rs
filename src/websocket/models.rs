@@ -7,22 +7,33 @@ use crate::errors::KalshiError;
 
 #[derive(Debug)]
 pub enum KalshiSocketMessage {
-    // Textual messages
-    SubscribedResponse(SubscribedResponse), // response to a sent subscribed message indicating success
-    UnsubscribedResponse(UnsubscribedResponse), // response to a sent unsubscribe message indicating success
-    OkResponse(OkResponse),                     // response to a sent message indicating failure
-    ErrorResponse(ErrorResponse),               // response to a sent message indicating failure
-    OrderbookSnapshot(OrderbookSnapshot), // snapshot of orderbook, first message from a orderbook_delta subscription
-    OrderbookDelta(OrderbookDelta),       // orderbook change
-    TradeUpdate(TradeUpdate),             // trade executed between two parties
-    TickerUpdate(TickerUpdate),           // tick update on market
-    UserFill(UserFill),                   // user order fill update
-    MarketPosition(MarketPosition),       // market position update
-    Unparseable(String), // fallback type in case not able to parse output correctly
-    // Heartbeat
+    // == TEXTUAL MESSAGES ==
+    // response to a sent subscribed message indicating success
+    SubscribedResponse(SubscribedResponse),
+    // response to a sent unsubscribe message indicating success
+    UnsubscribedResponse(UnsubscribedResponse),
+    // response to a sent message indicating failure
+    OkResponse(OkResponse),
+    // response to a sent message indicating failure
+    ErrorResponse(ErrorResponse),
+    // snapshot of orderbook, first message from a orderbook_delta subscription
+    OrderbookSnapshot(OrderbookSnapshot),
+    // orderbook change
+    OrderbookDelta(OrderbookDelta),
+    // trade executed between two parties
+    TradeUpdate(TradeUpdate),
+    // tick update on market
+    TickerUpdate(TickerUpdate),
+    // user order fill update
+    UserFill(UserFill),
+    // market position update
+    MarketPosition(MarketPosition),
+    // fallback type in case not able to parse output correctly
+    Unparseable(String),
+    // == HEARTBEAT TYPES ==
     Ping,
     Pong,
-    // Unexpected types from Kalshi API
+    // == UNEXPECTED TYPES FROM KALSHI's API ==
     Binary(tungstenite::Bytes),
     Frame(tungstenite::protocol::frame::Frame),
     Close(Option<tungstenite::protocol::frame::CloseFrame>),
@@ -44,7 +55,7 @@ impl TryFrom<tungstenite::Message> for KalshiSocketMessage {
 
 impl KalshiSocketMessage {
     pub fn from_textual_message(s: String) -> Result<KalshiSocketMessage, KalshiError> {
-        let msg_type = Self::determine_type(&s.clone())
+        let msg_type = determine_type(&s.clone())
             .ok_or(String::from("could not determine message type"))?;
         let socket_message = match msg_type.as_str() {
             "subscribed" => {
@@ -123,21 +134,23 @@ impl KalshiSocketMessage {
         Ok(socket_message)
     }
 
-    fn determine_type(msg: &str) -> Option<String> {
-        let msg_object = serde_json::Value::from_str(&msg).ok()?;
+}
 
-        let msg_type_value = match msg_object {
-            serde_json::Value::Object(obj) => {
-                let val = obj.get("type")?;
-                val.clone()
-            }
-            _ => return None,
-        };
+// TODO: this should not parse the whole message. Use regex or deser into struct with only type field.
+fn determine_type(msg: &str) -> Option<String> {
+    let msg_object = serde_json::Value::from_str(&msg).ok()?;
 
-        match msg_type_value {
-            serde_json::Value::String(s) => return Some(s),
-            _ => return None,
+    let msg_type_value = match msg_object {
+        serde_json::Value::Object(obj) => {
+            let val = obj.get("type")?;
+            val.clone()
         }
+        _ => return None,
+    };
+
+    match msg_type_value {
+        serde_json::Value::String(s) => return Some(s),
+        _ => return None,
     }
 }
 
