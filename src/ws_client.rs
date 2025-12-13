@@ -58,7 +58,7 @@ impl KalshiWebsocketClient{
         *lock = Some(receiver);
     }
 
-    fn build_promotion_request(&self) -> Result<ClientRequestBuilder, KalshiError> {
+    pub fn build_promotion_request(&self) -> Result<ClientRequestBuilder, KalshiError> {
         // creating auth headers for auth
         let (key_id, timestamp, signature) = create_auth_headers(
             &self.account, 
@@ -102,7 +102,7 @@ impl KalshiWebsocketClient{
         return Ok(())
     }
 
-    pub(crate) async fn send_message(&self, message: String) -> Result<(), KalshiError> {
+    pub async fn send_message(&self, message: String) -> Result<(), KalshiError> {
         let tung_message = Message::text(message);
         let mut lock = self.sender.lock().await;
         // TODO: pattern match this and clean True
