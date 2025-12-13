@@ -32,3 +32,8 @@ impl From<std::io::Error> for KalshiError {
         KalshiError::IoError(err)
     }
 }
+impl From<String> for KalshiError {
+    fn from(s: String) -> KalshiError{
+        KalshiError::Other(s)
+    }
+}
