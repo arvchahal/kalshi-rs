@@ -57,7 +57,7 @@ impl KalshiWebsocketClient{
         let mut lock = self.receiver.lock().await;
         *lock = Some(receiver);
     }
-
+    // #TODO move this to helpers.rs file in the src folder
     pub fn build_promotion_request(&self) -> Result<ClientRequestBuilder, KalshiError> {
         // creating auth headers for auth
         let (key_id, timestamp, signature) = create_auth_headers(

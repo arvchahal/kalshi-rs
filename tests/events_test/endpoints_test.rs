@@ -87,9 +87,7 @@ async fn test_get_event_with_markets_check() {
         "Event {} has {} markets", response.event.event_ticker, response.markets.len()
     );
 }
-/// =============================================================================
 /// EVENT METADATA TESTS
-/// =============================================================================
 #[tokio::test]
 async fn test_get_event_metadata() {
     let client = setup_client();
