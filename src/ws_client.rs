@@ -8,16 +8,17 @@ use tokio_tungstenite::{connect_async, tungstenite::Message};
 use crate::errors::KalshiError;
 use crate::auth::Account;
 use crate::helpers::create_auth_headers;
+use crate::websocket::models::KalshiSocketMessage;
 
 const KALSHI_WS_BASE: &str = "wss://api.elections.kalshi.com";
 const WEBSOCKET_PATH: &str = "/trade-api/ws/v2";
 
 pub struct KalshiWebsocketClient{
-    pub(crate) sender: Mutex<Option<stream::SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, Message>>>,
-    pub(crate) receiver: Mutex<Option<stream::SplitStream<WebSocketStream<MaybeTlsStream<TcpStream>>>>>,
-    pub(crate) cmd_id: std::sync::Mutex<u64>,
-    pub(crate) account: Account,
-    pub(crate) base_url: &'static str,
+    sender: Mutex<Option<stream::SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, Message>>>,
+    receiver: Mutex<Option<stream::SplitStream<WebSocketStream<MaybeTlsStream<TcpStream>>>>>,
+    cmd_id: std::sync::Mutex<u64>,
+    account: Account,
+    base_url: &'static str,
 
 }
 
@@ -120,6 +121,23 @@ impl KalshiWebsocketClient{
                 KalshiError::Other("`sender` field is none. call connect method first".into())
             );
         }
+    }
+
+    async fn next_unparsed_message(&self) -> Result<Message, KalshiError> {
+        // aquire lock
+        let mut lock = self.receiver.lock().await;
+        // await next message while holding lock
+        let next = lock.as_mut().unwrap().next().await;
+        // mapping errs
+        match next {
+            Some(res) => res.map_err(|e| KalshiError::Other(format!("{e}"))),
+            None => Err(KalshiError::Other("Next message resolved to None".into())),
+        }
+    }
+
+    pub async fn next_message(&self) -> Result<KalshiSocketMessage, KalshiError> {
+        let message = self.next_unparsed_message().await?;
+        TryInto::<KalshiSocketMessage>::try_into(message)
     }
 
 

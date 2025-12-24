@@ -55,22 +55,7 @@ impl KalshiWebsocketClient {
         Ok(())
     }
 
-    async fn next_unparsed_message(&self) -> Result<Message, KalshiError> {
-        // aquire lock
-        let mut lock = self.receiver.lock().await;
-        // await next message while holding lock
-        let next = lock.as_mut().unwrap().next().await;
-        // mapping errs
-        match next {
-            Some(res) => res.map_err(|e| KalshiError::Other(format!("{e}"))),
-            None => Err(KalshiError::Other("Next message resolved to None".into())),
-        }
-    }
-
-    pub async fn next_message(&self) -> Result<KalshiSocketMessage, KalshiError> {
-        let message = self.next_unparsed_message().await?;
-        TryInto::<KalshiSocketMessage>::try_into(message)
-    }
+    
 }
 
 fn subscribe_message(
