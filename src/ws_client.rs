@@ -18,8 +18,6 @@ pub struct KalshiWebsocketClient{
     receiver: Mutex<Option<stream::SplitStream<WebSocketStream<MaybeTlsStream<TcpStream>>>>>,
     cmd_id: std::sync::Mutex<u64>,
     account: Account,
-    base_url: &'static str,
-
 }
 
 impl KalshiWebsocketClient{
@@ -29,7 +27,6 @@ impl KalshiWebsocketClient{
             receiver: Mutex::new(None),
             cmd_id: std::sync::Mutex::new(1_u64),
             account: account,
-            base_url: KALSHI_WS_BASE,
         }
     }
     
@@ -67,8 +64,7 @@ impl KalshiWebsocketClient{
             WEBSOCKET_PATH 
         )?;
         // build request for promotion
-        let uri_string = self.base_url.to_string() + WEBSOCKET_PATH;
-        let uri = http::Uri::try_from(uri_string.as_str())
+        let uri = http::Uri::try_from(format!("{KALSHI_WS_BASE}{WEBSOCKET_PATH}"))
             .map_err(|e| KalshiError::Other(format!("{e}")))?;
         let request = ClientRequestBuilder::new(uri)
             .with_header("KALSHI-ACCESS-KEY", key_id)
