@@ -74,7 +74,7 @@ pub struct GetExchangeScheduleResponse {
 
 #[derive(serde::Deserialize, Display)]
 #[display(
-    "The Excahnge is Active (T/F) {}, Time to Resume {:?}, Tradiing is Active (T/F) {}",
+    "The Excahnge is Active (T/F) {}, Time to Resume {:?}, Trading is Active (T/F) {}",
     exchange_active,
     (exchange_estimated_resume_time),
     trading_active
