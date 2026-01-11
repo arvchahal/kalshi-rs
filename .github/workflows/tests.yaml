@@ -40,7 +40,7 @@
         - name: Run integration tests (models serialization)
           run: |
             for dir in tests/*_test; do
-              if [ -f "$dir/models_test.rs" ]; then
+              if [ -f "$dir/models_test.rs" ] && [ "$(basename "$dir")" != "websocket_test" ]; then
                 module=$(basename "$dir")
                 echo "Testing ${module}::models_test..."
                 cargo test --test lib "${module}::models_test" -- --nocapture
@@ -91,6 +91,11 @@
                 cargo test --test lib "${module}::endpoints_test" -- --nocapture || true
               fi
             done
+
+        - name: Run websocket tests
+          run: |
+            echo "Testing websocket_test::models_test..."
+            cargo test --test lib "websocket_test::models_test" -- --nocapture || true
 
         - name: Cleanup credentials
           if: always()
