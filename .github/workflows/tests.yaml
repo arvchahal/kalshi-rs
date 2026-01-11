@@ -88,14 +88,14 @@
               if [ -f "$dir/endpoints_test.rs" ]; then
                 module=$(basename "$dir")
                 echo "Testing ${module}::endpoints_test..."
-                cargo test --test lib "${module}::endpoints_test" -- --nocapture || true
+                cargo test --test lib "${module}::endpoints_test" -- --nocapture
               fi
             done
 
         - name: Run websocket tests
           run: |
             echo "Testing websocket_test::models_test..."
-            cargo test --test lib "websocket_test::models_test" -- --nocapture || true
+            cargo test --test lib "websocket_test::models_test" -- --nocapture
 
         - name: Cleanup credentials
           if: always()
