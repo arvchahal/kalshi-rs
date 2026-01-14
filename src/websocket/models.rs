@@ -81,7 +81,6 @@ impl KalshiSocketMessage {
 // Websocket subscription responses
 #[derive(Deserialize, Debug)]
 pub struct SubscribedResponse {
-    pub r#type: String,
     pub id: i64,
     pub msg: SubscribedResponseMessage,
 }
@@ -94,13 +93,11 @@ pub struct SubscribedResponseMessage {
 
 #[derive(Deserialize, Debug)]
 pub struct UnsubscribedResponse {
-    pub r#type: String,
     pub sid: i64,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct OkResponse {
-    pub r#type: String,
     pub id: i64,
     pub sid: i64,
     pub msg: OkResponseMessage,
@@ -113,7 +110,6 @@ pub struct OkResponseMessage {
 
 #[derive(Deserialize, Debug)]
 pub struct ErrorResponse {
-    pub r#type: String,
     pub id: i64,
     pub msg: ErrorResponseMessage,
 }
@@ -127,7 +123,6 @@ pub struct ErrorResponseMessage {
 // Orderbook update channel
 #[derive(Deserialize, Debug)]
 pub struct OrderbookSnapshot {
-    pub r#type: String,
     pub sid: i64,
     pub seq: i64,
     pub msg: OrderbookSnapshotMessage,
@@ -145,7 +140,6 @@ pub struct OrderbookSnapshotMessage {
 
 #[derive(Deserialize, Debug)]
 pub struct OrderbookDelta {
-    pub r#type: String,
     pub sid: i64,
     pub seq: i64,
     pub msg: OrderbookDeltaMessage,
@@ -165,7 +159,6 @@ pub struct OrderbookDeltaMessage {
 // Public trades channel
 #[derive(Deserialize, Debug)]
 pub struct TradeUpdate {
-    pub r#type: String,
     pub sid: i64,
     pub seq: i64,
     pub msg: TradeUpdateMessage,
@@ -187,7 +180,6 @@ pub struct TradeUpdateMessage {
 // Ticker updates channel
 #[derive(Deserialize, Debug)]
 pub struct TickerUpdate {
-    pub r#type: String,
     pub sid: i64,
     pub msg: TickerUpdateMessage,
 }
@@ -213,7 +205,6 @@ pub struct TickerUpdateMessage {
 // User order fills channel
 #[derive(Deserialize, Debug)]
 pub struct UserFill {
-    pub r#type: String,
     pub sid: i64,
     pub msg: UserFillMessage,
 }
@@ -238,7 +229,6 @@ pub struct UserFillMessage {
 // Market position updates channel
 #[derive(Deserialize, Debug)]
 pub struct MarketPosition {
-    pub r#type: String,
     pub sid: i64,
     pub msg: UserFillMessage,
 }
@@ -253,3 +243,5 @@ pub struct MarketPositionMessage {
     pub fees_paid: i64,
     pub volume: i64,
 }
+
+
