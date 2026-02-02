@@ -69,6 +69,33 @@ impl KalshiClient {
         Ok(data)
     }
 
+    /// This function fetches all markets using pagination and returns them
+    /// sorted by `volume_24h` in descending order (highest volume first).
+    ///
+    /// # Query Parameters
+    /// Same as get_all_markets, except `cursor` is managed automatically.
+    ///
+    /// # Returns
+    /// A vector of Market objects sorted by liquidity (volume_24h descending).
+    pub async fn get_most_active_markets(
+        &self,
+        params: &MarketsQuery,
+    ) -> Result<Vec<Market>, KalshiError> {
+        let mut markets = self.get_all_markets_paginated(params).await?;
+        markets.sort_by(|a, b| b.volume_24h.cmp(&a.volume_24h));
+        Ok(markets)
+    }
+    
+    
+    pub async fn get_most_liquid_markets(
+        &self,
+        params: &MarketsQuery,
+    ) -> Result<Vec<Market>, KalshiError> {
+        let mut markets = self.get_all_markets_paginated(params).await?;
+        markets.sort_by(|a, b| b.liquidity.cmp(&a.liquidity));
+        Ok(markets)
+    }
+
 
     /// Retrieves detailed information for a specific market.
     ///
