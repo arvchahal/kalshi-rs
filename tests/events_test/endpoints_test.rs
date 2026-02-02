@@ -9,6 +9,7 @@ async fn test_get_all_events_basic() {
     let params = EventsQuery {
         limit: Some(10),
         cursor: None,
+        ..Default::default()
     };
     let result = client.get_all_events(&params).await;
     assert!(result.is_ok(), "Failed to get all events: {:?}", result.err());
@@ -29,6 +30,7 @@ async fn test_get_all_events_with_cursor() {
     let params = EventsQuery {
         limit: Some(3),
         cursor: None,
+        ..Default::default()
     };
     let batch = client.get_all_events(&params).await.unwrap();
     if batch.events.is_empty() {
@@ -39,6 +41,7 @@ async fn test_get_all_events_with_cursor() {
     let params2 = EventsQuery {
         limit: Some(3),
         cursor: Some("abc123".to_string()),
+        ..Default::default()
     };
     let next = client.get_all_events(&params2).await;
     assert!(
@@ -53,6 +56,7 @@ async fn test_get_event_single() {
     let params = EventsQuery {
         limit: Some(1),
         cursor: None,
+        ..Default::default()
     };
     let events = client.get_all_events(&params).await.unwrap();
     if events.events.is_empty() {
@@ -75,6 +79,7 @@ async fn test_get_event_with_markets_check() {
     let params = EventsQuery {
         limit: Some(1),
         cursor: None,
+        ..Default::default()
     };
     let events = client.get_all_events(&params).await.unwrap();
     if events.events.is_empty() {
@@ -97,6 +102,7 @@ async fn test_get_event_metadata() {
     let params = EventsQuery {
         limit: Some(1),
         cursor: None,
+        ..Default::default()
     };
     let events = client.get_all_events(&params).await.unwrap();
     if events.events.is_empty() {
@@ -125,6 +131,7 @@ async fn test_events_endpoints_comprehensive() {
     let params = EventsQuery {
         limit: Some(5),
         cursor: None,
+        ..Default::default()
     };
     let events = client.get_all_events(&params).await.expect("Failed to get all events");
     println!("   Retrieved {} events\n", events.events.len());
