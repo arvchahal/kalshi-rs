@@ -10,3 +10,4 @@ pub mod milestones_test;
 pub mod series_test;
 pub mod structured_targets_test;
 pub mod websocket_test;
+pub mod constants;

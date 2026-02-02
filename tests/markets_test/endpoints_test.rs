@@ -1,4 +1,5 @@
 use crate::common::setup_client;
+use crate::constants::{LIVE_EVENT_TICKER, LIVE_SERIES_TICKER};
 use kalshi_rs::markets::models::*;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tokio::time::sleep;
@@ -15,22 +16,61 @@ async fn test_get_all_markets_basic() {
                 series_ticker: None,
                 max_close_ts: None,
                 min_close_ts: None,
-                status: Some("active".to_string()),
+                status: Some("open".to_string()),
                 tickers: None,
             },
         )
         .await;
     assert!(result.is_ok(), "Failed to get markets: {:?}", result.err());
-    let response = result.unwrap();
-    println!("Markets retrieved: {}", response.markets.len());
-    if let Some(cursor) = &response.cursor {
-        println!("Next page cursor: {}", cursor);
+}
+#[tokio::test]
+async fn test_get_most_active_markets() {
+    let client = setup_client();
+    let result = client
+        .get_most_active_markets(
+            &MarketsQuery {
+                limit: Some(100),
+                cursor: None,
+                event_ticker: Some(LIVE_EVENT_TICKER.to_string()),
+                series_ticker: None,
+                max_close_ts: None,
+                min_close_ts: None,
+                status: Some("open".to_string()),
+                tickers: None,
+            },
+        )
+        .await;
+    assert!(result.is_ok(), "Failed to get markets: {:?}", result.err());
+    if let Ok(res) = result{
+        if res.len() > 1 {
+            assert!(res[0].volume_24h>res[1].volume_24h);
+        }
+
     }
-    if let Some(market) = response.markets.first() {
-        println!(
-            "Sample market: {} | Status: {} | Category: {}", market.ticker, market
-            .status, market.category
-        );
+}
+#[tokio::test]
+async fn test_get_most_liquid_markets() {
+    let client = setup_client();
+    let result = client
+        .get_most_liquid_markets(
+            &MarketsQuery {
+                limit: Some(100),
+                cursor: None,
+                event_ticker: Some(LIVE_EVENT_TICKER.to_string()),
+                series_ticker: None,
+                max_close_ts: None,
+                min_close_ts: None,
+                status: Some("open".to_string()),
+                tickers: None,
+            },
+        )
+        .await;
+    assert!(result.is_ok(), "Failed to get markets: {:?}", result.err());
+    if let Ok(res) = result{
+        if res.len() > 1 {
+            assert!(res[0].liquidity>res[1].liquidity);
+        }
+
     }
 }
 #[tokio::test]
@@ -91,7 +131,7 @@ async fn test_get_single_market() {
                 series_ticker: None,
                 max_close_ts: None,
                 min_close_ts: None,
-                status: Some("active".to_string()),
+                status: Some("open".to_string()),
                 tickers: None,
             },
         )
@@ -124,7 +164,7 @@ async fn test_get_market_orderbook() {
                 series_ticker: None,
                 max_close_ts: None,
                 min_close_ts: None,
-                status: Some("active".to_string()),
+                status: Some("open".to_string()),
                 tickers: None,
             },
         )
@@ -155,7 +195,7 @@ async fn test_get_trades_recent() {
                 series_ticker: None,
                 max_close_ts: None,
                 min_close_ts: None,
-                status: Some("active".to_string()),
+                status: Some("open".to_string()),
                 tickers: None,
             },
         )
@@ -190,7 +230,7 @@ async fn test_get_market_candlesticks() {
                 series_ticker: None,
                 max_close_ts: None,
                 min_close_ts: None,
-                status: Some("active".to_string()),
+                status: Some("open".to_string()),
                 tickers: None,
             },
         )
@@ -246,7 +286,7 @@ async fn test_markets_endpoints_comprehensive() {
                 series_ticker: None,
                 max_close_ts: None,
                 min_close_ts: None,
-                status: Some("active".to_string()),
+                status: Some("open".to_string()),
                 tickers: None,
             },
         )

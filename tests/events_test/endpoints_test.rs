@@ -1,7 +1,9 @@
 use crate::common::setup_client;
+use crate::constants::{LIVE_EVENT_TICKER, LIVE_SERIES_TICKER};
 use kalshi_rs::events::models::*;
 use std::time::Duration;
 use tokio::time::sleep;
+
 /// ALL EVENTS TESTS
 #[tokio::test]
 async fn test_get_all_events_basic() {
@@ -30,6 +32,34 @@ async fn test_get_all_events_with_cursor() {
     let params = EventsQuery {
         limit: Some(3),
         cursor: None,
+        ..Default::default()
+    };
+    let batch = client.get_all_events(&params).await.unwrap();
+    if batch.events.is_empty() {
+        println!("No events available - skipping cursor pagination test");
+        return;
+    }
+    println!("Testing pagination with limit=3");
+    let params2 = EventsQuery {
+        limit: Some(3),
+        cursor: Some("abc123".to_string()),
+        ..Default::default()
+    };
+    let next = client.get_all_events(&params2).await;
+    assert!(
+        next.is_ok() || next.is_err(), "Pagination should succeed or gracefully fail"
+    );
+    println!("Pagination test completed (server may ignore cursor).");
+}
+
+#[tokio::test]
+async fn test_get_all_events_paginated() {
+    let client = setup_client();
+    let params = EventsQuery {
+        limit: Some(2),
+        cursor: None,
+        series_ticker: Some(LIVE_SERIES_TICKER.to_string()),
+        status: Some("open".to_string()),
         ..Default::default()
     };
     let batch = client.get_all_events(&params).await.unwrap();

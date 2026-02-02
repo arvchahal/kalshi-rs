@@ -1,7 +1,7 @@
 use crate::common::setup_ws_client;
 use kalshi_rs::websocket::models::*;
 
-use super::constants::TEST_MARKET_TICKER;
+use crate::constants::TEST_MARKET_TICKER;
 
 #[tokio::test]
 async fn test_orderbook_delta() {

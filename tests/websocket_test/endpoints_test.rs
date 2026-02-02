@@ -1,9 +1,9 @@
 use crate::common::setup_ws_client;
 use kalshi_rs::websocket::models::*;
 
-use super::constants::CHANNELS;
-use super::constants::TEST_ADD_MARKET_TICKER;
-use super::constants::TEST_MARKET_TICKER;
+use crate::constants::CHANNELS;
+use crate::constants::TEST_ADD_MARKET_TICKER;
+use crate::constants::TEST_MARKET_TICKER;
 
 #[tokio::test]
 async fn test_subscribe() {
