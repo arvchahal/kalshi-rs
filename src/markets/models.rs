@@ -149,7 +149,7 @@ pub struct GetMarketResponse {
 /// Query parameters for `GET /markets` endpoint.
 ///
 /// All fields are optional filters for market retrieval.
-#[derive(Serialize, Default)]
+#[derive(Serialize, Default, Clone)]
 
 
 pub struct MarketsQuery {
@@ -165,7 +165,7 @@ pub struct MarketsQuery {
     pub max_close_ts: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub min_close_ts: Option<i64>,
-    #[serde(rename = "statuses", skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub status: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tickers: Option<String>,
@@ -329,7 +329,7 @@ pub struct CandlesticksQuery {
 
 
 /// Query parameters for `GET /markets/trades` endpoint.
-#[derive(Serialize)]
+#[derive(Serialize, Default, Clone)]
 pub struct GetTradesQuery {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub limit: Option<u16>,
