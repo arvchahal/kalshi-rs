@@ -13,7 +13,7 @@ use crate::errors::KalshiError;
 use crate::markets::models::{
     CandlesticksQuery, GetMarketCandlesticksResponse, GetMarketOrderbookResponse,
     GetMarketResponse, GetMarketsResponse, GetTradesQuery, GetTradesResponse,
-    MarketsQuery, OrderbookQuery,
+    Market, MarketsQuery, OrderbookQuery,
 };
 
 const GET_MARKETS: &str = "/trade-api/v2/markets";
@@ -263,18 +263,19 @@ impl KalshiClient {
         /// Retrieves all markets from Kalshi, automatically handling pagination.
         ///
         /// This function repeatedly calls get_all_markets until
-        /// all pages have been fetched, returning a vector of responses (one per page).
+        /// all pages have been fetched, returning a flattened vector of all markets.
         ///
         /// # Query Parameters
         /// Same as get_all_markets, except `cursor` is managed automatically.
         ///
         /// # Returns
-        /// A vector of GetMarketsResponse objects, one for each page fetched.
+        /// A vector of Market objects from all pages.
         pub async fn get_all_markets_paginated(
             &self,
             params: &MarketsQuery
-        ) -> Result<Vec<GetMarketsResponse>, KalshiError> {
+        ) -> Result<Vec<Market>, KalshiError> {
             single_page_fn: get_all_markets,
+            response_field: markets
         }
     }
 }
