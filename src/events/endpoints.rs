@@ -5,7 +5,7 @@
 use crate::client::KalshiClient;
 use crate::errors::KalshiError;
 use crate::events::models::{
-    EventsQuery, GetEventMetadataResponse, GetEventResponse, GetEventsResponse,
+    Event, EventsQuery, GetEventMetadataResponse, GetEventResponse, GetEventsResponse,
 };
 
 
@@ -74,5 +74,25 @@ impl KalshiClient {
                 )
             })?;
         Ok(data)
+    }
+
+    crate::paginated_endpoint! {
+        /// Retrieves all events from Kalshi, automatically handling pagination.
+        ///
+        /// This function repeatedly calls get_all_events until
+        /// all pages have been fetched, returning a flattened vector of all events.
+        ///
+        /// # Query Parameters
+        /// Same as get_all_events, except `cursor` is managed automatically.
+        ///
+        /// # Returns
+        /// A vector of Event objects from all pages.
+        pub async fn get_all_events_paginated(
+            &self,
+            params: &EventsQuery
+        ) -> Result<Vec<Event>, KalshiError> {
+            single_page_fn: get_all_events,
+            response_field: events
+        }
     }
 }

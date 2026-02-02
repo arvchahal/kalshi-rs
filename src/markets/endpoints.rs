@@ -13,7 +13,7 @@ use crate::errors::KalshiError;
 use crate::markets::models::{
     CandlesticksQuery, GetMarketCandlesticksResponse, GetMarketOrderbookResponse,
     GetMarketResponse, GetMarketsResponse, GetTradesQuery, GetTradesResponse,
-    MarketsQuery, OrderbookQuery,
+    Market, MarketsQuery, OrderbookQuery,
 };
 
 const GET_MARKETS: &str = "/trade-api/v2/markets";
@@ -67,6 +67,33 @@ impl KalshiClient {
                 )
             })?;
         Ok(data)
+    }
+
+    /// This function fetches all markets using pagination and returns them
+    /// sorted by `volume_24h` in descending order (highest volume first).
+    ///
+    /// # Query Parameters
+    /// Same as get_all_markets, except `cursor` is managed automatically.
+    ///
+    /// # Returns
+    /// A vector of Market objects sorted by liquidity (volume_24h descending).
+    pub async fn get_most_active_markets(
+        &self,
+        params: &MarketsQuery,
+    ) -> Result<Vec<Market>, KalshiError> {
+        let mut markets = self.get_all_markets_paginated(params).await?;
+        markets.sort_by(|a, b| b.volume_24h.cmp(&a.volume_24h));
+        Ok(markets)
+    }
+    
+    
+    pub async fn get_most_liquid_markets(
+        &self,
+        params: &MarketsQuery,
+    ) -> Result<Vec<Market>, KalshiError> {
+        let mut markets = self.get_all_markets_paginated(params).await?;
+        markets.sort_by(|a, b| b.liquidity.cmp(&a.liquidity));
+        Ok(markets)
     }
 
 
@@ -257,5 +284,25 @@ impl KalshiClient {
                 )
             })?;
         Ok(data)
+    }
+
+    crate::paginated_endpoint! {
+        /// Retrieves all markets from Kalshi, automatically handling pagination.
+        ///
+        /// This function repeatedly calls get_all_markets until
+        /// all pages have been fetched, returning a flattened vector of all markets.
+        ///
+        /// # Query Parameters
+        /// Same as get_all_markets, except `cursor` is managed automatically.
+        ///
+        /// # Returns
+        /// A vector of Market objects from all pages.
+        pub async fn get_all_markets_paginated(
+            &self,
+            params: &MarketsQuery
+        ) -> Result<Vec<Market>, KalshiError> {
+            single_page_fn: get_all_markets,
+            response_field: markets
+        }
     }
 }

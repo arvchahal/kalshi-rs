@@ -1,9 +1,23 @@
-use std::str::FromStr;
-
 use serde::Deserialize;
 use tokio_tungstenite::tungstenite;
 
 use crate::errors::KalshiError;
+
+/// Tagged enum for deserializing text websocket messages based on the "type" field
+#[derive(Deserialize, Debug)]
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum TextSocketMessage {
+    Subscribed(SubscribedResponse),
+    Unsubscribed(UnsubscribedResponse),
+    Ok(OkResponse),
+    Error(ErrorResponse),
+    OrderbookSnapshot(OrderbookSnapshot),
+    OrderbookDelta(OrderbookDelta),
+    Trade(TradeUpdate),
+    Ticker(TickerUpdate),
+    Fill(UserFill),
+    MarketPosition(MarketPosition),
+}
 
 #[derive(Debug)]
 pub enum KalshiSocketMessage {
@@ -53,111 +67,35 @@ impl TryFrom<tungstenite::Message> for KalshiSocketMessage {
     }
 }
 
-impl KalshiSocketMessage {
-    pub fn from_textual_message(s: String) -> Result<KalshiSocketMessage, KalshiError> {
-        let msg_type = determine_type(&s.clone())
-            .ok_or(String::from("could not determine message type"))?;
-        let socket_message = match msg_type.as_str() {
-            "subscribed" => {
-                let inner = serde_json::from_str::<SubscribedResponse>(&s);
-                match inner {
-                    Ok(res) => KalshiSocketMessage::SubscribedResponse(res),
-                    Err(_) => KalshiSocketMessage::Unparseable(s),
-                }
-            }
-            "unsubscribed" => {
-                let inner = serde_json::from_str::<UnsubscribedResponse>(&s);
-                match inner {
-                    Ok(res) => KalshiSocketMessage::UnsubscribedResponse(res),
-                    Err(_) => KalshiSocketMessage::Unparseable(s),
-                }
-            }
-            "error" => {
-                let inner = serde_json::from_str::<ErrorResponse>(&s);
-                match inner {
-                    Ok(res) => KalshiSocketMessage::ErrorResponse(res),
-                    Err(_) => KalshiSocketMessage::Unparseable(s),
-                }
-            }
-            "ok" => {
-                let inner = serde_json::from_str::<OkResponse>(&s);
-                match inner {
-                    Ok(res) => KalshiSocketMessage::OkResponse(res),
-                    Err(_) => KalshiSocketMessage::Unparseable(s),
-                }
-            }
-            "orderbook_snapshot" => {
-                let inner = serde_json::from_str::<OrderbookSnapshot>(&s);
-                match inner {
-                    Ok(res) => KalshiSocketMessage::OrderbookSnapshot(res),
-                    Err(_) => KalshiSocketMessage::Unparseable(s),
-                }
-            }
-            "orderbook_delta" => {
-                let inner = serde_json::from_str::<OrderbookDelta>(&s);
-                match inner {
-                    Ok(res) => KalshiSocketMessage::OrderbookDelta(res),
-                    Err(_) => KalshiSocketMessage::Unparseable(s),
-                }
-            }
-            "trade" => {
-                let inner = serde_json::from_str::<TradeUpdate>(&s);
-                match inner {
-                    Ok(res) => KalshiSocketMessage::TradeUpdate(res),
-                    Err(_) => KalshiSocketMessage::Unparseable(s),
-                }
-            }
-            "ticker" => {
-                let inner = serde_json::from_str::<TickerUpdate>(&s);
-                match inner {
-                    Ok(res) => KalshiSocketMessage::TickerUpdate(res),
-                    Err(_) => KalshiSocketMessage::Unparseable(s),
-                }
-            }
-            "fill" => {
-                let inner = serde_json::from_str::<UserFill>(&s);
-                match inner {
-                    Ok(res) => KalshiSocketMessage::UserFill(res),
-                    Err(_) => KalshiSocketMessage::Unparseable(s),
-                }
-            }
-            "market_position" => {
-                let inner = serde_json::from_str::<MarketPosition>(&s);
-                match inner {
-                    Ok(res) => KalshiSocketMessage::MarketPosition(res),
-                    Err(_) => KalshiSocketMessage::Unparseable(s),
-                }
-            }
-            _ => KalshiSocketMessage::Unparseable(s),
-        };
-
-        Ok(socket_message)
+impl From<TextSocketMessage> for KalshiSocketMessage {
+    fn from(msg: TextSocketMessage) -> Self {
+        match msg {
+            TextSocketMessage::Subscribed(inner) => KalshiSocketMessage::SubscribedResponse(inner),
+            TextSocketMessage::Unsubscribed(inner) => KalshiSocketMessage::UnsubscribedResponse(inner),
+            TextSocketMessage::Ok(inner) => KalshiSocketMessage::OkResponse(inner),
+            TextSocketMessage::Error(inner) => KalshiSocketMessage::ErrorResponse(inner),
+            TextSocketMessage::OrderbookSnapshot(inner) => KalshiSocketMessage::OrderbookSnapshot(inner),
+            TextSocketMessage::OrderbookDelta(inner) => KalshiSocketMessage::OrderbookDelta(inner),
+            TextSocketMessage::Trade(inner) => KalshiSocketMessage::TradeUpdate(inner),
+            TextSocketMessage::Ticker(inner) => KalshiSocketMessage::TickerUpdate(inner),
+            TextSocketMessage::Fill(inner) => KalshiSocketMessage::UserFill(inner),
+            TextSocketMessage::MarketPosition(inner) => KalshiSocketMessage::MarketPosition(inner),
+        }
     }
-
 }
 
-// TODO: this should not parse the whole message. Use regex or deser into struct with only type field.
-fn determine_type(msg: &str) -> Option<String> {
-    let msg_object = serde_json::Value::from_str(&msg).ok()?;
-
-    let msg_type_value = match msg_object {
-        serde_json::Value::Object(obj) => {
-            let val = obj.get("type")?;
-            val.clone()
+impl KalshiSocketMessage {
+    pub fn from_textual_message(s: String) -> Result<KalshiSocketMessage, KalshiError> {
+        match serde_json::from_str::<TextSocketMessage>(&s) {
+            Ok(msg) => Ok(msg.into()),
+            Err(_) => Ok(KalshiSocketMessage::Unparseable(s)),
         }
-        _ => return None,
-    };
-
-    match msg_type_value {
-        serde_json::Value::String(s) => return Some(s),
-        _ => return None,
     }
 }
 
 // Websocket subscription responses
 #[derive(Deserialize, Debug)]
 pub struct SubscribedResponse {
-    pub r#type: String,
     pub id: i64,
     pub msg: SubscribedResponseMessage,
 }
@@ -170,13 +108,11 @@ pub struct SubscribedResponseMessage {
 
 #[derive(Deserialize, Debug)]
 pub struct UnsubscribedResponse {
-    pub r#type: String,
     pub sid: i64,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct OkResponse {
-    pub r#type: String,
     pub id: i64,
     pub sid: i64,
     pub msg: OkResponseMessage,
@@ -189,7 +125,6 @@ pub struct OkResponseMessage {
 
 #[derive(Deserialize, Debug)]
 pub struct ErrorResponse {
-    pub r#type: String,
     pub id: i64,
     pub msg: ErrorResponseMessage,
 }
@@ -203,7 +138,6 @@ pub struct ErrorResponseMessage {
 // Orderbook update channel
 #[derive(Deserialize, Debug)]
 pub struct OrderbookSnapshot {
-    pub r#type: String,
     pub sid: i64,
     pub seq: i64,
     pub msg: OrderbookSnapshotMessage,
@@ -221,7 +155,6 @@ pub struct OrderbookSnapshotMessage {
 
 #[derive(Deserialize, Debug)]
 pub struct OrderbookDelta {
-    pub r#type: String,
     pub sid: i64,
     pub seq: i64,
     pub msg: OrderbookDeltaMessage,
@@ -241,7 +174,6 @@ pub struct OrderbookDeltaMessage {
 // Public trades channel
 #[derive(Deserialize, Debug)]
 pub struct TradeUpdate {
-    pub r#type: String,
     pub sid: i64,
     pub seq: i64,
     pub msg: TradeUpdateMessage,
@@ -263,7 +195,6 @@ pub struct TradeUpdateMessage {
 // Ticker updates channel
 #[derive(Deserialize, Debug)]
 pub struct TickerUpdate {
-    pub r#type: String,
     pub sid: i64,
     pub msg: TickerUpdateMessage,
 }
@@ -289,7 +220,6 @@ pub struct TickerUpdateMessage {
 // User order fills channel
 #[derive(Deserialize, Debug)]
 pub struct UserFill {
-    pub r#type: String,
     pub sid: i64,
     pub msg: UserFillMessage,
 }
@@ -314,7 +244,6 @@ pub struct UserFillMessage {
 // Market position updates channel
 #[derive(Deserialize, Debug)]
 pub struct MarketPosition {
-    pub r#type: String,
     pub sid: i64,
     pub msg: UserFillMessage,
 }

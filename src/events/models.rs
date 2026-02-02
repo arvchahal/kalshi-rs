@@ -80,6 +80,7 @@ pub struct Event {
 ///
 pub struct GetEventsResponse {
     pub events: Vec<Event>,
+    pub cursor: Option<String>,
 }
 
 
@@ -105,7 +106,7 @@ pub struct PriceRange {
 }
 
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Default, Clone)]
 
 
 /// Query parameters for API endpoint.
@@ -115,4 +116,10 @@ pub struct EventsQuery {
     pub limit: Option<u16>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cursor: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub series_ticker: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub min_close_ts: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub status: Option<String>,
 }

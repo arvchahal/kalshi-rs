@@ -14,6 +14,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let events_query = EventsQuery {
         limit: Some(5),
         cursor: None,
+        ..Default::default()
     };
     let events = client.get_all_events(&events_query).await?;
     println!("   Found {} events\n", events.events.len());
