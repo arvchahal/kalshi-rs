@@ -1,8 +1,10 @@
 use crate::common::setup_client;
 use kalshi_rs::portfolio::models::*;
+use serial_test::serial;
 use std::time::Duration;
 use tokio::time::sleep;
 #[tokio::test]
+#[serial]
 async fn test_get_balance() {
     let client = setup_client();
     let result = client.get_balance().await;
@@ -12,6 +14,7 @@ async fn test_get_balance() {
     println!("Portfolio Value: {} cents", balance.portfolio_value);
 }
 #[tokio::test]
+#[serial]
 async fn test_get_positions_default() {
     let client = setup_client();
     let params = GetPositionsParams::default();
@@ -22,6 +25,7 @@ async fn test_get_positions_default() {
     println!("Event positions: {}", positions.event_positions.len());
 }
 #[tokio::test]
+#[serial]
 async fn test_get_positions_with_limit() {
     let client = setup_client();
     let params = GetPositionsParams {
@@ -35,6 +39,7 @@ async fn test_get_positions_with_limit() {
     assert!(positions.market_positions.len() <= 3);
 }
 #[tokio::test]
+#[serial]
 async fn test_get_positions_unsettled_only() {
     let client = setup_client();
     let params = GetPositionsParams {
@@ -47,6 +52,7 @@ async fn test_get_positions_unsettled_only() {
     println!("Unsettled positions: {}", positions.market_positions.len());
 }
 #[tokio::test]
+#[serial]
 async fn test_get_fills_default() {
     let client = setup_client();
     let params = GetFillsParams::default();
@@ -57,6 +63,7 @@ async fn test_get_fills_default() {
     println!("Cursor: {}", fills.cursor);
 }
 #[tokio::test]
+#[serial]
 async fn test_get_fills_with_limit() {
     let client = setup_client();
     let params = GetFillsParams {
@@ -77,6 +84,7 @@ async fn test_get_fills_with_limit() {
     }
 }
 #[tokio::test]
+#[serial]
 async fn test_get_fills_by_ticker() {
     let client = setup_client();
     let params = GetFillsParams {
@@ -90,6 +98,7 @@ async fn test_get_fills_by_ticker() {
     }
 }
 #[tokio::test]
+#[serial]
 async fn test_get_settlements_default() {
     let client = setup_client();
     let params = GetSettlementsParams::default();
@@ -101,6 +110,7 @@ async fn test_get_settlements_default() {
     println!("Settlements with losses: {}", losses);
 }
 #[tokio::test]
+#[serial]
 async fn test_get_settlements_with_limit() {
     let client = setup_client();
     let params = GetSettlementsParams {
@@ -113,6 +123,7 @@ async fn test_get_settlements_with_limit() {
     assert!(settlements.settlements.len() <= 10);
 }
 #[tokio::test]
+#[serial]
 async fn test_get_settlements_time_filter() {
     let client = setup_client();
     let now = std::time::SystemTime::now()
@@ -132,6 +143,7 @@ async fn test_get_settlements_time_filter() {
     println!("Settlements in last 30 days: {}", settlements.settlements.len());
 }
 #[tokio::test]
+#[serial]
 async fn test_get_orders_default() {
     let client = setup_client();
     let params = GetOrdersParams::default();
@@ -141,6 +153,7 @@ async fn test_get_orders_default() {
     println!("Total orders: {}", orders.orders.len());
 }
 #[tokio::test]
+#[serial]
 async fn test_get_orders_resting_only() {
     let client = setup_client();
     let params = GetOrdersParams {
@@ -157,6 +170,7 @@ async fn test_get_orders_resting_only() {
     }
 }
 #[tokio::test]
+#[serial]
 async fn test_get_single_order() {
     let client = setup_client();
     let orders = client
@@ -179,6 +193,7 @@ async fn test_get_single_order() {
     println!("Order: {:?}", order.order);
 }
 #[tokio::test]
+#[serial]
 async fn test_get_order_queue_position() {
     let client = setup_client();
     let orders = client
@@ -202,6 +217,7 @@ async fn test_get_order_queue_position() {
     println!("Queue position: {}", queue_pos.queue_position);
 }
 #[tokio::test]
+#[serial]
 async fn test_order_group_lifecycle() {
     let client = setup_client();
     println!("1. Creating order group...");
@@ -230,6 +246,7 @@ async fn test_order_group_lifecycle() {
     println!("     Deleted successfully");
 }
 #[tokio::test]
+#[serial]
 async fn test_get_order_groups() {
     let client = setup_client();
     let result = client.get_order_groups().await;
@@ -238,6 +255,7 @@ async fn test_get_order_groups() {
     println!("Total order groups: {}", groups.order_groups.len());
 }
 #[tokio::test]
+#[serial]
 async fn test_get_queue_positions() {
     let client = setup_client();
     let markets = client
@@ -271,6 +289,7 @@ async fn test_get_queue_positions() {
     }
 }
 #[tokio::test]
+#[serial]
 async fn test_portfolio_comprehensive() {
     let client = setup_client();
     println!("\n{}", "=".repeat(80));

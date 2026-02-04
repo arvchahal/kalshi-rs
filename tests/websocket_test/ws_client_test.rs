@@ -1,6 +1,8 @@
 use crate::common::setup_ws_client;
+use serial_test::serial;
 
 #[tokio::test]
+#[serial]
 async fn test_connect() {
     let client = setup_ws_client();
     // test connect works
@@ -12,6 +14,7 @@ async fn test_connect() {
 }
 
 #[tokio::test]
+#[serial]
 async fn test_send_message() {
     let client = setup_ws_client();
     client
@@ -22,6 +25,7 @@ async fn test_send_message() {
 }
 
 #[tokio::test]
+#[serial]
 async fn test_build_promotion_request() {
     let client = setup_ws_client();
     client.build_promotion_request().unwrap();

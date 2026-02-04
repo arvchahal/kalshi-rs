@@ -1,9 +1,11 @@
 use crate::common::setup_client;
 use kalshi_rs::events::models::*;
+use serial_test::serial;
 use std::time::Duration;
 use tokio::time::sleep;
 /// ALL EVENTS TESTS
 #[tokio::test]
+#[serial]
 async fn test_get_all_events_basic() {
     let client = setup_client();
     let params = EventsQuery {
@@ -24,6 +26,7 @@ async fn test_get_all_events_basic() {
     }
 }
 #[tokio::test]
+#[serial]
 async fn test_get_all_events_with_cursor() {
     let client = setup_client();
     let params = EventsQuery {
@@ -48,6 +51,7 @@ async fn test_get_all_events_with_cursor() {
 }
 /// SINGLE EVENT TESTS
 #[tokio::test]
+#[serial]
 async fn test_get_event_single() {
     let client = setup_client();
     let params = EventsQuery {
@@ -70,6 +74,7 @@ async fn test_get_event_single() {
     );
 }
 #[tokio::test]
+#[serial]
 async fn test_get_event_with_markets_check() {
     let client = setup_client();
     let params = EventsQuery {
@@ -92,6 +97,7 @@ async fn test_get_event_with_markets_check() {
 /// EVENT METADATA TESTS
 /// =============================================================================
 #[tokio::test]
+#[serial]
 async fn test_get_event_metadata() {
     let client = setup_client();
     let params = EventsQuery {
@@ -118,6 +124,7 @@ async fn test_get_event_metadata() {
 }
 /// COMPREHENSIVE EVENTS TEST
 #[tokio::test]
+#[serial]
 async fn test_events_endpoints_comprehensive() {
     let client = setup_client();
     println!("COMPREHENSIVE EVENTS ENDPOINTS TEST");

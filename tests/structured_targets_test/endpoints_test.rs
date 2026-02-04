@@ -1,7 +1,9 @@
 use crate::common::setup_client;
 use kalshi_rs::structured_targets::models::*;
+use serial_test::serial;
 use tokio::time::{sleep, Duration};
 #[tokio::test]
+#[serial]
 async fn test_get_all_structured_targets() {
     let client = setup_client();
     let result = client.get_all_structured_targets(Some(10), None).await;
@@ -16,6 +18,7 @@ async fn test_get_all_structured_targets() {
     }
 }
 #[tokio::test]
+#[serial]
 async fn test_get_all_structured_targets_with_limit() {
     let client = setup_client();
     let result = client.get_all_structured_targets(Some(5), None).await;
@@ -25,6 +28,7 @@ async fn test_get_all_structured_targets_with_limit() {
     assert!(! resp.structured_targets.is_empty(), "Expected at least some targets");
 }
 #[tokio::test]
+#[serial]
 async fn test_get_single_structured_target() {
     let client = setup_client();
     let list = client
@@ -48,6 +52,7 @@ async fn test_get_single_structured_target() {
     assert_eq!(& target.structured_target.id, target_id, "Target ID mismatch");
 }
 #[tokio::test]
+#[serial]
 async fn test_structured_targets_endpoints_comprehensive() {
     let client = setup_client();
     println!("\n{}", "=".repeat(80));
@@ -89,6 +94,7 @@ async fn test_structured_targets_endpoints_comprehensive() {
     println!("{}\n", "=".repeat(80));
 }
 #[tokio::test]
+#[serial]
 async fn test_structured_targets_pagination() {
     let client = setup_client();
     let page1 = client

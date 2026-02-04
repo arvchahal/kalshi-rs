@@ -1,12 +1,14 @@
 use crate::common::setup_client;
 use kalshi_rs::communications::models::*;
 use kalshi_rs::markets::models::MarketsQuery;
+use serial_test::serial;
 use std::time::Duration;
 use tokio::time::sleep;
 /// =============================================================================
 /// COMMUNICATIONS ENDPOINTS TESTS (RFQs + QUOTES)
 /// =============================================================================
 #[tokio::test]
+#[serial]
 async fn test_get_rfqs_list() {
     let client = setup_client();
     let result = client.get_rfqs().await;
@@ -18,6 +20,7 @@ async fn test_get_rfqs_list() {
     );
 }
 #[tokio::test]
+#[serial]
 async fn test_get_quotes_list() {
     let client = setup_client();
     let markets = client
@@ -71,6 +74,7 @@ async fn test_get_quotes_list() {
     assert!(resp.quotes.len() <= 10, "Quotes limit respected");
 }
 #[tokio::test]
+#[serial]
 async fn test_get_communications_id() {
     let client = setup_client();
     let result = client.get_communications_id().await;
@@ -86,6 +90,7 @@ async fn test_get_communications_id() {
     );
 }
 #[tokio::test]
+#[serial]
 #[ignore = "Creates RFQ which could trigger market maker responses"]
 async fn test_create_and_delete_rfq_lifecycle() {
     let client = setup_client();
@@ -108,6 +113,7 @@ async fn test_create_and_delete_rfq_lifecycle() {
         .expect("Failed to delete RFQ");
 }
 #[tokio::test]
+#[serial]
 #[ignore = "DESTRUCTIVE: Accepts and confirms quotes which can execute real trades and cost real money"]
 async fn test_create_quote_and_accept_flow() {
     let client = setup_client();
