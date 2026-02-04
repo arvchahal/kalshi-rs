@@ -1,49 +1,68 @@
-use std::str::FromStr;
-
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
+use std::fmt;
 use tokio_tungstenite::tungstenite;
 
 use crate::errors::KalshiError;
 
-#[derive(Debug)]
+#[derive(Debug, Deserialize)]
+#[serde(tag = "type")]
 pub enum KalshiSocketMessage {
     // == TEXTUAL MESSAGES ==
     // response to a sent subscribed message indicating success
+    #[serde(rename = "subscribed")]
     SubscribedResponse(SubscribedResponse),
     // response to a sent unsubscribe message indicating success
+    #[serde(rename = "unsubscribed")]
     UnsubscribedResponse(UnsubscribedResponse),
     // response to a sent message indicating failure
+    #[serde(rename = "ok")]
     OkResponse(OkResponse),
     // response to a sent message indicating failure
+    #[serde(rename = "error")]
     ErrorResponse(ErrorResponse),
     // snapshot of orderbook, first message from a orderbook_delta subscription
+    #[serde(rename = "orderbook_snapshot")]
     OrderbookSnapshot(OrderbookSnapshot),
     // orderbook change
+    #[serde(rename = "orderbook_delta")]
     OrderbookDelta(OrderbookDelta),
     // trade executed between two parties
+    #[serde(rename = "trade")]
     TradeUpdate(TradeUpdate),
     // tick update on market
+    #[serde(rename = "ticker")]
     TickerUpdate(TickerUpdate),
     // user order fill update
+    #[serde(rename = "fill")]
     UserFill(UserFill),
     // market position update
+    #[serde(rename = "market_position")]
     MarketPosition(MarketPosition),
-    // fallback type in case not able to parse output correctly
-    Unparseable(String),
+
     // == HEARTBEAT TYPES ==
+    #[serde(skip)]
     Ping,
+    #[serde(skip)]
     Pong,
-    // == UNEXPECTED TYPES FROM KALSHI's API ==
+
+    // == PROTOCOL TYPES ==
+    #[serde(skip)]
     Binary(tungstenite::Bytes),
+    #[serde(skip)]
     Frame(tungstenite::protocol::frame::Frame),
+    #[serde(skip)]
     Close(Option<tungstenite::protocol::frame::CloseFrame>),
+
+    // == FALLBACK ==
+    #[serde(untagged)]
+    Unhandled(RawJson),
 }
 
 impl TryFrom<tungstenite::Message> for KalshiSocketMessage {
     type Error = KalshiError;
     fn try_from(msg: tungstenite::Message) -> Result<KalshiSocketMessage, Self::Error> {
         match msg {
-            tungstenite::Message::Text(text) => Self::from_textual_message(text.to_string()),
+            tungstenite::Message::Text(text) => Self::from_textual_message(&text),
             tungstenite::Message::Ping(_) => Ok(Self::Ping),
             tungstenite::Message::Pong(_) => Ok(Self::Pong),
             tungstenite::Message::Binary(b) => Ok(Self::Binary(b)),
@@ -54,110 +73,28 @@ impl TryFrom<tungstenite::Message> for KalshiSocketMessage {
 }
 
 impl KalshiSocketMessage {
-    pub fn from_textual_message(s: String) -> Result<KalshiSocketMessage, KalshiError> {
-        let msg_type = determine_type(&s.clone())
-            .ok_or(String::from("could not determine message type"))?;
-        let socket_message = match msg_type.as_str() {
-            "subscribed" => {
-                let inner = serde_json::from_str::<SubscribedResponse>(&s);
-                match inner {
-                    Ok(res) => KalshiSocketMessage::SubscribedResponse(res),
-                    Err(_) => KalshiSocketMessage::Unparseable(s),
-                }
-            }
-            "unsubscribed" => {
-                let inner = serde_json::from_str::<UnsubscribedResponse>(&s);
-                match inner {
-                    Ok(res) => KalshiSocketMessage::UnsubscribedResponse(res),
-                    Err(_) => KalshiSocketMessage::Unparseable(s),
-                }
-            }
-            "error" => {
-                let inner = serde_json::from_str::<ErrorResponse>(&s);
-                match inner {
-                    Ok(res) => KalshiSocketMessage::ErrorResponse(res),
-                    Err(_) => KalshiSocketMessage::Unparseable(s),
-                }
-            }
-            "ok" => {
-                let inner = serde_json::from_str::<OkResponse>(&s);
-                match inner {
-                    Ok(res) => KalshiSocketMessage::OkResponse(res),
-                    Err(_) => KalshiSocketMessage::Unparseable(s),
-                }
-            }
-            "orderbook_snapshot" => {
-                let inner = serde_json::from_str::<OrderbookSnapshot>(&s);
-                match inner {
-                    Ok(res) => KalshiSocketMessage::OrderbookSnapshot(res),
-                    Err(_) => KalshiSocketMessage::Unparseable(s),
-                }
-            }
-            "orderbook_delta" => {
-                let inner = serde_json::from_str::<OrderbookDelta>(&s);
-                match inner {
-                    Ok(res) => KalshiSocketMessage::OrderbookDelta(res),
-                    Err(_) => KalshiSocketMessage::Unparseable(s),
-                }
-            }
-            "trade" => {
-                let inner = serde_json::from_str::<TradeUpdate>(&s);
-                match inner {
-                    Ok(res) => KalshiSocketMessage::TradeUpdate(res),
-                    Err(_) => KalshiSocketMessage::Unparseable(s),
-                }
-            }
-            "ticker" => {
-                let inner = serde_json::from_str::<TickerUpdate>(&s);
-                match inner {
-                    Ok(res) => KalshiSocketMessage::TickerUpdate(res),
-                    Err(_) => KalshiSocketMessage::Unparseable(s),
-                }
-            }
-            "fill" => {
-                let inner = serde_json::from_str::<UserFill>(&s);
-                match inner {
-                    Ok(res) => KalshiSocketMessage::UserFill(res),
-                    Err(_) => KalshiSocketMessage::Unparseable(s),
-                }
-            }
-            "market_position" => {
-                let inner = serde_json::from_str::<MarketPosition>(&s);
-                match inner {
-                    Ok(res) => KalshiSocketMessage::MarketPosition(res),
-                    Err(_) => KalshiSocketMessage::Unparseable(s),
-                }
-            }
-            _ => KalshiSocketMessage::Unparseable(s),
-        };
-
-        Ok(socket_message)
+    pub fn from_textual_message(text: &str) -> Result<KalshiSocketMessage, KalshiError> {
+        serde_json::from_str::<KalshiSocketMessage>(text)
+            .map_err(|e| KalshiError::Other(format!("JSON Parse Error: {e}")))
     }
-
 }
 
-// TODO: this should not parse the whole message. Use regex or deser into struct with only type field.
-fn determine_type(msg: &str) -> Option<String> {
-    let msg_object = serde_json::Value::from_str(&msg).ok()?;
+#[derive(Deserialize, Serialize)]
+#[serde(transparent)]
+pub struct RawJson(String);
 
-    let msg_type_value = match msg_object {
-        serde_json::Value::Object(obj) => {
-            let val = obj.get("type")?;
-            val.clone()
+impl fmt::Debug for RawJson {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match serde_json::from_str::<serde_json::Value>(&self.0) {
+            Ok(json) => fmt::Debug::fmt(&json, f),
+            Err(_) => fmt::Debug::fmt(&self.0, f),
         }
-        _ => return None,
-    };
-
-    match msg_type_value {
-        serde_json::Value::String(s) => return Some(s),
-        _ => return None,
     }
 }
 
 // Websocket subscription responses
 #[derive(Deserialize, Debug)]
 pub struct SubscribedResponse {
-    pub r#type: String,
     pub id: i64,
     pub msg: SubscribedResponseMessage,
 }
@@ -170,13 +107,11 @@ pub struct SubscribedResponseMessage {
 
 #[derive(Deserialize, Debug)]
 pub struct UnsubscribedResponse {
-    pub r#type: String,
     pub sid: i64,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct OkResponse {
-    pub r#type: String,
     pub id: i64,
     pub sid: i64,
     pub msg: OkResponseMessage,
@@ -189,7 +124,6 @@ pub struct OkResponseMessage {
 
 #[derive(Deserialize, Debug)]
 pub struct ErrorResponse {
-    pub r#type: String,
     pub id: i64,
     pub msg: ErrorResponseMessage,
 }
@@ -203,7 +137,6 @@ pub struct ErrorResponseMessage {
 // Orderbook update channel
 #[derive(Deserialize, Debug)]
 pub struct OrderbookSnapshot {
-    pub r#type: String,
     pub sid: i64,
     pub seq: i64,
     pub msg: OrderbookSnapshotMessage,
@@ -221,7 +154,6 @@ pub struct OrderbookSnapshotMessage {
 
 #[derive(Deserialize, Debug)]
 pub struct OrderbookDelta {
-    pub r#type: String,
     pub sid: i64,
     pub seq: i64,
     pub msg: OrderbookDeltaMessage,
@@ -241,7 +173,6 @@ pub struct OrderbookDeltaMessage {
 // Public trades channel
 #[derive(Deserialize, Debug)]
 pub struct TradeUpdate {
-    pub r#type: String,
     pub sid: i64,
     pub seq: i64,
     pub msg: TradeUpdateMessage,
@@ -263,7 +194,6 @@ pub struct TradeUpdateMessage {
 // Ticker updates channel
 #[derive(Deserialize, Debug)]
 pub struct TickerUpdate {
-    pub r#type: String,
     pub sid: i64,
     pub msg: TickerUpdateMessage,
 }
@@ -289,7 +219,6 @@ pub struct TickerUpdateMessage {
 // User order fills channel
 #[derive(Deserialize, Debug)]
 pub struct UserFill {
-    pub r#type: String,
     pub sid: i64,
     pub msg: UserFillMessage,
 }
@@ -314,7 +243,6 @@ pub struct UserFillMessage {
 // Market position updates channel
 #[derive(Deserialize, Debug)]
 pub struct MarketPosition {
-    pub r#type: String,
     pub sid: i64,
     pub msg: UserFillMessage,
 }
