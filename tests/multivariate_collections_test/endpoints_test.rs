@@ -1,8 +1,10 @@
 use crate::common::setup_client;
 use kalshi_rs::multivariate_collections::models::*;
+use serial_test::serial;
 use std::time::Duration;
 use tokio::time::sleep;
 #[tokio::test]
+#[serial]
 async fn test_get_multivariate_event_collections_list() {
     tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
     let client = setup_client();
@@ -17,6 +19,7 @@ async fn test_get_multivariate_event_collections_list() {
     );
 }
 #[tokio::test]
+#[serial]
 async fn test_get_single_multivariate_event_collection() {
     let client = setup_client();
     let list = client
@@ -32,6 +35,7 @@ async fn test_get_single_multivariate_event_collection() {
     assert!(result.is_ok(), "Failed for MVC {}: {:?}", ticker, result.err());
 }
 #[tokio::test]
+#[serial]
 async fn test_multivariate_collections_endpoints_all() {
     let client = setup_client();
     let collections = client

@@ -1,8 +1,10 @@
 use crate::common::setup_client;
 use kalshi_rs::milestones::models::*;
+use serial_test::serial;
 use std::time::Duration;
 use tokio::time::sleep;
 #[tokio::test]
+#[serial]
 async fn test_get_milestones_basic() {
     tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
     let client = setup_client();
@@ -12,6 +14,7 @@ async fn test_get_milestones_basic() {
     assert!(! resp.milestones.is_empty(), "Expected at least one milestone to exist");
 }
 #[tokio::test]
+#[serial]
 async fn test_get_single_milestone() {
     let client = setup_client();
     let list = client.get_milestones(Some(5)).await.expect("Failed to list milestones");
@@ -26,6 +29,7 @@ async fn test_get_single_milestone() {
     );
 }
 #[tokio::test]
+#[serial]
 async fn test_milestones_endpoints_all() {
     let client = setup_client();
     let list = client.get_milestones(Some(20)).await.expect("Failed to get milestones");

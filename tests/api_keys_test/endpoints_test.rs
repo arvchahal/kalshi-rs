@@ -1,9 +1,11 @@
 use crate::common::setup_client;
 use kalshi_rs::api_keys::models::*;
+use serial_test::serial;
 use std::time::Duration;
 use tokio::time::sleep;
 /// api keys endpoints except the one where you provide your own api key because I was lazy
 #[tokio::test]
+#[serial]
 async fn test_get_api_keys_list() {
     let client = setup_client();
     println!("\n=== API KEYS: GET LIST ===");
@@ -17,6 +19,7 @@ async fn test_get_api_keys_list() {
     assert!(! keys.is_empty(), "Expected at least one API key to be present");
 }
 #[tokio::test]
+#[serial]
 async fn test_generate_and_delete_api_key() {
     let client = setup_client();
     println!("\n API KEYS: GENERATE + DELETE");
@@ -43,6 +46,7 @@ async fn test_generate_and_delete_api_key() {
     }
 }
 #[tokio::test]
+#[serial]
 async fn test_api_keys_endpoints_comprehensive() {
     let client = setup_client();
     println!("Listing existing API keys...");

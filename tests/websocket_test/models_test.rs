@@ -1,9 +1,11 @@
 use crate::common::setup_ws_client;
 use kalshi_rs::websocket::models::*;
+use serial_test::serial;
 
 use super::constants::TEST_MARKET_TICKER;
 
 #[tokio::test]
+#[serial]
 async fn test_orderbook_delta() {
     let client = setup_ws_client();
     client.connect().await.unwrap();
@@ -38,6 +40,7 @@ async fn test_orderbook_delta() {
 }
 
 #[tokio::test]
+#[serial]
 async fn test_trade_update() {
     let client = setup_ws_client();
     client.connect().await.unwrap();
@@ -69,6 +72,7 @@ async fn test_trade_update() {
 }
 
 #[tokio::test]
+#[serial]
 async fn test_ticker_update() {
     let client = setup_ws_client();
     client.connect().await.unwrap();
