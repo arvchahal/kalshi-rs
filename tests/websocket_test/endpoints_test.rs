@@ -76,7 +76,7 @@ async fn test_list_subscriptions() {
         // deser and check type. because of ambiguous "type" field in response
         // list subscripotions response is unparseable
         match message {
-            KalshiSocketMessage::Unparseable(_) => return,
+            KalshiSocketMessage::Unhandled(_) => return,
             _ => trys += 1,
         };
         // panic if waited 5 ping message
