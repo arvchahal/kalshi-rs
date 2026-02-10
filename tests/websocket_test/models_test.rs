@@ -18,7 +18,7 @@ async fn test_orderbook_delta() {
     let mut trys = 0;
     loop {
         // recieve next message
-        let message = client.next_message().await.unwrap();
+        let message = client.next_message().await.unwrap().unwrap();
         // deser and check type
         match &message {
             KalshiSocketMessage::OrderbookSnapshot(_snap) => recv_snapshot = true,
@@ -51,7 +51,7 @@ async fn test_trade_update() {
     let mut trys = 0;
     loop {
         // recieve next message
-        let message = client.next_message().await.unwrap();
+        let message = client.next_message().await.unwrap().unwrap();
         // deser and check type
         match &message {
             KalshiSocketMessage::TradeUpdate(_trade) => recv_trade = true,
@@ -82,7 +82,7 @@ async fn test_ticker_update() {
     let mut trys = 0;
     loop {
         // recieve next message
-        let message = client.next_message().await.unwrap();
+        let message = client.next_message().await.unwrap().unwrap();
         // deser and check type
         match &message {
             KalshiSocketMessage::TickerUpdate(_tick) => recv_tick = true,

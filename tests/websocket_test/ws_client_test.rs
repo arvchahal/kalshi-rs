@@ -8,7 +8,7 @@ async fn test_connect() {
     // send req to test sender
     client.list_subscriptions().await.unwrap();
     // if we recieve a message we know we have a connection
-    client.next_message().await.unwrap();
+    client.next_message().await.unwrap().unwrap();
 }
 
 #[tokio::test]
