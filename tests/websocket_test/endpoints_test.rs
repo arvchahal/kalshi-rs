@@ -18,7 +18,7 @@ async fn test_subscribe() {
     let mut trys = 0;
     loop {
         // recieve next message
-        let message = client.next_message().await.unwrap();
+        let message = client.next_message().await.unwrap().unwrap();
         // deser and check type
         match message {
             KalshiSocketMessage::SubscribedResponse(_) => return,
@@ -48,7 +48,7 @@ async fn test_unsubscribe() {
     let mut trys = 0;
     loop {
         // recieve next message
-        let message = client.next_message().await.unwrap();
+        let message = client.next_message().await.unwrap().unwrap();
         // deser and check type
         match message {
             KalshiSocketMessage::UnsubscribedResponse(_) => return,
@@ -72,7 +72,7 @@ async fn test_list_subscriptions() {
     let mut trys = 0;
     loop {
         // recieve next message
-        let message = client.next_message().await.unwrap();
+        let message = client.next_message().await.unwrap().unwrap();
         // deser and check type. because of ambiguous "type" field in response
         // list subscripotions response is unparseable
         match message {
@@ -102,7 +102,7 @@ async fn test_add_markets() {
     let mut trys = 0;
     loop {
         // recieve next message
-        let message = client.next_message().await.unwrap();
+        let message = client.next_message().await.unwrap().unwrap();
         match message {
             KalshiSocketMessage::OkResponse(_) => return,
             _ => trys += 1,
@@ -135,7 +135,7 @@ async fn test_del_markets() {
     let mut ok_messages = 0;
     loop {
         // recieve next message
-        let message = client.next_message().await.unwrap();
+        let message = client.next_message().await.unwrap().unwrap();
         match message {
             KalshiSocketMessage::OkResponse(_) => ok_messages += 1,
             _ => trys += 1,

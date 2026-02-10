@@ -41,9 +41,9 @@ pub enum KalshiSocketMessage {
 
     // == HEARTBEAT TYPES ==
     #[serde(skip)]
-    Ping,
+    Ping(tungstenite::Bytes),
     #[serde(skip)]
-    Pong,
+    Pong(tungstenite::Bytes),
 
     // == PROTOCOL TYPES ==
     #[serde(skip)]
@@ -63,8 +63,8 @@ impl TryFrom<tungstenite::Message> for KalshiSocketMessage {
     fn try_from(msg: tungstenite::Message) -> Result<KalshiSocketMessage, Self::Error> {
         match msg {
             tungstenite::Message::Text(text) => Self::from_textual_message(&text),
-            tungstenite::Message::Ping(_) => Ok(Self::Ping),
-            tungstenite::Message::Pong(_) => Ok(Self::Pong),
+            tungstenite::Message::Ping(b) => Ok(Self::Ping(b)),
+            tungstenite::Message::Pong(b) => Ok(Self::Pong(b)),
             tungstenite::Message::Binary(b) => Ok(Self::Binary(b)),
             tungstenite::Message::Close(c) => Ok(Self::Close(c)),
             tungstenite::Message::Frame(f) => Ok(Self::Frame(f)),
