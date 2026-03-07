@@ -73,3 +73,5 @@ pub mod websocket;                  // Websocket trades and orderbook updates
 pub use auth::Account;
 pub use client::KalshiClient;
 pub use ws_client::KalshiWebsocketClient;
+pub mod ratelimiter;
+
