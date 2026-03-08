@@ -316,7 +316,7 @@ pub struct UserFillMessage {
 pub struct MarketPosition {
     pub r#type: String,
     pub sid: i64,
-    pub msg: UserFillMessage,
+    pub msg: MarketPositionMessage,
 }
 
 #[derive(Deserialize, Debug)]
