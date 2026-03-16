@@ -8,15 +8,11 @@ use crate::events::models::{
     EventsQuery, GetEventMetadataResponse, GetEventResponse, GetEventsResponse,
 };
 
-
 const GET_EVENTS: &str = "/trade-api/v2/events";
-
 
 const GET_EVENT: &str = "/trade-api/v2/events/{}";
 
-
 const GET_EVENT_META: &str = "/trade-api/v2/events/{}/metadata";
-
 
 impl KalshiClient {
     /// get
@@ -26,37 +22,30 @@ impl KalshiClient {
         params: &EventsQuery,
     ) -> Result<GetEventsResponse, KalshiError> {
         let query = serde_urlencoded::to_string(params)
-            .map_err(|e| KalshiError::Other(
-                format!("Failed to serialize params: {}", e),
-            ))?;
+            .map_err(|e| KalshiError::Other(format!("Failed to serialize params: {}", e)))?;
         let url = if query.is_empty() {
             GET_EVENTS.to_string()
         } else {
             format!("{}?{}", GET_EVENTS, query)
         };
         let resp = self.unauthenticated_get(&url).await?;
-        let data: GetEventsResponse = serde_json::from_str(&resp)
-            .map_err(|e| {
-                KalshiError::Other(
-                    format!("Invalid parse format: Parse error: {e}. Response: {resp}"),
-                )
-            })?;
+        let data: GetEventsResponse = serde_json::from_str(&resp).map_err(|e| {
+            KalshiError::Other(format!(
+                "Invalid parse format: Parse error: {e}. Response: {resp}"
+            ))
+        })?;
         Ok(data)
     }
     /// GET /trade-api/v2/events/{ticker}
     /// Returns the specified event and its markets
-    pub async fn get_event(
-        &self,
-        event_ticker: &str,
-    ) -> Result<GetEventResponse, KalshiError> {
+    pub async fn get_event(&self, event_ticker: &str) -> Result<GetEventResponse, KalshiError> {
         let url = GET_EVENT.replace("{}", event_ticker);
         let resp = self.unauthenticated_get(&url).await?;
-        let data: GetEventResponse = serde_json::from_str(&resp)
-            .map_err(|e| {
-                KalshiError::Other(
-                    format!("Invalid parse format: Parse error: {e}. Response: {resp}"),
-                )
-            })?;
+        let data: GetEventResponse = serde_json::from_str(&resp).map_err(|e| {
+            KalshiError::Other(format!(
+                "Invalid parse format: Parse error: {e}. Response: {resp}"
+            ))
+        })?;
         Ok(data)
     }
     /// get /trade-api/v2/events/{ticker}/metadata
@@ -67,12 +56,11 @@ impl KalshiClient {
     ) -> Result<GetEventMetadataResponse, KalshiError> {
         let url = GET_EVENT_META.replace("{}", event_ticker);
         let resp = self.unauthenticated_get(&url).await?;
-        let data: GetEventMetadataResponse = serde_json::from_str(&resp)
-            .map_err(|e| {
-                KalshiError::Other(
-                    format!("Invalid parse format: Parse error: {e}. Response: {resp}"),
-                )
-            })?;
+        let data: GetEventMetadataResponse = serde_json::from_str(&resp).map_err(|e| {
+            KalshiError::Other(format!(
+                "Invalid parse format: Parse error: {e}. Response: {resp}"
+            ))
+        })?;
         Ok(data)
     }
 }
