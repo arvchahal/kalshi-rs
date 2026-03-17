@@ -8,12 +8,10 @@ pub struct GetMilestonesResponse {
     pub milestones: Vec<Milestone>,
 }
 
-
 #[derive(Debug, Deserialize, Serialize)]
 pub struct GetMilestoneResponse {
     pub milestone: Milestone,
 }
-
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Milestone {

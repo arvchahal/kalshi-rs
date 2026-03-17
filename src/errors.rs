@@ -33,7 +33,7 @@ impl From<std::io::Error> for KalshiError {
     }
 }
 impl From<String> for KalshiError {
-    fn from(s: String) -> KalshiError{
+    fn from(s: String) -> KalshiError {
         KalshiError::Other(s)
     }
 }

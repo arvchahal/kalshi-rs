@@ -1,20 +1,18 @@
 use crate::auth::models::Account;
-use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
+use base64::{engine::general_purpose::STANDARD as BASE64, Engine as _};
 use rand::thread_rng;
 use rsa::pss::SigningKey;
 use rsa::signature::{RandomizedSigner, SignatureEncoding};
-use rsa::{RsaPrivateKey, pkcs1::DecodeRsaPrivateKey, pkcs8::DecodePrivateKey};
+use rsa::{pkcs1::DecodeRsaPrivateKey, pkcs8::DecodePrivateKey, RsaPrivateKey};
 use sha2::Sha256;
 use std::env;
 use std::fs;
 use std::io;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-
 // Environment variable names for authentication
 const KALSHI_PK_FILE_PATH: &str = "KALSHI_PK_FILE_PATH";
 const KALSHI_API_KEY_ID: &str = "KALSHI_API_KEY_ID";
-
 
 /// Load authentication credentials from environment variables and file
 ///
@@ -25,14 +23,13 @@ const KALSHI_API_KEY_ID: &str = "KALSHI_API_KEY_ID";
 /// Returns an Account struct with credentials loaded
 pub fn load_auth_from_file() -> io::Result<Account> {
     // Load API key ID from environment
-    let api_key_id = env::var(KALSHI_API_KEY_ID)
-        .map_err(|_| {
-            eprintln!("{} is not set. Exiting.", KALSHI_API_KEY_ID);
-            io::Error::new(
-                io::ErrorKind::NotFound,
-                "KALSHI_API_KEY_ID environment variable not set",
-            )
-        })?;
+    let api_key_id = env::var(KALSHI_API_KEY_ID).map_err(|_| {
+        eprintln!("{} is not set. Exiting.", KALSHI_API_KEY_ID);
+        io::Error::new(
+            io::ErrorKind::NotFound,
+            "KALSHI_API_KEY_ID environment variable not set",
+        )
+    })?;
 
     // Load private key file path from environment
     let pk_file_path = env::var(KALSHI_PK_FILE_PATH)
@@ -46,16 +43,14 @@ pub fn load_auth_from_file() -> io::Result<Account> {
 
     // Read the private key PEM file
     // Handle the error gracefully since the file path comes from env var
-    let private_key_pem = fs::read_to_string(&pk_file_path)
-        .map_err(|e| {
-            eprintln!("error {}", e);
-            io::Error::new(io::ErrorKind::NotFound, "new weird error reading from file")
-        })?;
+    let private_key_pem = fs::read_to_string(&pk_file_path).map_err(|e| {
+        eprintln!("error {}", e);
+        io::Error::new(io::ErrorKind::NotFound, "new weird error reading from file")
+    })?;
 
     println!("Loaded private key from {}", &pk_file_path);
     Ok(Account::new(private_key_pem, api_key_id))
 }
-
 
 /// Get current timestamp in milliseconds
 /// Used for request signing - TODO might delete if only used once
@@ -67,7 +62,6 @@ pub fn get_current_timestamp_ms() -> String {
     let in_ms = since_the_epoch.as_millis();
     in_ms.to_string()
 }
-
 
 /// Sign a request using RSA-PSS with SHA256
 ///

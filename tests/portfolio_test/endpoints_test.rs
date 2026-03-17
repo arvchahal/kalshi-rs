@@ -16,7 +16,11 @@ async fn test_get_positions_default() {
     let client = setup_client();
     let params = GetPositionsParams::default();
     let result = client.get_positions(&params).await;
-    assert!(result.is_ok(), "Failed to get positions: {:?}", result.err());
+    assert!(
+        result.is_ok(),
+        "Failed to get positions: {:?}",
+        result.err()
+    );
     let positions = result.unwrap();
     println!("Market positions: {}", positions.market_positions.len());
     println!("Event positions: {}", positions.event_positions.len());
@@ -94,10 +98,18 @@ async fn test_get_settlements_default() {
     let client = setup_client();
     let params = GetSettlementsParams::default();
     let result = client.get_settlements(&params).await;
-    assert!(result.is_ok(), "Failed to get settlements: {:?}", result.err());
+    assert!(
+        result.is_ok(),
+        "Failed to get settlements: {:?}",
+        result.err()
+    );
     let settlements = result.unwrap();
     println!("Total settlements: {}", settlements.settlements.len());
-    let losses = settlements.settlements.iter().filter(|s| s.revenue < 0).count();
+    let losses = settlements
+        .settlements
+        .iter()
+        .filter(|s| s.revenue < 0)
+        .count();
     println!("Settlements with losses: {}", losses);
 }
 #[tokio::test]
@@ -129,7 +141,10 @@ async fn test_get_settlements_time_filter() {
     let result = client.get_settlements(&params).await;
     assert!(result.is_ok());
     let settlements = result.unwrap();
-    println!("Settlements in last 30 days: {}", settlements.settlements.len());
+    println!(
+        "Settlements in last 30 days: {}",
+        settlements.settlements.len()
+    );
 }
 #[tokio::test]
 async fn test_get_orders_default() {
@@ -160,12 +175,10 @@ async fn test_get_orders_resting_only() {
 async fn test_get_single_order() {
     let client = setup_client();
     let orders = client
-        .get_orders(
-            &GetOrdersParams {
-                limit: Some(1),
-                ..Default::default()
-            },
-        )
+        .get_orders(&GetOrdersParams {
+            limit: Some(1),
+            ..Default::default()
+        })
         .await;
     if orders.is_err() || orders.as_ref().unwrap().orders.is_empty() {
         println!("No orders available to test get_order");
@@ -182,13 +195,11 @@ async fn test_get_single_order() {
 async fn test_get_order_queue_position() {
     let client = setup_client();
     let orders = client
-        .get_orders(
-            &GetOrdersParams {
-                status: Some("resting".to_string()),
-                limit: Some(1),
-                ..Default::default()
-            },
-        )
+        .get_orders(&GetOrdersParams {
+            status: Some("resting".to_string()),
+            limit: Some(1),
+            ..Default::default()
+        })
         .await;
     if orders.is_err() || orders.as_ref().unwrap().orders.is_empty() {
         println!("No resting orders available - skipping queue position test");
@@ -197,7 +208,11 @@ async fn test_get_order_queue_position() {
     let order_id = &orders.unwrap().orders[0].order_id;
     println!("Testing queue position for order ID: {}", order_id);
     let result = client.get_order_queue_position(order_id).await;
-    assert!(result.is_ok(), "Failed to get queue position: {:?}", result.err());
+    assert!(
+        result.is_ok(),
+        "Failed to get queue position: {:?}",
+        result.err()
+    );
     let queue_pos = result.unwrap();
     println!("Queue position: {}", queue_pos.queue_position);
 }
@@ -209,7 +224,11 @@ async fn test_order_group_lifecycle() {
         contracts_limit: 100,
     };
     let create_result = client.create_order_group(&create_request).await;
-    assert!(create_result.is_ok(), "Failed to create: {:?}", create_result.err());
+    assert!(
+        create_result.is_ok(),
+        "Failed to create: {:?}",
+        create_result.err()
+    );
     let order_group_id = create_result.unwrap().order_group_id;
     println!("     Created: {}", order_group_id);
     sleep(Duration::from_secs(2)).await;
@@ -221,19 +240,31 @@ async fn test_order_group_lifecycle() {
     sleep(Duration::from_secs(2)).await;
     println!("3. Resetting order group... with id {}", order_group_id);
     let reset_result = client.reset_order_group(&order_group_id).await;
-    assert!(reset_result.is_ok(), "Failed to reset: {:?}", reset_result.err());
+    assert!(
+        reset_result.is_ok(),
+        "Failed to reset: {:?}",
+        reset_result.err()
+    );
     println!("     Reset successful");
     sleep(Duration::from_secs(2)).await;
     println!("4. Deleting order group...");
     let delete_result = client.delete_order_group(&order_group_id).await;
-    assert!(delete_result.is_ok(), "Failed to delete: {:?}", delete_result.err());
+    assert!(
+        delete_result.is_ok(),
+        "Failed to delete: {:?}",
+        delete_result.err()
+    );
     println!("     Deleted successfully");
 }
 #[tokio::test]
 async fn test_get_order_groups() {
     let client = setup_client();
     let result = client.get_order_groups().await;
-    assert!(result.is_ok(), "Failed to get order groups: {:?}", result.err());
+    assert!(
+        result.is_ok(),
+        "Failed to get order groups: {:?}",
+        result.err()
+    );
     let groups = result.unwrap();
     println!("Total order groups: {}", groups.order_groups.len());
 }
@@ -241,18 +272,16 @@ async fn test_get_order_groups() {
 async fn test_get_queue_positions() {
     let client = setup_client();
     let markets = client
-        .get_all_markets(
-            &kalshi_rs::markets::models::MarketsQuery {
-                limit: Some(1),
-                cursor: None,
-                event_ticker: None,
-                series_ticker: None,
-                max_close_ts: None,
-                min_close_ts: None,
-                status: None,
-                tickers: None,
-            },
-        )
+        .get_all_markets(&kalshi_rs::markets::models::MarketsQuery {
+            limit: Some(1),
+            cursor: None,
+            event_ticker: None,
+            series_ticker: None,
+            max_close_ts: None,
+            min_close_ts: None,
+            status: None,
+            tickers: None,
+        })
         .await;
     if markets.is_err() || markets.as_ref().unwrap().markets.is_empty() {
         println!("Skipping - no markets available for queue position test");
@@ -286,42 +315,37 @@ async fn test_portfolio_comprehensive() {
         .await
         .expect("Positions");
     println!(
-        "   Positions: {} markets, {} events\n", positions.market_positions.len(),
+        "   Positions: {} markets, {} events\n",
+        positions.market_positions.len(),
         positions.event_positions.len()
     );
     sleep(Duration::from_secs(2)).await;
     println!("3. Getting fills...");
     let fills = client
-        .get_fills(
-            &GetFillsParams {
-                limit: Some(5),
-                ..Default::default()
-            },
-        )
+        .get_fills(&GetFillsParams {
+            limit: Some(5),
+            ..Default::default()
+        })
         .await
         .expect("Fills");
     println!("   Recent fills: {}\n", fills.fills.len());
     sleep(Duration::from_secs(2)).await;
     println!("4. Getting settlements...");
     let settlements = client
-        .get_settlements(
-            &GetSettlementsParams {
-                limit: Some(5),
-                ..Default::default()
-            },
-        )
+        .get_settlements(&GetSettlementsParams {
+            limit: Some(5),
+            ..Default::default()
+        })
         .await
         .expect("Settlements");
     println!("  Recent settlements: {}\n", settlements.settlements.len());
     sleep(Duration::from_secs(2)).await;
     println!("5. Getting orders...");
     let orders = client
-        .get_orders(
-            &GetOrdersParams {
-                limit: Some(5),
-                ..Default::default()
-            },
-        )
+        .get_orders(&GetOrdersParams {
+            limit: Some(5),
+            ..Default::default()
+        })
         .await
         .expect("Orders");
     println!("  Recent orders: {}\n", orders.orders.len());
@@ -330,7 +354,10 @@ async fn test_portfolio_comprehensive() {
     let og = CreateOrderGroupRequest {
         contracts_limit: 10,
     };
-    let created = client.create_order_group(&og).await.expect("Create order group");
+    let created = client
+        .create_order_group(&og)
+        .await
+        .expect("Create order group");
     sleep(Duration::from_secs(2)).await;
     let _ = client
         .get_order_group(&created.order_group_id)
