@@ -9,7 +9,10 @@ async fn test_get_all_series() {
     let result = client.get_all_series(Some(10), None).await;
     assert!(result.is_ok(), "fail to get all series: {:?}", result.err());
     let resp = result.unwrap();
-    assert!(! resp.series.is_empty(), "expected at least 1 series to be returned");
+    assert!(
+        !resp.series.is_empty(),
+        "expected at least 1 series to be returned"
+    );
 }
 #[tokio::test]
 #[serial]
@@ -26,7 +29,10 @@ async fn test_get_single_series() {
     let ticker = "KXATTYGENID";
     let result = client.get_series_by_ticker(ticker).await;
     assert!(
-        result.is_ok(), "fail to get series by ticker {}: {:?}", ticker, result.err()
+        result.is_ok(),
+        "fail to get series by ticker {}: {:?}",
+        ticker,
+        result.err()
     );
 }
 #[tokio::test]

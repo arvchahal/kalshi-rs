@@ -50,8 +50,6 @@ impl KalshiWebsocketClient {
         self.send_message(msg).await?;
         Ok(())
     }
-
-    
 }
 
 fn subscribe_message(

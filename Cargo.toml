@@ -38,5 +38,6 @@ futures-util = "0.3.31"
 
 [dev-dependencies]
 serial_test = "3"
+rust_decimal = "1.40.0"
 
 

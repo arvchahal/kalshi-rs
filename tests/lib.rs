@@ -1,12 +1,12 @@
+pub mod api_keys_test;
 pub mod common;
+pub mod communications_test;
 pub mod events_test;
 pub mod exchange_test;
 pub mod markets_test;
-pub mod portfolio_test;
-pub mod api_keys_test;
-pub mod communications_test;
-pub mod multivariate_collections_test;
 pub mod milestones_test;
+pub mod multivariate_collections_test;
+pub mod portfolio_test;
 pub mod series_test;
 pub mod structured_targets_test;
 pub mod websocket_test;

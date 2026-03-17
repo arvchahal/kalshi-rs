@@ -99,12 +99,12 @@ pub struct RFQ {
     pub creator_user_id: Option<String>,
     pub creator_id: String,
     pub market_ticker: String,
-    pub contacts: Option<u64>,
+    pub contacts_fp: Option<String>,
     pub rest_remainder: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub contracts: Option<i32>,
+    pub contracts_fp: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub target_cost_centi_cents: Option<i32>,
+    pub target_cost_dollars: Option<String>,
     pub mve_collection_ticker: Option<String>,
     pub mve_selected_legs: Option<Vec<MveLogs>>,
     pub cancellation_reason: Option<String>,
@@ -163,9 +163,9 @@ pub struct Quote {
     pub creator_id: String,
     pub rfq_creator_id: String,
     pub market_ticker: String,
-    pub contracts: i32,
-    pub yes_bid: i32,
-    pub no_bid: i32,
+    pub contracts_fp: String,
+    pub yes_bid_dollars: String,
+    pub no_bid_dollars: String,
     pub created_ts: String,
     pub updated_ts: String,
     pub status: String,
@@ -190,7 +190,7 @@ pub struct Quote {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub expired_ts: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub rfq_target_cost_centi_cents: Option<i32>,
+    pub rfq_target_cost_dollars: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub rfq_creator_order_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]

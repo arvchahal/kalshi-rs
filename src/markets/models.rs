@@ -7,13 +7,11 @@ use derive_more::Display;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-
 /// Represents a single market on the Kalshi platform.
 ///
 /// Contains comprehensive market data including pricing, volume, liquidity,
 /// and settlement information for binary prediction markets.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-
 
 pub struct Market {
     pub ticker: String,
@@ -34,35 +32,23 @@ pub struct Market {
     pub settlement_timer_seconds: u32,
     pub status: String,
     pub response_price_units: String,
-    pub notional_value: u32,
     pub notional_value_dollars: String,
-    pub yes_bid: u32,
     pub yes_bid_dollars: String,
-    pub yes_ask: u32,
     pub yes_ask_dollars: String,
-    pub no_bid: u32,
     pub no_bid_dollars: String,
-    pub no_ask: u32,
     pub no_ask_dollars: String,
-    pub last_price: u32,
     pub last_price_dollars: String,
-    pub previous_yes_bid: u32,
     pub previous_yes_bid_dollars: String,
-    pub previous_yes_ask: u32,
     pub previous_yes_ask_dollars: String,
-    pub previous_price: u32,
     pub previous_price_dollars: String,
-    pub volume: u64,
-    pub volume_24h: u64,
-    pub liquidity: i64,
+    pub volume_fp: String,
+    pub volume_24h_fp: String,
     pub liquidity_dollars: String,
-    pub open_interest: u32,
+    pub open_interest_fp: String,
     pub can_close_early: bool,
     pub result: Option<String>,
     #[serde(default)]
     pub expiration_value: String,
-    #[serde(default)]
-    pub settlement_value: Option<u32>,
     #[serde(default)]
     pub settlement_value_dollars: Option<String>,
     #[serde(default)]
@@ -96,12 +82,10 @@ pub struct Market {
     pub primary_participant_key: Option<String>,
 }
 
-
 /// Represents a selected leg in a multivariate event (MVE) collection.
 ///
 /// Used for markets that are part of composite multi-outcome events.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-
 
 pub struct MveSelectedLeg {
     pub event_ticker: String,
@@ -109,10 +93,8 @@ pub struct MveSelectedLeg {
     pub side: String,
 }
 
-
 /// Defines a price range for market trading with specified step increments.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-
 
 pub struct PriceRange {
     pub start: String,
@@ -120,19 +102,16 @@ pub struct PriceRange {
     pub step: String,
 }
 
-
 /// Response from `GET /markets` endpoint.
 ///
 /// Contains a list of markets with optional cursor for pagination.
 #[derive(Debug, Clone, Serialize, Deserialize, Display)]
 #[display("All markets {:?}", markets)]
 
-
 pub struct GetMarketsResponse {
     pub cursor: Option<String>,
     pub markets: Vec<Market>,
 }
-
 
 /// Response from `GET /markets/{ticker}` endpoint.
 ///
@@ -140,17 +119,14 @@ pub struct GetMarketsResponse {
 #[derive(Debug, Clone, Serialize, Deserialize, Display)]
 #[display("Market {:?}", market)]
 
-
 pub struct GetMarketResponse {
     pub market: Market,
 }
-
 
 /// Query parameters for `GET /markets` endpoint.
 ///
 /// All fields are optional filters for market retrieval.
 #[derive(Serialize, Default)]
-
 
 pub struct MarketsQuery {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -171,17 +147,14 @@ pub struct MarketsQuery {
     pub tickers: Option<String>,
 }
 
-
 /// Response from `GET /markets/{ticker}/orderbook` endpoint.
 ///
 /// Contains the current orderbook with bid/ask levels.
 #[derive(serde::Deserialize, Display, Debug)]
 
-
 pub struct GetMarketOrderbookResponse {
-    pub orderbook: Orderbook,
+    pub orderbook_fp: Orderbook,
 }
-
 
 /// Market orderbook containing yes/no bid and ask levels.
 ///
@@ -189,33 +162,25 @@ pub struct GetMarketOrderbookResponse {
 /// Prices are available in both cents and dollar representations.
 #[derive(serde::Deserialize, Display, Debug)]
 #[display(
-    "No(cents, total shares available) {:?} \nNo(dollars, shares available): {:?} \nYes(cents, total shares available) {:?} \nYes(dollars, shares available): {:?}",
-    no,
+    "No(dollars, shares available): {:?} \nYes(dollars, shares available): {:?}",
     no_dollars,
-    yes,
     yes_dollars
 )]
-
 
 /// Orderbook data model.
 ///
 pub struct Orderbook {
-    pub no: Option<Vec<(u64, u64)>>,
-    pub no_dollars: Option<Vec<(String, u64)>>,
-    pub yes: Option<Vec<(u64, u64)>>,
-    pub yes_dollars: Option<Vec<(String, u64)>>,
+    pub no_dollars: Option<Vec<(String, String)>>,
+    pub yes_dollars: Option<Vec<(String, String)>>,
 }
-
 
 /// Query parameters for `GET /markets/{ticker}/orderbook` endpoint.
 #[derive(Serialize)]
-
 
 pub struct OrderbookQuery {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub depth: Option<u128>,
 }
-
 
 /// Response from `GET /series/{series_ticker}/markets/{ticker}/candlesticks` endpoint.
 ///
@@ -227,14 +192,12 @@ pub struct OrderbookQuery {
     "self.adjusted_end_ts"
 )]
 
-
 /// Response model for API endpoint.
 ///
 pub struct GetMarketCandlesticksResponse {
-    pub market_candlesticks: Vec<Candlestick>,
-    pub market_ticker: String,
+    pub candlesticks: Vec<Candlestick>,
+    pub ticker: String,
 }
-
 
 /// A single candlestick data point representing market activity for a time period.
 ///
@@ -251,13 +214,12 @@ pub struct GetMarketCandlesticksResponse {
     "self.yes_ask"
 )]
 
-
 /// Candlestick data model.
 ///
 pub struct Candlestick {
     pub end_period_ts: i64,
-    pub open_interest: Option<u32>,
-    pub volume: u32,
+    pub open_interest_fp: Option<String>,
+    pub volume_fp: String,
     pub price: PriceStats,
     pub yes_ask: SideOhlc,
     pub yes_bid: SideOhlc,
@@ -266,7 +228,6 @@ pub struct Candlestick {
     #[serde(default)]
     pub no_bid: Option<SideOhlc>,
 }
-
 
 /// Statistical price information for a candlestick period.
 ///
@@ -280,7 +241,6 @@ pub struct Candlestick {
     "self.low",
     "self.close"
 )]
-
 
 /// PriceStats data model.
 ///
@@ -303,21 +263,21 @@ pub struct PriceStats {
     pub previous_dollars: Option<String>,
 }
 
-
 /// OHLC (Open, High, Low, Close) data for one side of the market (yes or no).
 #[derive(Debug, Clone, Deserialize, Display)]
-#[display("O/H/L/C={}/{}/{}/{}", "self.open", "self.high", "self.low", "self.close")]
+#[display(
+    "O/H/L/C={}/{}/{}/{}",
+    "self.open",
+    "self.high",
+    "self.low",
+    "self.close"
+)]
 pub struct SideOhlc {
-    pub open: u32,
     pub open_dollars: String,
-    pub high: u32,
     pub high_dollars: String,
-    pub low: u32,
     pub low_dollars: String,
-    pub close: u32,
     pub close_dollars: String,
 }
-
 
 /// Query parameters for `GET /series/{series_ticker}/markets/{ticker}/candlesticks` endpoint.
 #[derive(Serialize)]
@@ -326,7 +286,6 @@ pub struct CandlesticksQuery {
     pub end_ts: i64,
     pub period_interval: u32,
 }
-
 
 /// Query parameters for `GET /markets/trades` endpoint.
 #[derive(Serialize)]
@@ -343,7 +302,6 @@ pub struct GetTradesQuery {
     pub max_ts: Option<u64>,
 }
 
-
 /// Response from `GET /markets/trades` endpoint.
 ///
 /// Returns a list of recent trades with optional pagination cursor.
@@ -354,21 +312,17 @@ pub struct GetTradesResponse {
     pub trades: Vec<Trade>,
 }
 
-
 /// Represents a single trade execution on a market.
 ///
 /// Contains trade details including price, quantity, side, and timestamp.
 #[derive(serde::Deserialize, Display, Debug, Clone)]
-#[display("Trade: {} {} @ ${} ({})", ticker, count, price, taker_side)]
+#[display("Trade: {} {} @ ${} ({})", ticker, count_fp, if taker_side == "yes" { yes_price_dollars } else { no_price_dollars }, taker_side)]
 pub struct Trade {
-    pub count: i64,
+    pub count_fp: String,
     pub created_time: String,
-    pub no_price: u64,
     pub no_price_dollars: String,
-    pub price: f64,
     pub taker_side: String,
     pub ticker: String,
     pub trade_id: String,
-    pub yes_price: u64,
     pub yes_price_dollars: String,
 }

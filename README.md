@@ -36,6 +36,8 @@ The crate supports:
 * creating, canceling, and managing orders
 * fetching portfolio and positions
 * error handling consistent with Kalshi’s API responses
+* websocket endpoints for continous data streaming and trading
+
 
 The best way to get started is to look at the examples below, the examples in the [examples directory](examples) and in the [quickstart guide](QUICKSTART) and for contirbutions and understanding how the repo is structured the [/src readme](SRC/README)
 <br>
