@@ -1,9 +1,11 @@
 use crate::common::setup_client;
 use kalshi_rs::markets::models::*;
+use serial_test::serial;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tokio::time::sleep;
 /// MARKETS LIST TESTS
 #[tokio::test]
+#[serial]
 async fn test_get_all_markets_basic() {
     let client = setup_client();
     let result = client
@@ -32,6 +34,7 @@ async fn test_get_all_markets_basic() {
     }
 }
 #[tokio::test]
+#[serial]
 async fn test_get_all_markets_with_event_ticker_filter() {
     let client = setup_client();
     let base = client
@@ -74,6 +77,7 @@ async fn test_get_all_markets_with_event_ticker_filter() {
 }
 /// SINGLE MARKET TEST
 #[tokio::test]
+#[serial]
 async fn test_get_single_market() {
     let client = setup_client();
     let markets = client
@@ -109,6 +113,7 @@ async fn test_get_single_market() {
 }
 /// MARKET ORDERBOOK TEST
 #[tokio::test]
+#[serial]
 async fn test_get_market_orderbook() {
     let client = setup_client();
     let markets = client
@@ -142,6 +147,7 @@ async fn test_get_market_orderbook() {
 }
 /// TRADES TEST
 #[tokio::test]
+#[serial]
 async fn test_get_trades_recent() {
     let client = setup_client();
     let markets = client
@@ -175,6 +181,7 @@ async fn test_get_trades_recent() {
 }
 /// CANDLESTICKS TEST
 #[tokio::test]
+#[serial]
 async fn test_get_market_candlesticks() {
     let client = setup_client();
     let markets = client
@@ -228,6 +235,7 @@ async fn test_get_market_candlesticks() {
 /// COMPREHENSIVE MARKETS TEST
 /// =============================================================================
 #[tokio::test]
+#[serial]
 async fn test_markets_endpoints_comprehensive() {
     let client = setup_client();
     println!("\n{}", "=".repeat(80));

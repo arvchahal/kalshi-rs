@@ -1,8 +1,10 @@
 use crate::common::setup_client;
 use kalshi_rs::milestones::models::*;
+use serial_test::serial;
 use std::time::Duration;
 use tokio::time::sleep;
 #[tokio::test]
+#[serial]
 async fn test_get_milestones_basic() {
     tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
     let client = setup_client();
@@ -15,6 +17,7 @@ async fn test_get_milestones_basic() {
     );
 }
 #[tokio::test]
+#[serial]
 async fn test_get_single_milestone() {
     let client = setup_client();
     let list = client
@@ -35,6 +38,7 @@ async fn test_get_single_milestone() {
     );
 }
 #[tokio::test]
+#[serial]
 async fn test_milestones_endpoints_all() {
     let client = setup_client();
     let list = client

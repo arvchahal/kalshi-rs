@@ -1,11 +1,13 @@
 use crate::common::setup_ws_client;
 use kalshi_rs::websocket::models::*;
+use serial_test::serial;
 
 use super::constants::CHANNELS;
 use super::constants::TEST_ADD_MARKET_TICKER;
 use super::constants::TEST_MARKET_TICKER;
 
 #[tokio::test]
+#[serial]
 async fn test_subscribe() {
     let client = setup_ws_client();
     client.connect().await.unwrap();
@@ -32,6 +34,7 @@ async fn test_subscribe() {
 }
 
 #[tokio::test]
+#[serial]
 async fn test_unsubscribe() {
     let client = setup_ws_client();
     client.connect().await.unwrap();
@@ -64,6 +67,7 @@ async fn test_unsubscribe() {
 // NOTE: this is not a great test. problem is that both OkResponse and ListSubscriptionsResponse
 // have type field equal to "ok"
 #[tokio::test]
+#[serial]
 async fn test_list_subscriptions() {
     let client = setup_ws_client();
     client.connect().await.unwrap();
@@ -87,6 +91,7 @@ async fn test_list_subscriptions() {
 }
 
 #[tokio::test]
+#[serial]
 async fn test_add_markets() {
     let client = setup_ws_client();
     client.connect().await.unwrap();
@@ -115,6 +120,7 @@ async fn test_add_markets() {
 }
 
 #[tokio::test]
+#[serial]
 async fn test_del_markets() {
     let client = setup_ws_client();
     client.connect().await.unwrap();

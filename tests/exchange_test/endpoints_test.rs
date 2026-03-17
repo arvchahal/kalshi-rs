@@ -1,11 +1,13 @@
 use crate::common::setup_client;
 use kalshi_rs::exchange::models::*;
+use serial_test::serial;
 use std::time::Duration;
 use tokio::time::sleep;
 /// =============================================================================
 /// EXCHANGE ANNOUNCEMENTS TESTS
 /// =============================================================================
 #[tokio::test]
+#[serial]
 async fn test_get_exchange_announcements() {
     let client = setup_client();
     let result = client.get_exchange_announcements().await;
@@ -29,6 +31,7 @@ async fn test_get_exchange_announcements() {
 /// EXCHANGE SCHEDULE TESTS
 /// =============================================================================
 #[tokio::test]
+#[serial]
 async fn test_get_exchange_schedule() {
     let client = setup_client();
     let result = client.get_exchange_schedule().await;
@@ -53,6 +56,7 @@ async fn test_get_exchange_schedule() {
 /// EXCHANGE STATUS TESTS
 /// =============================================================================
 #[tokio::test]
+#[serial]
 async fn test_get_exchange_status() {
     let client = setup_client();
     let result = client.get_exchange_status().await;
@@ -79,6 +83,7 @@ async fn test_get_exchange_status() {
 /// USER DATA TIMESTAMP TESTS
 /// =============================================================================
 #[tokio::test]
+#[serial]
 async fn test_get_user_data_timestamp() {
     let client = setup_client();
     let result = client.get_user_data_timestamp().await;
@@ -99,6 +104,7 @@ async fn test_get_user_data_timestamp() {
 /// COMPREHENSIVE EXCHANGE TEST
 /// =============================================================================
 #[tokio::test]
+#[serial]
 async fn test_exchange_endpoints_comprehensive() {
     let client = setup_client();
     println!("\n{}", "=".repeat(80));
