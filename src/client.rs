@@ -1,6 +1,7 @@
 use crate::auth::Account;
 use crate::errors::KalshiError;
 use crate::helpers;
+use crate::ratelimiter;
 use reqwest::{Client, StatusCode};
 
 // Kalshi API base URL for production
@@ -57,10 +58,12 @@ const KALSHI_API: &str = "https://api.elections.kalshi.com";
 /// # Ok(())
 /// # }
 /// ```
+#[derive(Debug, Clone)]
 pub struct KalshiClient {
     pub(crate) http_client: Client,
     pub(crate) account: Account,
     pub(crate) base_url: String,
+    pub(crate) limiter: ratelimiter::KalshiLimiter,
 }
 
 impl KalshiClient {
@@ -70,16 +73,29 @@ impl KalshiClient {
             http_client: Client::new(),
             account: user,
             base_url: KALSHI_API.to_string(),
+            limiter: ratelimiter::KalshiLimiter::new(
+                ratelimiter::RateLimitTier::default(),
+                ratelimiter::RateLimiterConfig::default(),
+            ),
         }
     }
 
     /// Create a new KalshiClient with custom API endpoint
     /// Useful for testing or using different API environments
-    pub fn new_with_config(user: Account, configuration: Option<String>) -> KalshiClient {
+    pub fn new_with_config(
+        user: Account,
+        configuration: Option<String>,
+        limiter: Option<ratelimiter::RateLimitTier>,
+        limiter_config: Option<ratelimiter::RateLimiterConfig>,
+    ) -> KalshiClient {
         KalshiClient {
             http_client: Client::new(),
             account: user,
-            base_url: configuration.unwrap_or_else(|| KALSHI_API.to_string()),
+            base_url: configuration.unwrap_or(KALSHI_API.to_string()),
+            limiter: ratelimiter::KalshiLimiter::new(
+                limiter.unwrap_or(ratelimiter::RateLimitTier::Basic),
+                limiter_config.unwrap_or(ratelimiter::RateLimiterConfig::default()),
+            ),
         }
     }
 
@@ -92,6 +108,7 @@ impl KalshiClient {
     where
         T: serde::Serialize + ?Sized,
     {
+        self.limiter.wait_read().await;
         helpers::authenticated_get(&self.http_client, &self.base_url, &self.account, path, body)
             .await
     }
@@ -105,6 +122,7 @@ impl KalshiClient {
     where
         T: serde::Serialize + ?Sized,
     {
+        self.limiter.wait_write().await;
         helpers::authenticated_post(
             &self.http_client,
             &self.base_url,
@@ -124,12 +142,14 @@ impl KalshiClient {
     where
         T: serde::Serialize + ?Sized,
     {
+        self.limiter.wait_write().await;
         helpers::authenticated_delete(&self.http_client, &self.base_url, &self.account, path, body)
             .await
     }
 
     /// Wrapper for unauthenticated GET requests
     pub async fn unauthenticated_get(&self, path: &str) -> Result<String, KalshiError> {
+        self.limiter.wait_read().await;
         helpers::unauthenticated_get(&self.http_client, &self.base_url, path).await
     }
 
@@ -142,6 +162,7 @@ impl KalshiClient {
     where
         T: serde::Serialize + ?Sized,
     {
+        self.limiter.wait_write().await;
         helpers::authenticated_put(
             &self.http_client,
             &self.base_url,
