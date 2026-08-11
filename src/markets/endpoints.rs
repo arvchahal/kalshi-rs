@@ -55,7 +55,7 @@ impl KalshiClient {
         } else {
             format!("{}?{}", GET_MARKETS, query)
         };
-        let resp = self.unauthenticated_get(&url).await?;
+        let resp = self.authenticated_get::<str>(&url, None).await?;
         let data: GetMarketsResponse = serde_json::from_str(&resp).map_err(|e| {
             KalshiError::Other(format!(
                 "Invalid Parsing response format: Parse error: {e}. Response: {resp}"
@@ -78,7 +78,7 @@ impl KalshiClient {
     /// - Response: [`GetMarketResponse`]
     pub async fn get_market(&self, ticker: &str) -> Result<GetMarketResponse, KalshiError> {
         let url = GET_MARKET.replace("{}", ticker);
-        let resp = self.unauthenticated_get(&url).await?;
+        let resp = self.authenticated_get::<str>(&url, None).await?;
         let data: GetMarketResponse = serde_json::from_str(&resp).map_err(|e| {
             KalshiError::Other(format!(
                 "Invalid Parsing response format: Parse error: {e}. Response: {resp}"
@@ -126,7 +126,7 @@ impl KalshiClient {
         } else {
             format!("{}?{}", GET_TRADES, query)
         };
-        let resp = self.unauthenticated_get(&url).await?;
+        let resp = self.authenticated_get::<str>(&url, None).await?;
         let data: GetTradesResponse = serde_json::from_str(&resp).map_err(|e| {
             KalshiError::Other(format!(
                 "Invalid Parsing response format: Parse error: {e}. Response: {resp}"
@@ -168,7 +168,7 @@ impl KalshiClient {
         } else {
             format!("{}?{}", base_url, query)
         };
-        let resp = self.unauthenticated_get(&url).await?;
+        let resp = self.authenticated_get::<str>(&url, None).await?;
         let data: GetMarketOrderbookResponse = serde_json::from_str(&resp).map_err(|e| {
             KalshiError::Other(format!(
                 "Invalid Parsing response format: Parse error: {e}. Response: {resp}"
@@ -220,7 +220,7 @@ impl KalshiClient {
         } else {
             format!("{}?{}", base_url, query)
         };
-        let resp = self.unauthenticated_get(&url).await?;
+        let resp = self.authenticated_get::<str>(&url, None).await?;
         let data: GetMarketCandlesticksResponse = serde_json::from_str(&resp).map_err(|e| {
             KalshiError::Other(format!(
                 "Invalid Parsing response format: Parse error: {e}. Response: {resp}"
