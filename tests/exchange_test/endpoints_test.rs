@@ -5,25 +5,23 @@ use tokio::time::sleep;
 /// =============================================================================
 /// EXCHANGE ANNOUNCEMENTS TESTS
 /// =============================================================================
+/// Kalshi removed `GET /exchange/announcements`. This test now pins the
+/// removal: if Kalshi ever brings the endpoint back, it fails so the
+/// deprecation on `get_exchange_announcements` can be lifted.
 #[tokio::test]
-async fn test_get_exchange_announcements() {
+async fn test_get_exchange_announcements_is_removed() {
     let client = setup_client();
+    #[allow(deprecated)]
     let result = client.get_exchange_announcements().await;
+    let err = match result {
+        Ok(_) => panic!("GET /exchange/announcements responded again - remove the deprecation"),
+        Err(e) => e.to_string(),
+    };
     assert!(
-        result.is_ok(),
-        "Failed to get exchange announcements: {:?}",
-        result.err()
+        err.contains("404"),
+        "expected removed endpoint to 404, got: {err}"
     );
-    let announcements = result.unwrap();
-    println!(
-        "Exchange announcements count: {}",
-        announcements.announcements.len()
-    );
-    if announcements.announcements.is_empty() {
-        println!("No exchange announcements currently available (OK).");
-    } else {
-        println!("First announcement: {}", announcements.announcements[0]);
-    }
+    println!("Confirmed: GET /exchange/announcements is removed (404).");
 }
 /// =============================================================================
 /// EXCHANGE SCHEDULE TESTS
@@ -104,13 +102,7 @@ async fn test_exchange_endpoints_comprehensive() {
     println!("\n{}", "=".repeat(80));
     println!("COMPREHENSIVE EXCHANGE ENDPOINTS TEST");
     println!("{}\n", "=".repeat(80));
-    println!("1. Getting exchange announcements...");
-    let announcements = client
-        .get_exchange_announcements()
-        .await
-        .expect("Failed to get announcements");
-    println!("   Announcements: {}\n", announcements.announcements.len());
-    sleep(Duration::from_secs(2)).await;
+    println!("1. Skipping exchange announcements (endpoint removed by Kalshi)\n");
     println!("2. Getting exchange schedule...");
     let schedule = client
         .get_exchange_schedule()

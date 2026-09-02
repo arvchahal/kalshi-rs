@@ -79,6 +79,23 @@ pub struct GetExcahngeStatus {
     pub exchange_active: bool,
     pub exchange_estimated_resume_time: Option<String>,
     pub trading_active: bool,
+    /// Whether transfers between exchange instances are currently enabled.
+    #[serde(default)]
+    pub intra_exchange_transfers_active: bool,
+    /// Per-exchange-instance status breakdown.
+    #[serde(default)]
+    pub exchange_index_statuses: Vec<ExchangeIndexStatus>,
+}
+
+#[derive(serde::Deserialize, Display, Debug, Clone)]
+#[display("Exchange {} active: {}", exchange_index, exchange_active)]
+/// Status of a single exchange instance.
+pub struct ExchangeIndexStatus {
+    pub exchange_index: i32,
+    pub exchange_active: bool,
+    pub trading_active: bool,
+    #[serde(default)]
+    pub intra_exchange_transfers_active: bool,
 }
 
 #[derive(serde::Deserialize, Display)]

@@ -31,6 +31,9 @@ pub struct Market {
     pub latest_expiration_time: String,
     pub settlement_timer_seconds: u32,
     pub status: String,
+    /// Deprecated by Kalshi and no longer returned. Kept for backwards
+    /// compatibility with older recorded payloads.
+    #[serde(default)]
     pub response_price_units: String,
     pub notional_value_dollars: String,
     pub yes_bid_dollars: String,
@@ -69,8 +72,12 @@ pub struct Market {
     pub rules_primary: String,
     #[serde(default)]
     pub rules_secondary: String,
+    /// Deprecated by Kalshi in favour of `price_level_structure` /
+    /// `price_ranges`, and no longer returned.
+    #[serde(default)]
     pub tick_size: u32,
     pub price_level_structure: String,
+    #[serde(default)]
     pub price_ranges: Vec<PriceRange>,
     #[serde(default)]
     pub fee_waiver_expiration_time: Option<String>,
@@ -80,6 +87,27 @@ pub struct Market {
     pub mve_selected_legs: Option<Vec<MveSelectedLeg>>,
     #[serde(default)]
     pub primary_participant_key: Option<String>,
+    /// Index of the exchange instance this market belongs to.
+    #[serde(default)]
+    pub exchange_index: i32,
+    #[serde(default)]
+    pub created_time: Option<String>,
+    #[serde(default)]
+    pub updated_time: Option<String>,
+    /// True while the market is provisional and not yet finalised.
+    #[serde(default)]
+    pub is_provisional: bool,
+    /// Resting size at the best yes bid/ask, as fixed-point strings.
+    #[serde(default)]
+    pub yes_bid_size_fp: Option<String>,
+    #[serde(default)]
+    pub yes_ask_size_fp: Option<String>,
+    #[serde(default)]
+    pub settlement_ts: Option<String>,
+    #[serde(default)]
+    pub early_close_condition: Option<String>,
+    #[serde(default)]
+    pub occurrence_datetime: Option<String>,
 }
 
 /// Represents a selected leg in a multivariate event (MVE) collection.
@@ -141,7 +169,17 @@ pub struct MarketsQuery {
     pub max_close_ts: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub min_close_ts: Option<i64>,
-    #[serde(rename = "statuses", skip_serializing_if = "Option::is_none")]
+    /// Market status filter. Kalshi accepts `open`, `closed`, `settled`, and
+    /// `unopened`, and rejects anything else with `HTTP 400`.
+    ///
+    /// Note these filter values differ from the `status` field on a returned
+    /// [`Market`]: filtering by `open` yields markets whose status reads
+    /// `active`, `settled` yields `finalized`, and `unopened` yields
+    /// `initialized`.
+    ///
+    /// Serialized as `status`. It was previously sent as `statuses`, a
+    /// parameter Kalshi ignores, so the filter silently did nothing.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub status: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tickers: Option<String>,

@@ -64,7 +64,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = KalshiClient::new(account);
 
     let params = MarketsQuery {
-        status: Some("active".into()),
+        status: Some("open".into()),
         limit: Some(10),
         ..Default::default()
     };
@@ -111,7 +111,7 @@ You **must** set your environment variables:
 
 ```bash
 export KALSHI_API_KEY_ID="your_key_id"
-export KALSHI_PRIVATE_KEY_PATH="path/to/your/kalshi_private.pem"
+export KALSHI_PK_FILE_PATH="path/to/your/kalshi_private.pem"
 ```
 
 You can generate these keys from the Kalshi dashboard:

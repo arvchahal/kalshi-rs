@@ -14,7 +14,7 @@ async fn test_get_all_markets_basic() {
             series_ticker: None,
             max_close_ts: None,
             min_close_ts: None,
-            status: Some("active".to_string()),
+            status: Some("open".to_string()),
             tickers: None,
         })
         .await;
@@ -78,13 +78,13 @@ async fn test_get_single_market() {
     let client = setup_client();
     let markets = client
         .get_all_markets(&MarketsQuery {
-            limit: Some(1),
+            limit: Some(100),
             cursor: None,
             event_ticker: None,
             series_ticker: None,
             max_close_ts: None,
             min_close_ts: None,
-            status: Some("active".to_string()),
+            status: Some("open".to_string()),
             tickers: None,
         })
         .await
@@ -93,7 +93,20 @@ async fn test_get_single_market() {
         println!("No markets available - skipping single market test");
         return;
     }
-    let ticker = &markets.markets[0].ticker;
+    // Provisional multivariate-collection markets are listed by `GET /markets`
+    // but are generated combinations that frequently are not individually
+    // addressable, so `GET /markets/{ticker}` 404s on them. Pick a standalone
+    // market instead of blindly taking the first listing.
+    let market = markets
+        .markets
+        .iter()
+        .find(|m| m.mve_collection_ticker.is_none() && !m.is_provisional)
+        .or_else(|| markets.markets.iter().find(|m| m.mve_collection_ticker.is_none()));
+    let Some(market) = market else {
+        println!("Only multivariate collection markets listed - skipping");
+        return;
+    };
+    let ticker = &market.ticker;
     println!("Testing get_market for ticker: {}", ticker);
     let result = client.get_market(ticker).await;
     assert!(
@@ -119,7 +132,7 @@ async fn test_get_market_orderbook() {
             series_ticker: None,
             max_close_ts: None,
             min_close_ts: None,
-            status: Some("active".to_string()),
+            status: Some("open".to_string()),
             tickers: None,
         })
         .await
@@ -152,7 +165,7 @@ async fn test_get_trades_recent() {
             series_ticker: None,
             max_close_ts: None,
             min_close_ts: None,
-            status: Some("active".to_string()),
+            status: Some("open".to_string()),
             tickers: None,
         })
         .await
@@ -185,7 +198,7 @@ async fn test_get_market_candlesticks() {
             series_ticker: None,
             max_close_ts: None,
             min_close_ts: None,
-            status: Some("active".to_string()),
+            status: Some("open".to_string()),
             tickers: None,
         })
         .await
@@ -236,20 +249,26 @@ async fn test_markets_endpoints_comprehensive() {
     println!("1. Getting all markets...");
     let markets = client
         .get_all_markets(&MarketsQuery {
-            limit: Some(5),
+            limit: Some(100),
             cursor: None,
             event_ticker: None,
             series_ticker: None,
             max_close_ts: None,
             min_close_ts: None,
-            status: Some("active".to_string()),
+            status: Some("open".to_string()),
             tickers: None,
         })
         .await
         .expect("Failed to get markets");
     println!("   Markets retrieved: {}\n", markets.markets.len());
     sleep(Duration::from_secs(2)).await;
-    if let Some(first) = markets.markets.first() {
+    // Skip generated multivariate-collection markets: they are listed but are
+    // often not individually addressable, so `GET /markets/{ticker}` 404s.
+    if let Some(first) = markets
+        .markets
+        .iter()
+        .find(|m| m.mve_collection_ticker.is_none())
+    {
         println!("2. Getting single market...");
         let single = client
             .get_market(&first.ticker)
@@ -290,4 +309,57 @@ async fn test_markets_endpoints_comprehensive() {
     println!("{}", "=".repeat(80));
     println!("ALL MARKET ENDPOINTS TESTS PASSED");
     println!("{}\n", "=".repeat(80));
+}
+
+/// The `status` filter must actually reach Kalshi.
+///
+/// `MarketsQuery::status` was serialized as `statuses`, which Kalshi ignores,
+/// so every status filter silently returned unfiltered results. Kalshi's
+/// filter vocabulary also differs from the status values it returns, so this
+/// asserts the mapping rather than equality.
+#[tokio::test]
+async fn test_status_filter_is_actually_applied() {
+    let client = setup_client();
+    for (filter, expected_status) in [("settled", "finalized"), ("unopened", "initialized")] {
+        let markets = client
+            .get_all_markets(&MarketsQuery {
+                limit: Some(20),
+                status: Some(filter.to_string()),
+                ..Default::default()
+            })
+            .await
+            .unwrap_or_else(|e| panic!("status={filter} failed: {e:?}"));
+        assert!(
+            !markets.markets.is_empty(),
+            "status={filter} returned no markets"
+        );
+        for m in &markets.markets {
+            assert_eq!(
+                m.status, expected_status,
+                "status={filter} returned a market with status {}",
+                m.status
+            );
+        }
+        println!("status={filter} -> {} markets, all {expected_status}", markets.markets.len());
+    }
+}
+
+/// Kalshi validates the status filter, so a bad value must surface as an error
+/// rather than being silently dropped.
+#[tokio::test]
+async fn test_invalid_status_filter_is_rejected() {
+    let client = setup_client();
+    let result = client
+        .get_all_markets(&MarketsQuery {
+            limit: Some(1),
+            // "active" is a market *state*, not a valid filter value.
+            status: Some("active".to_string()),
+            ..Default::default()
+        })
+        .await;
+    let err = match result {
+        Ok(_) => panic!("expected HTTP 400 for an invalid status filter"),
+        Err(e) => e.to_string(),
+    };
+    assert!(err.contains("400"), "expected 400, got: {err}");
 }

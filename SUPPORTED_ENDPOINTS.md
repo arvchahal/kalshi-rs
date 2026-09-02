@@ -4,7 +4,7 @@
 | API Endpoint                                               | kalshi-rs Function                     | Module                      | Status          |
 | ---------------------------------------------------------- | -------------------------------------- | --------------------------- | --------------- |
 | Get Exchange Status                                        | `get_exchange_status()`                | exchange/endpoints.rs       | ✅ Implemented  |
-| Get Exchange Announcements                                 | `get_exchange_announcements()`         | exchange/endpoints.rs       | ✅ Implemented  |
+| Get Exchange Announcements                                 | `get_exchange_announcements()`         | exchange/endpoints.rs       | ⚠️ Removed by Kalshi (404) |
 | Get Series Fee Changes                                     |                                        |                             | ❌ Not Implemented |
 | Get Exchange Schedule                                      | `get_exchange_schedule()`              | exchange/endpoints.rs       | ✅ Implemented  |
 | Get User Data Timestamp                                    | `get_user_data_timestamp()`            | exchange/endpoints.rs       | ✅ Implemented  |
@@ -92,6 +92,53 @@ These endpoints are available in the Kalshi API but not yet implemented in kalsh
 6. **Incentives**: Get Volume Incentives
 7. **FCM**: Get FCM Orders, Get FCM Positions
 8. **Multivariate**: Create Market In Multivariate Event Collection, Get Multivariate Event Collection Lookup History, Lookup Tickers For Market In Multivariate Event Collection
+
+## Verified against the live API on 2026-08-12
+
+Every endpoint above was exercised against `api.elections.kalshi.com`. Notable
+behaviour worth knowing before you rely on it:
+
+- **`GET /exchange/announcements` is gone.** It returns `404`; the method is
+  now `#[deprecated]`.
+- **`MarketsQuery::status` was a silent no-op.** It serialized as `statuses`,
+  which Kalshi ignores, so every status filter returned unfiltered results.
+  Now sent as `status`. Valid values are `open`, `closed`, `settled`, and
+  `unopened` — note these differ from the `status` a market reports
+  (`open` → `active`, `settled` → `finalized`, `unopened` → `initialized`).
+  `active` is **not** a valid filter and returns `400`.
+- **`GET /markets/{ticker}` 404s for provisional multivariate-collection
+  markets.** They are listed by `GET /markets` but are generated combinations
+  that are frequently not individually addressable.
+- **`GET /portfolio/summary/total_resting_order_value` returns `403`
+  permission denied** for a standard key, though the method works.
+- **`GET /communications/quotes` returns `403`** unless a creator filter is
+  supplied.
+
+## Added by Kalshi, not yet implemented here
+
+Confirmed reachable with a standard key on 2026-08-12:
+
+| API Endpoint | Notes |
+| --- | --- |
+| `GET /margin/positions` | Margin positions, with `is_portfolio` and `subaccount` |
+| `GET /margin/fee_tiers` | Live maker/taker rates per margin market |
+| `GET /margin/risk` | Requires query parameters |
+| `GET /markets/orderbooks` | Several orderbooks in one call |
+| `GET /historical/cutoff` | Cutoff timestamps for the historical tier |
+| `GET /historical/positions` | Settled positions archived out of `/portfolio/positions` |
+| `GET /historical/trades` | Trades older than the cutoff, archived out of `/markets/trades` |
+| `GET /portfolio/deposits` | Deposit history |
+| `GET /portfolio/withdrawals` | Withdrawal history |
+| `GET /account/api_usage_level/volume_progress` | Trailing volume toward the next tier |
+| `GET /account/endpoint_costs` | Per-endpoint token costs (`default_cost` is 10) |
+
+Since 2026-02-19 Kalshi splits data into a live tier and a historical tier, so
+`/portfolio/positions` and `/markets/trades` no longer return archived rows —
+reach for the `/historical/*` endpoints for anything older than the cutoff.
+
+Kalshi has also deprecated the legacy order endpoints (`POST /portfolio/orders`
+and friends) in favour of `POST /portfolio/events/orders`. The legacy paths
+this SDK uses still work, but have a scheduled removal.
 
 ## Contributing
 

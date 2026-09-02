@@ -2,6 +2,9 @@
 /.lsp
 /.clj-kondo
 /*.json
+# never commit private keys in any form
+*.pem
+*.pem.*
 kalshi_private.pem
 CLAUDE.md
 t.py

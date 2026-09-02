@@ -110,7 +110,7 @@ You **must** set your environment variables:
 
 ```bash
 export KALSHI_API_KEY_ID="your_key_id"
-export KALSHI_PRIVATE_KEY_PATH="path/to/your/kalshi_private.pem"
+export KALSHI_PK_FILE_PATH="path/to/your/kalshi_private.pem"
 ```
 
 You can generate these keys from the Kalshi dashboard:
@@ -124,6 +124,41 @@ cargo test -- --nocapture
 ```
 
 Tests involving trading endpoints will make **real requests**, so be mindful of costs.
+
+The test suite shares a single rate limiter across all tests, so the whole run
+stays inside one token budget even when tests execute concurrently.
+
+<br>
+
+## Rate Limiting
+
+Kalshi meters requests with a per-second token budget, tracked separately for
+reads and writes. Most endpoints cost 10 tokens, so a Basic key (200 read
+tokens/sec) sustains about 20 reads/sec. Going over returns `HTTP 429`, and
+Kalshi sends no `Retry-After` header.
+
+Opt in to client-side pacing so requests wait for capacity rather than being
+rejected:
+
+```rust
+use kalshi_rs::{Account, KalshiClient, RateLimitTier};
+
+let client = KalshiClient::new(account).with_rate_limit(RateLimitTier::Basic);
+```
+
+Any `429` that still gets through is retried with exponential backoff. To share
+one budget across several clients, build the limiter yourself and pass it to
+`with_rate_limiter`:
+
+```rust
+use std::sync::Arc;
+use kalshi_rs::{KalshiClient, RateLimiter, RateLimitTier};
+
+let limiter = Arc::new(RateLimiter::new(RateLimitTier::Advanced));
+let client = KalshiClient::new(account).with_rate_limiter(limiter.clone());
+```
+
+Clients are unthrottled unless you ask for a limiter.
 
 <br>
 

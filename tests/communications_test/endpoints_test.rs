@@ -28,7 +28,7 @@ async fn test_get_quotes_list() {
             series_ticker: None,
             max_close_ts: None,
             min_close_ts: None,
-            status: Some("active".to_string()),
+            status: Some("open".to_string()),
             tickers: None,
         })
         .await

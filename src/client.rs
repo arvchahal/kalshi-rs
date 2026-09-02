@@ -1,7 +1,9 @@
 use crate::auth::Account;
 use crate::errors::KalshiError;
 use crate::helpers;
+use crate::rate_limit::{RateLimitTier, RateLimiter};
 use reqwest::{Client, StatusCode};
+use std::sync::Arc;
 
 // Kalshi API base URL for production
 const KALSHI_API: &str = "https://api.elections.kalshi.com";
@@ -61,15 +63,20 @@ pub struct KalshiClient {
     pub(crate) http_client: Client,
     pub(crate) account: Account,
     pub(crate) base_url: String,
+    pub(crate) rate_limiter: Option<Arc<RateLimiter>>,
 }
 
 impl KalshiClient {
     /// Create a new KalshiClient with default API endpoint
+    ///
+    /// No client-side rate limiting is applied by default; see
+    /// [`with_rate_limit`](KalshiClient::with_rate_limit).
     pub fn new(user: Account) -> KalshiClient {
         KalshiClient {
             http_client: Client::new(),
             account: user,
             base_url: KALSHI_API.to_string(),
+            rate_limiter: None,
         }
     }
 
@@ -80,7 +87,34 @@ impl KalshiClient {
             http_client: Client::new(),
             account: user,
             base_url: configuration.unwrap_or_else(|| KALSHI_API.to_string()),
+            rate_limiter: None,
         }
+    }
+
+    /// Pace requests to stay within the token budget for `tier`, retrying
+    /// any `HTTP 429` with exponential backoff.
+    ///
+    /// ```no_run
+    /// # use kalshi_rs::{Account, KalshiClient, RateLimitTier};
+    /// # fn example(account: Account) {
+    /// let client = KalshiClient::new(account).with_rate_limit(RateLimitTier::Basic);
+    /// # }
+    /// ```
+    pub fn with_rate_limit(mut self, tier: RateLimitTier) -> KalshiClient {
+        self.rate_limiter = Some(Arc::new(RateLimiter::new(tier)));
+        self
+    }
+
+    /// Pace requests using a limiter you construct, so several clients can
+    /// share one budget.
+    pub fn with_rate_limiter(mut self, limiter: Arc<RateLimiter>) -> KalshiClient {
+        self.rate_limiter = Some(limiter);
+        self
+    }
+
+    /// The limiter in force, if any.
+    pub(crate) fn limiter(&self) -> Option<&RateLimiter> {
+        self.rate_limiter.as_deref()
     }
 
     /// Wrapper for authenticated GET requests
@@ -92,8 +126,15 @@ impl KalshiClient {
     where
         T: serde::Serialize + ?Sized,
     {
-        helpers::authenticated_get(&self.http_client, &self.base_url, &self.account, path, body)
-            .await
+        helpers::authenticated_get(
+            &self.http_client,
+            &self.base_url,
+            &self.account,
+            self.limiter(),
+            path,
+            body,
+        )
+        .await
     }
 
     /// Wrapper for authenticated POST requests
@@ -109,6 +150,7 @@ impl KalshiClient {
             &self.http_client,
             &self.base_url,
             &self.account,
+            self.limiter(),
             path,
             json_body,
         )
@@ -124,13 +166,20 @@ impl KalshiClient {
     where
         T: serde::Serialize + ?Sized,
     {
-        helpers::authenticated_delete(&self.http_client, &self.base_url, &self.account, path, body)
-            .await
+        helpers::authenticated_delete(
+            &self.http_client,
+            &self.base_url,
+            &self.account,
+            self.limiter(),
+            path,
+            body,
+        )
+        .await
     }
 
     /// Wrapper for unauthenticated GET requests
     pub async fn unauthenticated_get(&self, path: &str) -> Result<String, KalshiError> {
-        helpers::unauthenticated_get(&self.http_client, &self.base_url, path).await
+        helpers::unauthenticated_get(&self.http_client, &self.base_url, self.limiter(), path).await
     }
 
     /// Wrapper for authenticated put requests
@@ -146,6 +195,7 @@ impl KalshiClient {
             &self.http_client,
             &self.base_url,
             &self.account,
+            self.limiter(),
             path,
             json_body,
         )

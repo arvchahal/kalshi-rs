@@ -189,9 +189,25 @@ pub struct DecreaseOrderRequest {
 /// Response model for API endpoint.
 ///
 pub struct GetBalanceResponse {
+    /// Legacy integer-cent balance. Truncates sub-cent precision; prefer
+    /// `balance_dollars`.
     pub balance: u64,
+    /// Available balance as a fixed-point dollar string, carrying the
+    /// centi-cent precision that `balance` truncates.
+    #[serde(default)]
+    pub balance_dollars: String,
+    /// Per-exchange-instance balance breakdown.
+    #[serde(default)]
+    pub balance_breakdown: Vec<ExchangeBalance>,
     pub portfolio_value: u64,
     pub updated_ts: u64,
+}
+
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
+/// Balance held on a single exchange instance.
+pub struct ExchangeBalance {
+    pub balance: String,
+    pub exchange_index: i32,
 }
 
 #[derive(serde::Serialize, Default, Debug, Clone)]
@@ -394,11 +410,25 @@ pub struct GetSettlementsParams {
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Settlement {
     pub ticker: String,
+    #[serde(default)]
+    pub event_ticker: Option<String>,
     pub market_result: String,
     pub yes_count_fp: String,
-    pub yes_total_cost: u64,
+    /// Total cost of the yes side as a fixed-point dollar string.
+    /// Replaces the removed integer-cent `yes_total_cost`.
+    #[serde(default)]
+    pub yes_total_cost_dollars: String,
     pub no_count_fp: String,
-    pub no_total_cost: u64,
+    /// Total cost of the no side as a fixed-point dollar string.
+    /// Replaces the removed integer-cent `no_total_cost`.
+    #[serde(default)]
+    pub no_total_cost_dollars: String,
+    /// Legacy integer-cent fields, removed by Kalshi on 2026-03-12.
+    /// Retained so older recorded payloads still deserialize.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub yes_total_cost: Option<u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub no_total_cost: Option<u64>,
     pub revenue: i64,
     pub settled_time: String,
     #[serde(skip_serializing_if = "Option::is_none")]

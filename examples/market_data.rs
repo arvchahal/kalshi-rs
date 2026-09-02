@@ -17,7 +17,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Fetching active markets...");
     let params = MarketsQuery {
         limit: Some(500),
-        status: Some("active".to_string()),
+        status: Some("open".to_string()),
         cursor: None,
         event_ticker: None,
         series_ticker: None,

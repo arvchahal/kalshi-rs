@@ -274,7 +274,25 @@ pub struct TickerUpdateMessage {
     pub dollar_volume: i64,
     pub dollar_open_interest: i64,
     pub ts: i64,
-    pub Clock: i64, // idk why api makes this upper case
+    /// Matching engine timestamp in epoch milliseconds. Kalshi added this
+    /// alongside `ts`, which it is deprecating.
+    #[serde(default)]
+    pub ts_ms: Option<i64>,
+    #[serde(default)]
+    pub market_id: Option<String>,
+    /// Resting size at the best bid/ask, and the size of the last trade.
+    #[serde(default)]
+    pub yes_bid_size_fp: Option<String>,
+    #[serde(default)]
+    pub yes_ask_size_fp: Option<String>,
+    #[serde(default)]
+    pub last_trade_size_fp: Option<String>,
+    #[serde(default)]
+    pub time: Option<String>,
+    /// No longer sent by Kalshi. A required `Clock` field here made every
+    /// ticker message fail to deserialize.
+    #[serde(default)]
+    pub Clock: Option<i64>,
 }
 
 // User order fills channel

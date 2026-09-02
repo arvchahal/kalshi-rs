@@ -50,6 +50,7 @@
 pub mod auth; // Authentication and credential management
 pub mod client; // Main HTTP client
 pub mod errors; // Error types
+pub mod rate_limit; // Client-side request pacing
 pub(crate) mod helpers;
 pub mod ws_client; // Main Websocket client // Internal HTTP helpers
 
@@ -69,4 +70,5 @@ pub mod websocket; // Websocket trades and orderbook updates
 // Re-exports for convenient access
 pub use auth::Account;
 pub use client::KalshiClient;
+pub use rate_limit::{RateLimitTier, RateLimiter, RequestKind};
 pub use ws_client::KalshiWebsocketClient;

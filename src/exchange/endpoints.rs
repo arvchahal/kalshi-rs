@@ -22,6 +22,9 @@ impl KalshiClient {
     ///
     /// # Returns
     /// Result with response data or error
+    #[deprecated(
+        note = "Kalshi removed GET /exchange/announcements; this endpoint now always returns HTTP 404."
+    )]
     pub async fn get_exchange_announcements(
         &self,
     ) -> Result<GetExchangeAnnouncementsResponse, KalshiError> {
